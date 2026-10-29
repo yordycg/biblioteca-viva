@@ -8,9 +8,9 @@
     - Administrador (Dirección académica).
 - **Objetivo del sistema:** Plataforma web/móvil para la reserva ágil de recursos, validaciones con QR y gestión de devoluciones.
 - **Alcance MVP:** Las 3 funcionalidades prioritarias son:
-    - RF-01: Búsqueda y disponibilidad.
+    - RF-01: Búsqueda de recurso.
     - RF-02: Reserva de recurso.
-    - RF-03: Validación y Devolución con QR.
+    - RF-03: Generación de comprobante (QR).
 - **Exclusiones explícitas:** Multas monetarias, catálogo de libros físicos, soporte offline PWA, reportes analíticos para dirección, Redis, liberación por no-show.
 - **Equipo:**
     - Vicente Díaz
