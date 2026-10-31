@@ -1,0 +1,34 @@
+%% BibliotecaViva - Secuencia de reserva con QR
+
+sequenceDiagram
+  actor E as Estudiante/Docente
+  participant UI as Frontend
+  participant API as API
+  participant R as Reglas
+  participant DB as Datos
+  participant QR as QR
+
+  E->>UI: Selecciona recurso, fecha y bloque
+  UI->>API: POST /reservas
+  API->>R: validarSolicitud(usuario, recurso, fecha, bloque)
+  R->>DB: consultar disponibilidad
+  DB-->>R: disponible / ocupado
+  R->>DB: contar reservas activas del día
+  DB-->>R: 0 / 1 / 2
+  R->>DB: consultar sanción vigente
+  DB-->>R: activa / inactiva
+
+  alt Solicitud válida
+    API->>DB: guardar reserva
+    API->>QR: generar(reservaId)
+    QR-->>API: payload
+    API-->>UI: 201 + reserva + QR
+  else Recurso ocupado
+    API-->>UI: 409 + "Recurso no disponible"
+  else Límite diario alcanzado (RF-06)
+    API-->>UI: 422 + "Máximo 2 reservas activas por día"
+  else Usuario sancionado (RF-07)
+    API-->>UI: 403 + "Usuario sancionado hasta [fecha]"
+  else Datos inválidos
+    API-->>UI: 400 + "Revisa fecha y bloque"
+  end
