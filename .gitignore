@@ -1,8 +1,9 @@
-# Entorno e IA Local
+# Espacio de trabajo personal
+local/
 AGENTS.md
+justfile
 .agents/
 .prompts/
-*.local.md
 .cursorrules
 
 # Archivos de entorno y credenciales

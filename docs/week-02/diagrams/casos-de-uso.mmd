@@ -1,0 +1,21 @@
+%% BibliotecaViva - Diagrama de casos de uso (MVP)
+
+flowchart LR
+  E([Estudiante / Docente])
+  B([Bibliotecario])
+
+  subgraph Sistema BibliotecaViva
+    CU1[Buscar recurso]
+    CU2[Reservar recurso]
+    CU3[Ver QR]
+    CU4[Validar inicio]
+    CU5[Registrar devolución]
+    CU6[Aplicar sanción]
+  end
+
+  E --> CU1
+  E --> CU2
+  CU2 -.-> CU3
+  B --> CU4
+  B --> CU5
+  CU5 -.-> CU6

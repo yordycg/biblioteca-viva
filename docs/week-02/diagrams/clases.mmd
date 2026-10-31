@@ -1,0 +1,48 @@
+%% BibliotecaViva - Modelo de clases
+
+classDiagram
+  class Usuario {
+    +id
+    +nombre
+    +rol
+    +sancionadoHasta
+    +puedeReservar(fecha)
+  }
+
+  class Recurso {
+    +id
+    +tipo
+    +nombre
+    +estado
+    +disponible(bloque)
+  }
+
+  class Reserva {
+    +id
+    +fecha
+    +bloque
+    +estado
+    +generarQR()
+    +iniciar()
+    +finalizar()
+  }
+
+  class QR {
+    +id
+    +reservaId
+    +payload
+    +valido()
+  }
+
+  class Sancion {
+    +id
+    +usuarioId
+    +inicio
+    +fin
+    +motivo
+  }
+
+  Usuario "1" --> "*" Reserva : realiza
+  Recurso "1" --> "*" Reserva : reservado
+  Reserva "1" --> "1" QR : genera
+  Usuario "1" --> "*" Sancion : recibe

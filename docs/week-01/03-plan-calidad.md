@@ -9,6 +9,7 @@
     - Documentador Principal & Redactor - Lucas Jara.
 - **Mecanismos de calidad:**
     - Revisiones semanales formativas.
-    - Políticas de ramas (`feature/`, PR obligatorio, aprobación previa a merge).
+    - Políticas de ramas: una rama semanal + PR obligatorio.
+    - **Actualización semana 2:** el flujo pasó de ramas por tarea a integración semanal.
     - Criterios medibles de aceptación y definición de terminado (DoD).
     - Trazabilidad total de requisitos.
