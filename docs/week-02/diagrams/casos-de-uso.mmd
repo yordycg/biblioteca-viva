@@ -1,21 +1,32 @@
-%% BibliotecaViva - Diagrama de casos de uso (MVP)
+%% BibliotecaViva — Casos de uso del MVP
+%% Fuente de verdad del diagrama. Sintaxis Mermaid (GitHub) o Pele.
+%% Contenido equivalente a sem2-t2-casos-de-uso.png (entrega de SEM2-T2).
+%% Mermaid no tiene notación UML nativa de casos de uso: actores como nodos
+%% y «include» / «extend» como flechas punteadas etiquetadas.
 
 flowchart LR
-  E([Estudiante / Docente])
-  B([Bibliotecario])
+  A(["Docente / Estudiante"])
+  B(["Bibliotecario / Resolutor"])
 
-  subgraph Sistema BibliotecaViva
-    CU1[Buscar recurso]
-    CU2[Reservar recurso]
-    CU3[Ver QR]
-    CU4[Validar inicio]
-    CU5[Registrar devolución]
-    CU6[Aplicar sanción]
+  subgraph SISTEMA["Sistema BibliotecaViva"]
+    CU2["CU2 Reservar recurso"]
+    CU1["CU1 Buscar recurso"]
+    CU3["CU3 Visualizar QR"]
+    CU4["CU4 Validar inicio"]
+    CU5["CU5 Registrar devolución"]
+    CU0["CU0 Iniciar Sesión"]
+    CU6["CU6 Aplicar sanción"]
   end
 
-  E --> CU1
-  E --> CU2
-  CU2 -.-> CU3
+  A --> CU2
+  A --> CU1
+  A --> CU0
   B --> CU4
   B --> CU5
-  CU5 -.-> CU6
+  B --> CU0
+
+  CU2 -.->|"«include»"| CU3
+  CU2 -.->|"«include»"| CU0
+  CU4 -.->|"«include»"| CU0
+  CU5 -.->|"«include»"| CU0
+  CU5 -.->|"«extend» [si hay retraso]"| CU6
