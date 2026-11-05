@@ -143,9 +143,9 @@ Plan completo (12 casos, propuesta `[VERIFICAR]` para CP-07 a CP-12):
 
 | Tipo | Cantidad | Casos |
 |---|---|---|
-| Positivo | 6 | CP-01, CP-02, CP-05, CP-08, CP-09, CP-10 |
+| Positivo | 5 | CP-01, CP-02, CP-05, CP-09, CP-10 |
 | Negativo | 3 | CP-04, CP-07, CP-11 |
-| Límite | 3 | CP-03, CP-06, CP-12 |
+| Límite | 4 | CP-03, CP-06, CP-08, CP-12 |
 | Total | 12 | Cumple ≥ 3 negativos y ≥ 2 de límite |
 
 ## (b) Plan de CP-07 a CP-12
@@ -155,7 +155,7 @@ Plan completo (12 casos, propuesta `[VERIFICAR]` para CP-07 a CP-12):
 | CP-07 | Login con credenciales ficticias inválidas rechazado; con credenciales válidas carga la vista según rol | Negativo | RF-08 | 3 | `docs/week-02/evidence/CP-07.png` |
 | CP-11 | Búsqueda sin resultados muestra mensaje claro | Negativo | RF-01 | 3 | `docs/week-02/evidence/CP-11.png` |
 | CP-12 | Devolución exactamente a las 11:00 (bloque hasta 11:00) no genera sanción | Límite | RF-07 | 3 | `docs/week-02/evidence/CP-12.png` |
-| CP-08 | Reserva + QR en ≤ 1,5 s: promedio de 20 peticiones concurrentes con script/curl | Positivo | RNF-01 | 4 | `docs/week-02/evidence/CP-08.txt` |
+| CP-08 | Reserva + QR en ≤ 1,5 s: promedio de 20 peticiones concurrentes con script/curl | Límite | RNF-01 | 4 | `docs/week-02/evidence/CP-08.txt` |
 | CP-09 | Layout sin scroll horizontal ni textos cortados en 3 resoluciones (360 px, 1280 px y una intermedia [COMPLETAR]) y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | 4 | `docs/week-02/evidence/CP-09.png` |
 | CP-10 | Contraseñas con hash; datos ficticios; credenciales excluidas por .gitignore | Positivo | RNF-03 | 4 | `docs/week-02/evidence/CP-10.md` |
 
@@ -186,3 +186,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12 (3) · Semana 4: CP
 | 8 | CP-08 y CP-09 usan los métodos de verificación del equipo (20 peticiones concurrentes; 3 resoluciones en DevTools). | Coherencia con la definición de RNF-01 y RNF-02. |
 | 9 | Los casos usan solo datos @example.com, no los datos de los mockups. | Los mockups muestran nombre y correo de apariencia real; RNF-03 exige cero datos reales. |
 | 10 | No se agregan RF/RNF ni funcionalidades fuera de alcance. | Regla de trabajo del proyecto. |
+| 11 | CP-08 se clasifica como Límite, no como Positivo. | Verifica el comportamiento en el borde del umbral de RNF-01 (≤ 1,5 s); se corrige por `OBS-LOCAL-01` de la revisión interna. |
