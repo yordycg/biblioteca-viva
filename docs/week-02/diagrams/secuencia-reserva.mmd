@@ -1,34 +1,54 @@
-%% BibliotecaViva - Secuencia de reserva con QR
+%% BibliotecaViva — Secuencia de reserva con QR
+%% Fuente de verdad del diagrama. Sintaxis Mermaid (GitHub).
+%% Transcrito el 2026-11-05 desde sem2-t2-diagrama-secuencia.png (entrega de SEM2-T2
+%% de Héctor Oviedo), para que la fuente y la exportación coincidan.
+%% Pendiente: el diseño entregado separa servicios y repositorios (microservicios),
+%% fuera del alcance declarado en AGENTS.md. Ver OBS-LOCAL-02 / HAL-05.
 
 sequenceDiagram
-  actor E as Estudiante/Docente
-  participant UI as Frontend
-  participant API as API
-  participant R as Reglas
-  participant DB as Datos
-  participant QR as QR
+  actor U as Usuario
+  participant UI as Interfaz web
+  participant BE as Backend
+  participant SR as Servicio de reservas
+  participant SS as Servicio de sanciones
+  participant RRes as Repositorio de reservas
+  participant RRec as Repositorio de recursos
+  participant QR as Servicio QR
 
-  E->>UI: Selecciona recurso, fecha y bloque
-  UI->>API: POST /reservas
-  API->>R: validarSolicitud(usuario, recurso, fecha, bloque)
-  R->>DB: consultar disponibilidad
-  DB-->>R: disponible / ocupado
-  R->>DB: contar reservas activas del día
-  DB-->>R: 0 / 1 / 2
-  R->>DB: consultar sanción vigente
-  DB-->>R: activa / inactiva
+  U->>UI: Selecciona recurso, fecha y bloque
+  UI->>BE: Solicitar reserva
+  BE->>SR: crearReserva(datos)
+  SR->>SS: verificarSancion(usuarioId)
+  SS-->>SR: Resultado de sanción
 
-  alt Solicitud válida
-    API->>DB: guardar reserva
-    API->>QR: generar(reservaId)
-    QR-->>API: payload
-    API-->>UI: 201 + reserva + QR
-  else Recurso ocupado
-    API-->>UI: 409 + "Recurso no disponible"
-  else Límite diario alcanzado (RF-06)
-    API-->>UI: 422 + "Máximo 2 reservas activas por día"
-  else Usuario sancionado (RF-07)
-    API-->>UI: 403 + "Usuario sancionado hasta [fecha]"
-  else Datos inválidos
-    API-->>UI: 400 + "Revisa fecha y bloque"
+  alt Usuario sancionado (RF-07)
+    SR-->>BE: Rechazar reserva
+    BE-->>UI: Error: usuario sancionado
+    UI-->>U: Mostrar mensaje de sanción
+  else Usuario habilitado
+    SR->>RRes: contarReservasActivas(usuarioId, fecha)
+    RRes-->>SR: Cantidad de reservas
+    alt Límite diario alcanzado (RF-06)
+      SR-->>BE: Rechazar reserva
+      BE-->>UI: Error: máximo 2 reservas
+      UI-->>U: Mostrar límite diario
+    else Tiene cupo disponible
+      SR->>RRec: verificarDisponibilidad(recurso, fecha, bloque)
+      RRec-->>SR: Disponibilidad
+      alt Recurso ocupado
+        SR-->>BE: Rechazar reserva
+        BE-->>UI: Error: recurso no disponible
+        UI-->>U: Mostrar recurso ocupado
+      else Recurso disponible
+        SR->>RRes: guardarReserva(datos)
+        RRes-->>SR: Reserva registrada
+        SR->>QR: generarQR(idReserva)
+        QR-->>SR: QR único
+        SR->>RRes: asociarQR(idReserva, QR)
+        RRes-->>SR: Confirmación
+        SR-->>BE: Reserva y QR
+        BE-->>UI: Confirmación de reserva
+        UI-->>U: Mostrar código QR
+      end
+    end
   end
