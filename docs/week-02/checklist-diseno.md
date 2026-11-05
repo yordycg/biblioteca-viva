@@ -4,7 +4,7 @@
 >
 > Aplicar a requisitos, mockups y UML. Registrar cada hallazgo con fecha y responsable. No marcar “Cumple” sin evidencia.
 >
-> Aplicado el 2026-11-04 sobre los artefactos integrados en `week/sem2`: requisitos (`docs/week-01/02-requisitos.md`), mockups (`docs/week-02/mockups/`) y casos de uso (`docs/week-02/diagrams/casos-de-uso.mmd`). La secuencia y las clases (T3) y los casos de prueba (T5, T6) quedan `Pendiente` porque aún no están integrados.
+> Aplicado el 2026-11-04 sobre los artefactos integrados en `week/sem2`: requisitos (`docs/week-01/02-requisitos.md`), mockups (`docs/week-02/mockups/`) y casos de uso (`docs/week-02/diagrams/casos-de-uso.mmd`). **Segunda pasada el 2026-11-05** sobre los artefactos integrados desde Drive: secuencia y clases (T3), casos de prueba (T6) y matriz de trazabilidad (T5). Queda `Pendiente` solo lo que depende de la ejecución de pruebas (semanas 3–4).
 
 ## 1. Requisitos
 
@@ -16,7 +16,7 @@
 | Sin ambigüedad | Cumple | Cumple | Cumple | Cumple | Cumple | Parcial | Parcial | Cumple | RF-06 no define si una reserva cancelada libera cupo; RF-07 no fija tolerancia para “fuera de hora” [VERIFICAR] |
 | Criterio de aceptación | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | |
 | Pantalla asociada | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Pendiente | RF-01 lámina 1; RF-02/03/06 lámina 2; RF-04/05/07 lámina 3. RF-08 no tiene pantalla: el login no se entregó |
-| UML consistente | Cumple | Cumple | Cumple | Cumple | Cumple | Parcial | Cumple | Cumple | RF-06 no tiene caso de uso propio: se aplica como regla dentro de CU2. Secuencia y clases aún no integradas |
+| UML consistente | Cumple | Cumple | Cumple | Cumple | Cumple | Parcial | Cumple | Cumple | RF-06 no tiene caso de uso propio: se aplica como regla dentro de CU2. T3 integrado el 2026-11-05 con observaciones → HAL-05 |
 
 ## 2. Requisitos no funcionales
 
@@ -47,23 +47,23 @@
 |---|---|---|
 | Actores: Estudiante/Docente y Bibliotecario | Cumple | `docs/week-02/diagrams/casos-de-uso.mmd` — “Docente / Estudiante” y “Bibliotecario / Resolutor” |
 | Casos: buscar, reservar, ver QR, validar inicio, devolver, sancionar | Cumple | CU1, CU2, CU3, CU4, CU5 y CU6; se agrega CU0 Iniciar Sesión (RF-08) |
-| Secuencia del flujo principal | Pendiente | `secuencia-reserva.mmd` sigue siendo el esqueleto del 31 de octubre (T3 sin integrar) |
-| Rama de error: límite diario (RF-06) | Pendiente | Depende de T3 |
-| Rama de error: usuario sancionado (RF-07) | Pendiente | Depende de T3 |
-| Rama de error: recurso ocupado | Pendiente | Depende de T3 |
-| Clases/entidades: Usuario, Recurso, Reserva, QR, Sanción | Pendiente | `clases.mmd` sigue siendo el esqueleto (T3 sin integrar) |
-| Consistencia entre casos de uso, secuencia y clases | Pendiente | Verificable recién con T3 integrado |
-| Diagramas exportados y legibles | Cumple | `sem2-t2-casos-de-uso.png` (4520×2887) exportado y legible |
+| Secuencia del flujo principal | Cumple | `sem2-t2-diagrama-secuencia.png` — reserva completa desde la interfaz hasta la confirmación con QR |
+| Rama de error: límite diario (RF-06) | Cumple | Diagrama de secuencia, bloque `alt` “Límite diario alcanzado (RF-06)” con rechazo y mensaje |
+| Rama de error: usuario sancionado (RF-07) | Cumple | Diagrama de secuencia, bloque `alt` “Usuario sancionado (RF-07)” con rechazo y mensaje |
+| Rama de error: recurso ocupado | Cumple | Diagrama de secuencia, bloque `alt` “Recurso ocupado” con rechazo y mensaje |
+| Clases/entidades: Usuario, Recurso, Reserva, QR, Sanción | Cumple | `sem2-t2-diagrama-clases.png` — 5 clases con atributos, métodos y relaciones |
+| Consistencia entre casos de uso, secuencia y clases | Parcial | Los entregables cubren lo exigido, pero (a) las fuentes `.mmd` del repo no corresponden a los PNG entregados y (b) la secuencia modela microservicios (Servicio de reservas, Servicio de sanciones, repositorios), fuera del alcance declarado en `AGENTS.md` → HAL-05 |
+| Diagramas exportados y legibles | Cumple | 3 PNG integrados: `sem2-t2-casos-de-uso.png` (4520×2887), `sem2-t2-diagrama-clases.png` (1034×2046), `sem2-t2-diagrama-secuencia.png` (3946×3882) |
 
 ## 5. Casos de prueba y matriz
 
 | Criterio | Estado | Evidencia / observación |
 |---|---|---|
-| 6 casos con todos los campos (12 al cierre) | Pendiente | `qa/casos-prueba.md` sigue siendo el esqueleto; T6 sin integrar |
-| Plan de 12 casos (6 + 3 + 3) | Cumple | Declarado en `qa/matriz-trazabilidad.md` |
-| Al menos 1 caso negativo en semana 2 | Pendiente | Depende de T6 |
-| Al menos 1 caso de límite en semana 2 | Pendiente | Depende de T6 |
-| Al cierre: ≥ 3 negativos y ≥ 2 de límites | Pendiente | Se verifica en semana 4 |
+| 6 casos con todos los campos (12 al cierre) | Cumple | `qa/casos-prueba.md` — 6 casos con los 10 campos de la plantilla, verificados uno por uno |
+| Plan de 12 casos (6 + 3 + 3) | Cumple | Declarado en `qa/casos-prueba.md` y `qa/matriz-trazabilidad.md`. CP-11 y CP-12 se adelantan a semana 3 |
+| Al menos 1 caso negativo en semana 2 | Cumple | CP-04 — QR inválido o duplicado rechazado |
+| Al menos 1 caso de límite en semana 2 | Cumple | CP-03 — tercera reserva del día; CP-06 — devolución 1 min después del bloque |
+| Al cierre: ≥ 3 negativos y ≥ 2 de límites | Pendiente | El plan ya garantiza 5 positivos / 3 negativos / 4 límites; se verifica al ejecutar en semana 4 |
 | Resultados `Pendiente` sin evidencia | Cumple | La matriz mantiene todo en `Pendiente` |
 | Matriz con CP-01 a CP-12 y todos los RF/RNF | Cumple | 8 RF y 3 RNF con su caso asignado |
 | Estado de implementación declarado | Cumple | “No implementado (semana 3/4)” en las 11 filas |
@@ -87,16 +87,17 @@
 | HAL-02 | Faltan los estados de error de recurso ocupado, QR inválido y QR duplicado | `sem2-t1-reserva-qr.jpg`, `sem2-t1-bibliotecario.jpg` | Media | Vicente Díaz | Agregar los tres estados y reexportar, o declararlos pendientes para semana 3 | [COMPLETAR] | Pendiente |
 | HAL-03 | Funciones fuera de alcance: “Descargar PDF” y “Descargar QR” (lámina 2), “Historial” y “Mis Reservas” (lámina 1) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg` | Baja | Vicente Díaz | Eliminarlas o declararlas como mejora futura en el README de la tarea | [COMPLETAR] | Pendiente |
 | HAL-04 | La sección de exportación de `T1-mockups.md` listaba 7 archivos `-mobile`/`-desktop`; lo entregado son 3 láminas con móvil y escritorio juntos | `local/week-02/T1-mockups.md` | Baja | Yordy Carmona | Actualizar la sección a los 3 nombres reales | 2026-11-04 | No aplica (documento local) |
+| HAL-05 | Las fuentes `.mmd` del repo no corresponden a los PNG entregados, y la secuencia modela microservicios (Servicio de reservas, Servicio de sanciones, repositorios) pese a que el alcance excluye microservicios | `sem2-t2-diagrama-clases.png`, `sem2-t2-diagrama-secuencia.png`, `clases.mmd`, `secuencia-reserva.mmd` | **Alta** | Héctor Oviedo | Entregar las fuentes que generan los PNG, o rehacer la secuencia sobre el stack real (API + reglas + datos) y actualizar los `.mmd` | [COMPLETAR] | Pendiente |
 
 ## 8. Resultado global
 
 | Campo | Detalle |
 |---|---|
 | Ítems evaluados | 18 (9 de mockups + 9 de UML) |
-| Cumple | 9 |
-| No cumple / parcial | 2 |
-| Pendiente | 6 |
+| Cumple | 14 |
+| No cumple / parcial | 3 |
+| Pendiente | 0 |
 | No aplica | 1 |
-| Conclusión | Aprobado con cambios: los mockups y el diagrama de casos de uso están integrados y son utilizables; quedan 3 hallazgos abiertos en los mockups y la integración de T3, T5 y T6 |
+| Conclusión | Aprobado con cambios: mockups y los tres diagramas UML están integrados y son utilizables. Quedan abiertos HAL-01, HAL-02 y HAL-03 (mockups, Vicente Díaz) y HAL-05 (diagramas, Héctor Oviedo). T5 y T6 integrados y verificados con OBS-LOCAL-01 corregida. |
 | Revisor | Yordy Carmona |
-| Fecha | 2026-11-04 |
+| Fecha | 2026-11-04 (primera pasada) · 2026-11-05 (segunda pasada, T3 + T5 + T6) |
