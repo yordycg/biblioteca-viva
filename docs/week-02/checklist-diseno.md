@@ -52,7 +52,7 @@
 | Rama de error: usuario sancionado (RF-07) | Cumple | Diagrama de secuencia, bloque `alt` “Usuario sancionado (RF-07)” con rechazo y mensaje |
 | Rama de error: recurso ocupado | Cumple | Diagrama de secuencia, bloque `alt` “Recurso ocupado” con rechazo y mensaje |
 | Clases/entidades: Usuario, Recurso, Reserva, QR, Sanción | Cumple | `sem2-t2-diagrama-clases.png` — 5 clases con atributos, métodos y relaciones |
-| Consistencia entre casos de uso, secuencia y clases | Parcial | Los entregables cubren lo exigido, pero (a) las fuentes `.mmd` del repo no corresponden a los PNG entregados y (b) la secuencia modela microservicios (Servicio de reservas, Servicio de sanciones, repositorios), fuera del alcance declarado en `AGENTS.md` → HAL-05 |
+| Consistencia entre casos de uso, secuencia y clases | Parcial | (a) **Resuelto el 2026-11-05**: las fuentes `.mmd` se reconstruyeron desde los PNG entregados y ahora fuente y exportación coinciden. (b) **Pendiente**: la secuencia modela microservicios (Servicio de reservas, Servicio de sanciones, dos repositorios), fuera del alcance declarado en `AGENTS.md` → HAL-05 |
 | Diagramas exportados y legibles | Cumple | 3 PNG integrados: `sem2-t2-casos-de-uso.png` (4520×2887), `sem2-t2-diagrama-clases.png` (1034×2046), `sem2-t2-diagrama-secuencia.png` (3946×3882) |
 
 ## 5. Casos de prueba y matriz
@@ -87,7 +87,7 @@
 | HAL-02 | Faltan los estados de error de recurso ocupado, QR inválido y QR duplicado | `sem2-t1-reserva-qr.jpg`, `sem2-t1-bibliotecario.jpg` | Media | Vicente Díaz | Agregar los tres estados y reexportar, o declararlos pendientes para semana 3 | [COMPLETAR] | Pendiente |
 | HAL-03 | Funciones fuera de alcance: “Descargar PDF” y “Descargar QR” (lámina 2), “Historial” y “Mis Reservas” (lámina 1) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg` | Baja | Vicente Díaz | Eliminarlas o declararlas como mejora futura en el README de la tarea | [COMPLETAR] | Pendiente |
 | HAL-04 | La sección de exportación de `T1-mockups.md` listaba 7 archivos `-mobile`/`-desktop`; lo entregado son 3 láminas con móvil y escritorio juntos | `local/week-02/T1-mockups.md` | Baja | Yordy Carmona | Actualizar la sección a los 3 nombres reales | 2026-11-04 | No aplica (documento local) |
-| HAL-05 | Las fuentes `.mmd` del repo no corresponden a los PNG entregados, y la secuencia modela microservicios (Servicio de reservas, Servicio de sanciones, repositorios) pese a que el alcance excluye microservicios | `sem2-t2-diagrama-clases.png`, `sem2-t2-diagrama-secuencia.png`, `clases.mmd`, `secuencia-reserva.mmd` | **Alta** | Héctor Oviedo | Entregar las fuentes que generan los PNG, o rehacer la secuencia sobre el stack real (API + reglas + datos) y actualizar los `.mmd` | [COMPLETAR] | Pendiente |
+| HAL-05 | Las fuentes `.mmd` del repo no corresponden a los PNG entregados, y la secuencia modela microservicios (Servicio de reservas, Servicio de sanciones, repositorios) pese a que el alcance excluye microservicios | `sem2-t2-diagrama-clases.png`, `sem2-t2-diagrama-secuencia.png`, `clases.mmd`, `secuencia-reserva.mmd` | **Alta** | Héctor Oviedo | (a) Fuentes `.mmd` reconstruidas el 2026-11-05 desde los PNG: 5 clases y 8 participantes con 27 mensajes, ya coinciden. (b) Pendiente: rehacer la secuencia sobre el stack real (API + reglas + datos) | 2026-11-05 (a) | (a) Corregido · (b) Pendiente |
 
 ## 8. Resultado global
 

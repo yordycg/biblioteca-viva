@@ -1,48 +1,60 @@
-%% BibliotecaViva - Modelo de clases
+%% BibliotecaViva — Modelo de clases del MVP
+%% Fuente de verdad del diagrama. Sintaxis Mermaid (GitHub).
+%% Transcrito el 2026-11-05 desde sem2-t2-diagrama-clases.png (entrega de SEM2-T2
+%% de Héctor Oviedo), para que la fuente y la exportación coincidan.
+%% Pendiente: el modelo refleja el diseño entregado; revisar el alcance en OBS-LOCAL-02.
 
 classDiagram
   class Usuario {
-    +id
-    +nombre
-    +rol
-    +sancionadoHasta
-    +puedeReservar(fecha)
+    +int idUsuario
+    +string nombre
+    +string correo
+    +string rol
+    +realizarReserva()
+    +consultarReservas()
   }
 
   class Recurso {
-    +id
-    +tipo
-    +nombre
-    +estado
-    +disponible(bloque)
+    +int idRecurso
+    +string nombre
+    +string tipo
+    +string estado
+    +verificarDisponibilidad()
+    +bloquearRecurso()
+    +liberarRecurso()
   }
 
   class Reserva {
-    +id
-    +fecha
-    +bloque
-    +estado
-    +generarQR()
-    +iniciar()
-    +finalizar()
+    +int idReserva
+    +date fecha
+    +string bloqueHorario
+    +string estado
+    +datetime fechaCreacion
+    +crearReserva()
+    +iniciarUso()
+    +finalizarReserva()
   }
 
   class QR {
-    +id
-    +reservaId
-    +payload
-    +valido()
+    +int idQR
+    +string codigo
+    +datetime fechaGeneracion
+    +boolean utilizado
+    +generarQR()
+    +validarQR()
   }
 
   class Sancion {
-    +id
-    +usuarioId
-    +inicio
-    +fin
-    +motivo
+    +int idSancion
+    +date fechaInicio
+    +date fechaFin
+    +string motivo
+    +string estado
+    +registrarSancion()
+    +verificarVigencia()
   }
 
-  Usuario "1" --> "*" Reserva : realiza
-  Recurso "1" --> "*" Reserva : reservado
-  Reserva "1" --> "1" QR : genera
-  Usuario "1" --> "*" Sancion : recibe
+  Usuario "1" --> "0..*" Sancion : recibe
+  Usuario "1" --> "0..*" Reserva : realiza
+  Recurso "1" --> "0..*" Reserva : corresponde
+  Reserva "1" *-- "1" QR : posee
