@@ -31,7 +31,7 @@
 
 | Criterio | Estado | Evidencia / observación |
 |---|---|---|
-| Búsqueda / listado con filtros | Cumple | `sem2-t1-busqueda.jpg` — tipo, fecha y bloque; tarjetas con estado “Disponible” |
+| Búsqueda / listado con filtros | Parcial | `sem2-t1-busqueda.jpg` — tipo, fecha y bloque; tarjetas con estado “Disponible”. Repite “Sala 1” y los conteos no cuadran (HAL-07) |
 | Reserva + QR (detalle, confirmación y QR) | Cumple | `sem2-t1-reserva-qr.jpg` — detalle, confirmación con QR e ID de reserva |
 | Vista bibliotecario: validar inicio y devolución | Cumple | `sem2-t1-bibliotecario.jpg` — QR, datos de la reserva, “Confirmar entrega” y “Registrar devolución” |
 | Login opcional / mínimo | No aplica | No se entregó; el login sigue siendo opcional según el plan |
@@ -39,7 +39,7 @@
 | Versión móvil 360 px en las 3 pantallas | Cumple | Las 3 láminas incluyen el marco móvil |
 | Versión escritorio 1280 px en al menos 2 | Cumple | Las 3 láminas incluyen el marco de escritorio |
 | Cada pantalla referencia su RF | Parcial | Láminas 1 y 2 con banda de título y chip de RF; lámina 3 sin ninguno → HAL-01 |
-| Datos ficticios, sin datos reales | Cumple | Usuario y correo de ejemplo; el equipo confirmó que no corresponden a una persona real |
+| Datos ficticios, sin datos reales | No cumple | Nombre real y correo con dominio institucional en las 3 láminas (HAL-06). Se reemplazan por “Estudiante 1” y estudiante1@example.com en la corrección de S2; el rediseño de S3 los mantiene ficticios |
 
 ## 4. UML
 
@@ -88,16 +88,18 @@
 | HAL-03 | Funciones fuera de alcance: “Descargar PDF” y “Descargar QR” (lámina 2), “Historial” y “Mis Reservas” (lámina 1) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg` | Baja | Vicente Díaz | Eliminarlas o declararlas como mejora futura en el README de la tarea | [COMPLETAR] | Pendiente |
 | HAL-04 | La sección de exportación de `T1-mockups.md` listaba 7 archivos `-mobile`/`-desktop`; lo entregado son 3 láminas con móvil y escritorio juntos | `local/week-02/T1-mockups.md` | Baja | Yordy Carmona | Actualizar la sección a los 3 nombres reales | 2026-11-04 | No aplica (documento local) |
 | HAL-05 | Las fuentes `.mmd` del repo no correspondían a los PNG entregados | `clases.mmd`, `secuencia-reserva.mmd` | Media | Yordy Carmona | Fuentes reconstruidas el 2026-11-05 desde los PNG: 5 clases y 8 participantes con 27 mensajes; fuente y exportación coinciden | 2026-11-05 | Corregido |
+| HAL-06 | Las 3 láminas incluyen el nombre real “Vicente Díaz” y el correo `v.diaz@alumnos.virginio.cl` (dominio institucional real; el correo es ficticio) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg`, `sem2-t1-bibliotecario.jpg` | Media | Vicente Díaz / Yordy Carmona | Reemplazar por “Estudiante 1” y `estudiante1@example.com` en las 3 láminas; el rediseño de S3 usa solo datos ficticios | 2026-11-06 | Corregido en S2; pendiente re-revisión 1:1 |
+| HAL-07 | La pantalla 1 repite “Sala 1” y los conteos no cuadran: “Disponibles (3)”, “Mostrando 4 resultados” y 5 tarjetas | `sem2-t1-busqueda.jpg` | Media | Vicente Díaz | Corregir en el rediseño de S3 (SEM3-T1); se documenta en el informe | 2026-11-06 | Pendiente (S3) |
 
 ## 8. Resultado global
 
 | Campo | Detalle |
 |---|---|
 | Ítems evaluados | 18 (9 de mockups + 9 de UML) |
-| Cumple | 15 |
-| No cumple / parcial | 2 |
+| Cumple | 13 |
+| No cumple / parcial | 4 |
 | Pendiente | 0 |
 | No aplica | 1 |
-| Conclusión | Aprobado con cambios: mockups y los tres diagramas UML están integrados y son utilizables. Quedan abiertos HAL-01, HAL-02 y HAL-03 (mockups, Vicente Díaz). Aparte del checklist: la arquitectura y el stack no están decididos por el equipo, lo que bloquea el desglose de la semana 3 y el contenido de la sección 2.5 del informe. |
+| Conclusión | Aprobado con cambios: mockups y los tres diagramas UML están integrados y son utilizables. HAL-06 se corrigió en S2 (datos ficticios); quedan abiertos HAL-01, HAL-02, HAL-03 y HAL-07 (mockups, Vicente Díaz) para el rediseño de S3. Las decisiones D-01 a D-05 quedaron tomadas: monolito modular, Django 5.2 LTS, SQLite, bloques de 60 min y QR por ingreso manual. |
 | Revisor | Yordy Carmona |
-| Fecha | 2026-11-04 (primera pasada) · 2026-11-05 (segunda pasada, T3 + T5 + T6) |
+| Fecha | 2026-11-04 (primera pasada) · 2026-11-05 (segunda pasada, T3 + T5 + T6) · 2026-11-06 (corrección HAL-06/HAL-07 y cierre de decisiones) |
