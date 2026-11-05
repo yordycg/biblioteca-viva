@@ -16,7 +16,7 @@
 | Sin ambigüedad | Cumple | Cumple | Cumple | Cumple | Cumple | Parcial | Parcial | Cumple | RF-06 no define si una reserva cancelada libera cupo; RF-07 no fija tolerancia para “fuera de hora” [VERIFICAR] |
 | Criterio de aceptación | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | |
 | Pantalla asociada | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Cumple | Pendiente | RF-01 lámina 1; RF-02/03/06 lámina 2; RF-04/05/07 lámina 3. RF-08 no tiene pantalla: el login no se entregó |
-| UML consistente | Cumple | Cumple | Cumple | Cumple | Cumple | Parcial | Cumple | Cumple | RF-06 no tiene caso de uso propio: se aplica como regla dentro de CU2. T3 integrado el 2026-11-05 con observaciones → HAL-05 |
+| UML consistente | Cumple | Cumple | Cumple | Cumple | Cumple | Parcial | Cumple | Cumple | RF-06 no tiene caso de uso propio: se aplica como regla dentro de CU2. T3 integrado el 2026-11-05; fuentes `.mmd` reconstruidas desde los PNG |
 
 ## 2. Requisitos no funcionales
 
