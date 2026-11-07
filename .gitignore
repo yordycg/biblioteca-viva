@@ -18,6 +18,15 @@ __pycache__/
 bin/
 obj/
 
+# Django
+.venv/
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+.pytest_cache/
+htmlcov/
+
 # Sistemas operativos e IDEs
 .DS_Store
 .vscode/
