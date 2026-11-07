@@ -57,7 +57,11 @@ python manage.py runserver 0.0.0.0:8000
 
 Abrir en el navegador: `http://localhost:8000`.
 
-Para acceder desde un teléfono en la misma red, usar `http://IP-DEL-PC:8000` y agregar esa IP en `DJANGO_ALLOWED_HOSTS` y `DJANGO_CSRF_TRUSTED_ORIGINS` si hace falta.
+Para acceder desde un teléfono en la misma red, usar `http://IP-DEL-PC:8000` y arrancar el servidor con esa IP:
+
+```bash
+DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" python manage.py runserver 0.0.0.0:8000
+```
 
 ## Credenciales ficticias
 
@@ -94,6 +98,10 @@ Para acceder desde un teléfono en la misma red, usar `http://IP-DEL-PC:8000` y 
 Para probar RF-07 sin esperar la hora real:
 
 ```bash
+# Entrega y devolución dentro del bloque
+DEMO_MODE=1 DEMO_NOW=2026-11-10T10:45:00 python manage.py runserver 0.0.0.0:8000
+
+# Devolución tardía (sanción)
 DEMO_MODE=1 DEMO_NOW=2026-11-12T11:01:00 python manage.py runserver 0.0.0.0:8000
 ```
 
