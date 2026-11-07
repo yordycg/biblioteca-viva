@@ -43,21 +43,41 @@ requirements.txt
 - pip.
 - No requiere Node, Docker ni servicios externos.
 
-## Instalación y ejecución
+## Inicio rápido
+
+### Primera vez
 
 ```bash
+git clone https://github.com/yordycg/biblioteca-viva.git
+cd biblioteca-viva
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-
 python manage.py migrate
 python manage.py seed
 python manage.py runserver 0.0.0.0:8000
 ```
 
-Abrir en el navegador: `http://localhost:8000`.
+Abrir `http://localhost:8000`.
 
-Para acceder desde un teléfono en la misma red, usar `http://IP-DEL-PC:8000` y arrancar el servidor con esa IP:
+### Si ya tienes el entorno
+
+```bash
+cd biblioteca-viva
+source .venv/bin/activate
+python manage.py runserver 0.0.0.0:8000
+```
+
+Si la base está vacía:
+
+```bash
+python manage.py migrate
+python manage.py seed
+```
+
+Para reiniciar los datos: `python manage.py seed --reset`.
+
+Para acceder desde un teléfono en la misma red:
 
 ```bash
 DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" python manage.py runserver 0.0.0.0:8000
@@ -70,6 +90,37 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Estudiante | `estudiante1@example.com` | `demo1234` |
 | Estudiante | `estudiante2@example.com` | `demo1234` |
 | Bibliotecario | `bibliotecario1@example.com` | `demo1234` |
+
+## Pantallas para revisar
+
+| Pantalla | Ruta | Qué revisar |
+|---|---|---|
+| Login | `/login/` | Formulario, mensajes de error |
+| Búsqueda | `/buscar/` | Filtros, tarjetas, estado vacío |
+| Reserva | clic en “Seleccionar” | Detalle y confirmación |
+| QR | `/reserva/<id>/qr/` | QR legible e ID |
+| Bibliotecario | `/bibliotecario/` | Código manual, confirmar entrega y devolución |
+| Admin | `/admin/` | Solo para desarrollo; no es parte del flujo |
+
+## Revisión por rol
+
+| Rol | Dónde revisar | Qué entregar |
+|---|---|---|
+| Vicente (UI) | `/login/`, `/buscar/`, reserva, QR y `/bibliotecario/`; DevTools en 360 y 1280 | 3 capturas + 3 observaciones |
+| Héctor (backend) | `reservas/models.py`, `reservas/services.py`, `reservas/management/commands/seed.py`, `scripts/`; ejecutar `seed`, `demo_flujo` y `simular_retraso` | Nota de 1 página + salida de scripts |
+| Héctor (medición) | `python scripts/medir_rendimiento.py` | Salida con promedio y máximo |
+| Gerald (QA) | App + `docs/week-02/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
+| Lucas (docs) | `README.md` + informe SEM-03 | Documentos finales en Drive |
+| Yordy (integración) | `manage.py check`, `manage.py test` y flujo completo | PR actualizado, demo y tag |
+
+## Problemas comunes
+
+- **Puerto ocupado:** `python manage.py runserver 8001`.
+- **`DisallowedHost`:** agrega la IP a `DJANGO_ALLOWED_HOSTS`.
+- **CSRF en el teléfono:** agrega el origen a `DJANGO_CSRF_TRUSTED_ORIGINS`.
+- **No hay usuarios:** `python manage.py migrate && python manage.py seed`.
+- **Datos sucios:** `python manage.py seed --reset`.
+- **Login falla:** usa `estudiante1@example.com` / `demo1234`.
 
 ## Flujo principal
 
