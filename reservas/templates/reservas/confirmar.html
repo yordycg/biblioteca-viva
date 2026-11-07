@@ -1,0 +1,31 @@
+{% extends "reservas/base.html" %}
+{% block title %}Confirmar reserva · BibliotecaViva{% endblock %}
+
+{% block content %}
+<h1>Confirmar reserva</h1>
+
+<article class="card">
+  <div class="resource-head">
+    <h2>{{ recurso.nombre }}</h2>
+    <span class="badge badge-ok">Disponible</span>
+  </div>
+  <p class="small">
+    {{ recurso.get_tipo_display }}
+    {% if recurso.ubicacion %} · {{ recurso.ubicacion }}{% endif %}
+    {% if recurso.capacidad %} · Capacidad {{ recurso.capacidad }} personas{% endif %}
+    {% if recurso.codigo %} · Código {{ recurso.codigo }}{% endif %}
+  </p>
+  <p>Fecha: <strong>{{ form.fecha.value }}</strong> · Bloque: <strong>{{ form.bloque.value }}</strong></p>
+
+  <form method="post" class="form">
+    {% csrf_token %}
+    {{ form.fecha }}
+    {{ form.bloque }}
+    {{ form.errors }}
+    <div class="acciones">
+      <button class="btn" type="submit">Confirmar reserva</button>
+      <a class="btn btn-secondary" href="{% url 'buscar' %}">Volver</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

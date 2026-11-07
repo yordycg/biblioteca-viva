@@ -1,0 +1,289 @@
+/* BibliotecaViva — estilos mobile-first con paleta IPVG. */
+:root {
+  --azul: #001c71;
+  --azul2: #1c5199;
+  --verde: #00953b;
+  --amarillo: #e8c400;
+  --rojo: #c62828;
+  --fondo: #f5f7fa;
+  --texto: #1f2937;
+  --borde: #d5deea;
+  --blanco: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  line-height: 1.45;
+}
+
+a {
+  color: var(--azul2);
+}
+
+.topbar {
+  background: var(--azul);
+  color: var(--blanco);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  color: var(--blanco);
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.user-name {
+  font-size: 0.9rem;
+}
+
+.user form {
+  display: inline;
+}
+
+.link {
+  background: none;
+  border: 0;
+  color: var(--blanco);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  color: var(--azul);
+  font-size: 1.55rem;
+  margin: 0.5rem 0 1rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.resource-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.form label {
+  display: block;
+  font-weight: 600;
+  margin: 0.7rem 0 0.25rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid #b9c6d8;
+  border-radius: 8px;
+  font: inherit;
+  background: var(--blanco);
+  color: var(--texto);
+}
+
+input:focus,
+select:focus,
+button:focus,
+a:focus {
+  outline: 3px solid #8fb3e0;
+  outline-offset: 2px;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 0.8rem;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--azul2);
+  color: var(--blanco);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--azul);
+}
+
+.btn-secondary {
+  background: var(--blanco);
+  color: var(--azul2);
+  border: 2px solid var(--azul2);
+}
+
+.btn-secondary:hover {
+  background: #eef4fb;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: #e8eef7;
+  color: var(--azul);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-ok {
+  background: var(--verde);
+  color: var(--blanco);
+}
+
+.badge-warn {
+  background: var(--amarillo);
+  color: var(--texto);
+}
+
+.messages {
+  margin-bottom: 0.5rem;
+}
+
+.msg {
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  margin: 0.4rem 0;
+  border-left: 5px solid var(--azul2);
+  background: #eaf2fb;
+}
+
+.msg.success {
+  border-color: var(--verde);
+  background: #e3f5e8;
+}
+
+.msg.error {
+  border-color: var(--rojo);
+  background: #fde8e8;
+}
+
+.msg.warning {
+  border-color: var(--amarillo);
+  background: #fff6cc;
+}
+
+.small {
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.fila {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.grow {
+  flex: 1;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.card-qr {
+  text-align: center;
+}
+
+.qr {
+  display: block;
+  width: 220px;
+  max-width: 100%;
+  margin: 1rem auto;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+}
+
+.demo-box {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: var(--fondo);
+  border-left: 4px solid var(--verde);
+  border-radius: 6px;
+}
+
+.demo-box p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+code {
+  background: #e9eef6;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.empty {
+  text-align: center;
+}
+
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fila {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+
+  .fila > div {
+    flex: 1;
+  }
+}
+
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,55 @@
+{% extends "reservas/base.html" %}
+{% block title %}Buscar recursos · BibliotecaViva{% endblock %}
+
+{% block content %}
+<h1>Buscar recursos</h1>
+
+<form method="get" action="{% url 'buscar' %}" class="card form">
+  <div class="fila">
+    <div>
+      <label for="{{ form.tipo.id_for_label }}">Tipo de recurso</label>
+      {{ form.tipo }}
+    </div>
+    <div>
+      <label for="{{ form.fecha.id_for_label }}">Fecha</label>
+      {{ form.fecha }}
+    </div>
+    <div>
+      <label for="{{ form.bloque.id_for_label }}">Bloque horario</label>
+      {{ form.bloque }}
+    </div>
+  </div>
+  {{ form.errors }}
+  <button class="btn" type="submit">Buscar</button>
+</form>
+
+{% if resultados is not None %}
+  {% if resultados %}
+    <p class="small">Recursos disponibles para {{ fecha|date:"d-m-Y" }}, bloque {{ bloque }}.</p>
+    <div class="grid">
+      {% for recurso in resultados %}
+        <article class="card resource">
+          <div class="resource-head">
+            <h2>{{ recurso.nombre }}</h2>
+            <span class="badge badge-ok">Disponible</span>
+          </div>
+          <p class="small">
+            {{ recurso.get_tipo_display }}
+            {% if recurso.ubicacion %} · {{ recurso.ubicacion }}{% endif %}
+            {% if recurso.capacidad %} · Capacidad {{ recurso.capacidad }} personas{% endif %}
+            {% if recurso.codigo %} · Código {{ recurso.codigo }}{% endif %}
+          </p>
+          <a class="btn" href="{% url 'confirmar' recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">Seleccionar</a>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card empty">
+      <p>No hay recursos disponibles para ese tipo, fecha y bloque.</p>
+      <p class="small">Prueba con otro bloque o revisa la fecha.</p>
+    </div>
+  {% endif %}
+{% else %}
+  <p class="small">Selecciona tipo, fecha y bloque para ver la disponibilidad.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "reservas/base.html" %}
+{% block title %}Vista bibliotecario · BibliotecaViva{% endblock %}
+
+{% block content %}
+<h1>Validación de reservas</h1>
+
+<form method="get" action="{% url 'bibliotecario' %}" class="card form">
+  <label for="{{ form.codigo.id_for_label }}">Código del QR</label>
+  <div class="fila">
+    <div class="grow">{{ form.codigo }}</div>
+    <button class="btn" type="submit">Buscar reserva</button>
+  </div>
+  {{ form.errors }}
+  <p class="small">Ingresa el código manualmente. La cámara queda como mejora futura.</p>
+</form>
+
+{% if reserva %}
+  <article class="card">
+    <div class="resource-head">
+      <h2>{{ reserva.codigo }}</h2>
+      <span class="badge">{{ reserva.get_estado_display }}</span>
+    </div>
+    <p><strong>Recurso:</strong> {{ reserva.recurso.nombre }}</p>
+    <p><strong>Solicitante:</strong> {{ reserva.usuario.email }}</p>
+    <p><strong>Fecha:</strong> {{ reserva.fecha|date:"d-m-Y" }} · <strong>Bloque:</strong> {{ reserva.get_bloque_display }}</p>
+    {% if qr.utilizado %}
+      <p class="badge badge-warn">QR ya utilizado</p>
+    {% endif %}
+
+    {% if reserva.estado == "RESERVADA" %}
+      <form method="post" action="{% url 'validar' %}" class="form">
+        {% csrf_token %}
+        <input type="hidden" name="codigo" value="{{ qr.codigo }}">
+        <button class="btn" type="submit">Confirmar entrega</button>
+      </form>
+    {% elif reserva.estado == "EN_USO" %}
+      <form method="post" action="{% url 'devolver' %}" class="form">
+        {% csrf_token %}
+        <input type="hidden" name="codigo" value="{{ qr.codigo }}">
+        <button class="btn" type="submit">Registrar devolución</button>
+      </form>
+    {% else %}
+      <p class="small">La reserva ya está {{ reserva.get_estado_display|lower }}. No hay acciones pendientes.</p>
+    {% endif %}
+  </article>
+{% elif codigo %}
+  <div class="card empty">
+    <p>No se encontró una reserva con el código <strong>{{ codigo }}</strong>.</p>
+  </div>
+{% else %}
+  <p class="small">Ingresa un código para ver la reserva.</p>
+{% endif %}
+{% endblock %}

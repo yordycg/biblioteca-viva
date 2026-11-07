@@ -1,0 +1,16 @@
+{% extends "reservas/base.html" %}
+{% block title %}Reserva confirmada · BibliotecaViva{% endblock %}
+
+{% block content %}
+<section class="card card-qr">
+  <p class="badge badge-ok">Reserva confirmada</p>
+  <h1>{{ reserva.codigo }}</h1>
+  <p>{{ reserva.recurso.nombre }} · {{ reserva.fecha|date:"d-m-Y" }} · {{ reserva.get_bloque_display }}</p>
+  <p class="small">Estado: {{ reserva.get_estado_display }}</p>
+
+  <img class="qr" src="{{ qr_img }}" alt="Código QR de la reserva {{ reserva.codigo }}">
+  <p class="small">Muestra este código al bibliotecario. También puedes dictar el ID: <strong>{{ qr.codigo }}</strong>.</p>
+
+  <a class="btn" href="{% url 'buscar' %}">Volver a buscar</a>
+</section>
+{% endblock %}

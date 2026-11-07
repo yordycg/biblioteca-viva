@@ -1,0 +1,27 @@
+{% extends "reservas/base.html" %}
+{% block title %}Ingresar · BibliotecaViva{% endblock %}
+
+{% block content %}
+<section class="card card-login">
+  <h1>Ingresar</h1>
+  <p class="small">Usa las credenciales ficticias del seed.</p>
+
+  <form method="post" class="form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <label for="{{ form.username.id_for_label }}">Usuario o correo</label>
+    {{ form.username }}
+    {{ form.username.errors }}
+    <label for="{{ form.password.id_for_label }}">Contraseña</label>
+    {{ form.password }}
+    {{ form.password.errors }}
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+
+  <div class="demo-box">
+    <strong>Credenciales de demostración</strong>
+    <p>Estudiante: <code>estudiante1@example.com</code> / <code>demo1234</code></p>
+    <p>Bibliotecario: <code>bibliotecario1@example.com</code> / <code>demo1234</code></p>
+  </div>
+</section>
+{% endblock %}
