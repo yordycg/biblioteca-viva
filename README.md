@@ -177,4 +177,4 @@ DEMO_MODE=1 DEMO_NOW=2026-11-12T11:01:00 python manage.py runserver 0.0.0.0:8000
 
 ## Uso de IA
 
-El docente indicó que el equipo podía usar IA para construir el proyecto. El código fue generado con asistencia de IA bajo especificación del equipo y revisado por sus integrantes. La declaración completa se incluye en el informe SEM-03. Los prompts y notas de trabajo viven en `local/` y no se versionan.
+El docente indicó que el equipo podía usar IA para construir el proyecto. El código fue generado con asistencia de IA bajo especificación del equipo y revisado por sus integrantes. La declaración completa se incluye en el informe SEM-03. El material de trabajo interno no se versiona.
