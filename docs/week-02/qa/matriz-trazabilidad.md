@@ -1,19 +1,19 @@
 # Matriz de trazabilidad — BibliotecaViva (Semana 2, SEM2-T5)
 
-Estado real: el código de la aplicación aún no existe (F1–F3 parte en semana 3). Todos los resultados están en Pendiente; ningún requisito está aprobado ni implementado. Las rutas de evidencia son propuestas, no archivos existentes.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". Todos los resultados están en Pendiente; ningún requisito está aprobado ni tiene evidencia ejecutada. Las rutas de evidencia son propuestas, no archivos existentes.
 
 ## Matriz principal
 
 | ID Req | Funcionalidad | ID Prueba | Resultado | Evidencia | Estado de implementación |
 |---|---|---|---|---|---|
 | RF-01 | Búsqueda de recurso | CP-01, CP-11 | Pendiente | `docs/week-02/evidence/CP-01.png`, `docs/week-02/evidence/CP-11.png` | No implementado (semana 3) |
-| RF-02 | Reserva de recurso | CP-02 | Pendiente | `docs/week-02/evidence/CP-02.png` | No implementado (semana 3) |
-| RF-03 | Generación de comprobante (QR) | CP-02 | Pendiente | `docs/week-02/evidence/CP-02.png` | No implementado (semana 3) |
+| RF-02 | Reserva de recurso | CP-02, CP-13 | Pendiente | `docs/week-02/evidence/CP-02.png`, `docs/week-02/evidence/CP-13.png` | No implementado (semana 3) |
+| RF-03 | Generación de comprobante (QR) | CP-02, CP-13, CP-14 | Pendiente | `docs/week-02/evidence/CP-02.png`, `docs/week-02/evidence/CP-13.png`, `docs/week-02/evidence/CP-14.png` | No implementado (semana 3) |
 | RF-04 | Validación de entrega (check-in) | CP-04 | Pendiente | `docs/week-02/evidence/CP-04.png` | No implementado (semana 3) |
 | RF-05 | Registro de devolución (check-out) | CP-05 | Pendiente | `docs/week-02/evidence/CP-05.png` | No implementado (semana 3) |
 | RF-06 | Control de tope de reservas | CP-03 | Pendiente | `docs/week-02/evidence/CP-03.png` | No implementado (semana 3) |
 | RF-07 | Gestión de penalizaciones por retraso | CP-06, CP-12 | Pendiente | `docs/week-02/evidence/CP-06.png`, `docs/week-02/evidence/CP-12.png` | No implementado (semana 3) |
-| RF-08 | Autenticación y roles básicos | CP-07 | Pendiente | `docs/week-02/evidence/CP-07.png` | No implementado (semana 3) |
+| RF-08 | Autenticación y roles básicos | CP-07, CP-14 | Pendiente | `docs/week-02/evidence/CP-07.png`, `docs/week-02/evidence/CP-14.png` | No implementado (semana 3) |
 | RNF-01 | Rendimiento en reserva y QR | CP-08 | Pendiente | `docs/week-02/evidence/CP-08.txt` | No implementado (semana 4) |
 | RNF-02 | Usabilidad y diseño responsivo | CP-09 | Pendiente | `docs/week-02/evidence/CP-09.png` | No implementado (semana 4) |
 | RNF-03 | Seguridad de datos | CP-10 | Pendiente | `docs/week-02/evidence/CP-10.md` | No implementado (semana 4) |
@@ -28,6 +28,8 @@ Estado real: el código de la aplicación aún no existe (F1–F3 parte en seman
 | CP-04 | Negativo | RF-04 | CU4 Validar inicio | Un QR inválido (NO-EXISTE) y uno duplicado se rechazan sin cambiar el estado de la reserva. |
 | CP-05 | Positivo | RF-05 | CU5 Registrar devolución | La devolución dentro del bloque deja la reserva Finalizada y libera el recurso sin sanción. |
 | CP-06 | Límite | RF-07 | CU5 Registrar devolución, CU6 Aplicar sanción | La devolución a las 11:01 (bloque hasta 11:00) finaliza la reserva, aplica 7 días de sanción y rechaza una reserva posterior. |
+| CP-13 | Positivo | RF-02, RF-03 | CU2 Reservar recurso, CU3 Visualizar QR | "Mis reservas" muestra las reservas propias separadas en Activas/Historial y reabre el QR de una reserva activa. |
+| CP-14 | Negativo | RF-03, RF-08 | CU3 Visualizar QR, CU0 Iniciar Sesión | Un usuario no ve en su lista ni puede abrir por URL el QR de una reserva ajena. |
 
 ## (b) Plan de CP-07 a CP-12
 
@@ -36,6 +38,8 @@ Estado real: el código de la aplicación aún no existe (F1–F3 parte en seman
 | CP-07 | Login inválido rechazado; credenciales válidas cargan la vista según rol | Negativo | RF-08 | CU0 Iniciar Sesión | 3 |
 | CP-11 | Búsqueda sin resultados muestra mensaje claro | Negativo | RF-01 | CU1 Buscar recurso | 3 |
 | CP-12 | Devolución exactamente a las 11:00 no genera sanción | Límite | RF-07 | CU5 Registrar devolución | 3 |
+| CP-13 | "Mis reservas" lista las reservas propias y reabre el QR | Positivo | RF-02, RF-03 | CU2, CU3 | 3 |
+| CP-14 | Un usuario no ve ni abre el QR de una reserva ajena | Negativo | RF-03, RF-08 | CU3, CU0 | 3 |
 | CP-08 | Reserva + QR en ≤ 1,5 s (promedio de 20 peticiones concurrentes) | Límite | RNF-01 | CU2, CU3 | 4 |
 | CP-09 | Layout sin scroll horizontal en 3 resoluciones y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | Transversal | 4 |
 | CP-10 | Contraseñas con hash; datos ficticios; .gitignore | Positivo | RNF-03 | CU0 Iniciar Sesión | 4 |
@@ -52,7 +56,7 @@ Estado real: el código de la aplicación aún no existe (F1–F3 parte en seman
 - Los 11 requisitos (RF-01 a RF-08, RNF-01 a RNF-03) están presentes, cada uno con al menos un ID de prueba.
 - Todos los resultados están en "Pendiente".
 - El estado de implementación es explícito en las 11 filas.
-- IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-06).
+- IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-14).
 - Ningún requisito figura como aprobado o implementado sin evidencia.
 - Las rutas de evidencia usan .png para pantallas y .txt/.md para mediciones y logs (CP-08, CP-10).
 - Los casos de uso citados coinciden con el diagrama (CU0–CU6).
@@ -69,3 +73,4 @@ Estado real: el código de la aplicación aún no existe (F1–F3 parte en seman
 | 6 | Estado de implementación: semana 3 para RF y semana 4 para RNF. | Calendario del proyecto: F1–F3 en semana 3; medición de RNF en semana 4. |
 | 7 | Tipos de CP-07 a CP-12 propuestos para completar la distribución del plan. | Detalle final a confirmar al diseñarlos en semanas 3 y 4 [VERIFICAR]. |
 | 8 | Rutas de evidencia son propuestas. | Los archivos se crearán solo al ejecutar las pruebas. |
+| 9 | CP-13 y CP-14 se agregan en semana 3 (pantalla "Mis reservas"). | La pantalla figura en los mockups y CP-03 la referencia; se enlazan a RF-02/RF-03 y RF-03/RF-08 y siguen en Pendiente hasta su ejecución. |

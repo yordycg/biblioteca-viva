@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (Semana 2, SEM2-T6)
 
-Estado real: el código de la aplicación aún no existe (F1–F3 parte en semana 3). Todos los resultados, estados y fechas de ejecución están en Pendiente. No hay ejecuciones, capturas ni métricas.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
 
 Fuentes usadas: requisitos RF/RNF del equipo, diagrama de casos de uso (CU0–CU6) y mockups [SEM2-T1] (Pantalla 1, Pantalla 2 y Vista Bibliotecario). Los textos de botones y mensajes salen de esos mockups; lo que los mockups no definen queda como [COMPLETAR] o [VERIFICAR].
 
@@ -128,6 +128,36 @@ Vacíos detectados en los mockups (a resolver con el equipo antes de semana 3):
 | Evidencia | `docs/week-02/evidence/CP-06.png` |
 | Ejecutado por / fecha | Pendiente |
 
+## CP-13 — Mis reservas lista las reservas del usuario y reabre su QR
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-02, RF-03 (CU2 Reservar recurso, CU3 Visualizar QR) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. estudiante1@example.com con 1 reserva activa (Sala 3, 2026-11-10 10:00–11:00, ID-A) y 1 reserva finalizada (Sala 1, 2026-11-09 11:00–12:00). Sesión iniciada como estudiante1@example.com. |
+| Datos de entrada | Usuario: estudiante1@example.com · Reserva activa: ID-A (RSV-NNNN) |
+| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir "Mis reservas" en la navegación.<br>3. En la sección "Activas", verificar ID-A, recurso, fecha, bloque y estado "Reservada".<br>4. En la sección "Historial", verificar la reserva finalizada con estado "Finalizada".<br>5. Presionar "Ver QR" en ID-A.<br>6. Comparar el código mostrado con el ID de la reserva.<br>7. Presionar "Mis reservas" para volver a la lista. |
+| Resultado esperado | "Mis reservas" muestra solo las reservas del usuario: ID-A en "Activas" con estado Reservada y la reserva finalizada en "Historial". El botón "Ver QR" abre el QR de ID-A y el código coincide con el ID de la reserva. Al volver, la lista se mantiene. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-02/evidence/CP-13.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-14 — Un usuario no puede ver ni abrir el QR de una reserva ajena
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-03, RF-08 (CU3 Visualizar QR, CU0 Iniciar Sesión) |
+| Tipo | Negativo |
+| Precondiciones | Seed cargado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00 (ID-A). Sesión como estudiante2@example.com, sin reservas. |
+| Datos de entrada | Usuario: estudiante2@example.com · URL forzada: `/reserva/<ID-A>/qr/` |
+| Pasos | 1. Iniciar sesión como estudiante1@example.com y anotar el ID de su reserva (ID-A).<br>2. Cerrar sesión e iniciar como estudiante2@example.com.<br>3. Abrir "Mis reservas" y verificar que ID-A no aparece.<br>4. Escribir en el navegador la URL `/reserva/<ID-A>/qr/`.<br>5. Leer la respuesta del sistema. |
+| Resultado esperado | "Mis reservas" de estudiante2@example.com muestra el estado vacío o solo sus propias reservas, sin ID-A. La URL forzada no expone el QR ajeno: el sistema responde 404 (no encontrado) y no muestra datos de la reserva de estudiante1@example.com. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-02/evidence/CP-14.png` |
+| Ejecutado por / fecha | Pendiente |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -139,35 +169,46 @@ Semana 2 (casos diseñados):
 | Límite | 2 | CP-03, CP-06 |
 | Total | 6 |  |
 
-Plan completo (12 casos, propuesta `[VERIFICAR]` para CP-07 a CP-12):
+Plan completo (14 casos, propuesta `[VERIFICAR]` para CP-07 a CP-12):
 
 | Tipo | Cantidad | Casos |
 |---|---|---|
-| Positivo | 5 | CP-01, CP-02, CP-05, CP-09, CP-10 |
-| Negativo | 3 | CP-04, CP-07, CP-11 |
+| Positivo | 6 | CP-01, CP-02, CP-05, CP-09, CP-10, CP-13 |
+| Negativo | 4 | CP-04, CP-07, CP-11, CP-14 |
 | Límite | 4 | CP-03, CP-06, CP-08, CP-12 |
-| Total | 12 | Cumple ≥ 3 negativos y ≥ 2 de límite |
+| Total | 14 | Cumple ≥ 3 negativos y ≥ 2 de límite |
 
-## (b) Plan de CP-07 a CP-12
+Casos agregados en semana 3:
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 1 | CP-13 |
+| Negativo | 1 | CP-14 |
+| Límite | 0 | — |
+| Total | 2 |  |
+
+## (b) Plan de CP-07 a CP-14
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
 |---|---|---|---|---|---|
 | CP-07 | Login con credenciales ficticias inválidas rechazado; con credenciales válidas carga la vista según rol | Negativo | RF-08 | 3 | `docs/week-02/evidence/CP-07.png` |
 | CP-11 | Búsqueda sin resultados muestra mensaje claro | Negativo | RF-01 | 3 | `docs/week-02/evidence/CP-11.png` |
 | CP-12 | Devolución exactamente a las 11:00 (bloque hasta 11:00) no genera sanción | Límite | RF-07 | 3 | `docs/week-02/evidence/CP-12.png` |
+| CP-13 | "Mis reservas" lista las reservas propias con su estado y reabre el QR | Positivo | RF-02, RF-03 | 3 | `docs/week-02/evidence/CP-13.png` |
+| CP-14 | Un usuario no ve ni abre el QR de una reserva ajena | Negativo | RF-03, RF-08 | 3 | `docs/week-02/evidence/CP-14.png` |
 | CP-08 | Reserva + QR en ≤ 1,5 s: promedio de 20 peticiones concurrentes con script/curl | Límite | RNF-01 | 4 | `docs/week-02/evidence/CP-08.txt` |
 | CP-09 | Layout sin scroll horizontal ni textos cortados en 3 resoluciones (360 px, 1280 px y una intermedia [COMPLETAR]) y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | 4 | `docs/week-02/evidence/CP-09.png` |
 | CP-10 | Contraseñas con hash; datos ficticios; credenciales excluidas por .gitignore | Positivo | RNF-03 | 4 | `docs/week-02/evidence/CP-10.md` |
 
-Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12 (3) · Semana 4: CP-08, CP-09, CP-10 (3).
+Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) · Semana 4: CP-08, CP-09, CP-10 (3).
 
 ## (c) Checklist de aceptación
 
-- Los 6 casos tienen todos los campos de la plantilla.
-- Distribución exacta: 3 positivos, 1 negativo, 2 de límite.
+- Los 6 casos de semana 2 tienen todos los campos de la plantilla.
+- Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
-- El plan de 12 casos (6 + 3 + 3) está declarado.
-- Los IDs CP-01…CP-12 coinciden con matriz-trazabilidad.md.
+- El plan de 14 casos (6 + 5 + 3) está declarado.
+- Los IDs CP-01…CP-14 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -187,3 +228,5 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12 (3) · Semana 4: CP
 | 9 | Los casos usan solo datos @example.com, no los datos de los mockups. | Los mockups muestran nombre y correo de apariencia real; RNF-03 exige cero datos reales. |
 | 10 | No se agregan RF/RNF ni funcionalidades fuera de alcance. | Regla de trabajo del proyecto. |
 | 11 | CP-08 se clasifica como Límite, no como Positivo. | Verifica el comportamiento en el borde del umbral de RNF-01 (≤ 1,5 s); se corrige por `OBS-LOCAL-01` de la revisión interna. |
+| 12 | Se agregan CP-13 y CP-14 en semana 3 al implementar la pantalla "Mis reservas". | La pantalla ya figura en los mockups (pestaña "Mis Reservas") y CP-03 la usa; los casos cubren el listado propio y el aislamiento entre usuarios. |
+| 13 | CP-13 y CP-14 quedan en "Pendiente" hasta ejecutarse con captura real. | No se marca un caso como Aprobado sin evidencia; el MVP ya permite ejecutarlos, pero falta la captura. |
