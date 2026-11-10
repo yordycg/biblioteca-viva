@@ -15,6 +15,7 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("buscar/", views.buscar, name="buscar"),
+    path("mis-reservas/", views.mis_reservas, name="mis_reservas"),
     path("reservar/<int:recurso_id>/", views.confirmar, name="confirmar"),
     path("reserva/<int:reserva_id>/qr/", views.qr_view, name="qr"),
     path("bibliotecario/", views.bibliotecario, name="bibliotecario"),

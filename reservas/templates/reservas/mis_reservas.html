@@ -1,0 +1,73 @@
+{% extends "reservas/base.html" %}
+{% block title %}Mis reservas · BibliotecaViva{% endblock %}
+
+{% block content %}
+<h1>Mis reservas</h1>
+
+{% if not activas and not historial %}
+  <div class="card empty">
+    <p>Aún no tienes reservas.</p>
+    <p class="small">Busca un recurso disponible para crear tu primera reserva.</p>
+    <a class="btn" href="{% url 'buscar' %}">Buscar recursos</a>
+  </div>
+{% else %}
+  <section aria-labelledby="titulo-activas">
+    <h2 id="titulo-activas">Activas</h2>
+    {% if activas %}
+      <div class="grid">
+        {% for reserva in activas %}
+          <article class="card">
+            <div class="resource-head">
+              <h2>{{ reserva.codigo }}</h2>
+              {% if reserva.estado == "RESERVADA" %}
+                <span class="badge badge-ok">{{ reserva.get_estado_display }}</span>
+              {% else %}
+                <span class="badge badge-warn">{{ reserva.get_estado_display }}</span>
+              {% endif %}
+            </div>
+            <p class="small">
+              {{ reserva.recurso.nombre }} · {{ reserva.recurso.get_tipo_display }}
+              {% if reserva.recurso.ubicacion %} · {{ reserva.recurso.ubicacion }}{% endif %}
+            </p>
+            <p class="small">
+              {{ reserva.fecha|date:"d-m-Y" }} · {{ reserva.get_bloque_display }}
+            </p>
+            <div class="acciones">
+              <a class="btn" href="{% url 'qr' reserva.id %}">Ver QR</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="small">No tienes reservas activas.</p>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="titulo-historial">
+    <h2 id="titulo-historial">Historial</h2>
+    {% if historial %}
+      <div class="grid">
+        {% for reserva in historial %}
+          <article class="card">
+            <div class="resource-head">
+              <h2>{{ reserva.codigo }}</h2>
+              <span class="badge">{{ reserva.get_estado_display }}</span>
+            </div>
+            <p class="small">
+              {{ reserva.recurso.nombre }} · {{ reserva.recurso.get_tipo_display }}
+              {% if reserva.recurso.ubicacion %} · {{ reserva.recurso.ubicacion }}{% endif %}
+            </p>
+            <p class="small">
+              {{ reserva.fecha|date:"d-m-Y" }} · {{ reserva.get_bloque_display }}
+            </p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="small">Todavía no tienes reservas finalizadas.</p>
+    {% endif %}
+  </section>
+{% endif %}
+
+<a class="btn btn-secondary" href="{% url 'buscar' %}">Buscar recursos</a>
+{% endblock %}

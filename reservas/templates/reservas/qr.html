@@ -11,6 +11,9 @@
   <img class="qr" src="{{ qr_img }}" alt="Código QR de la reserva {{ reserva.codigo }}">
   <p class="small">Muestra este código al bibliotecario. También puedes dictar el ID: <strong>{{ qr.codigo }}</strong>.</p>
 
-  <a class="btn" href="{% url 'buscar' %}">Volver a buscar</a>
+  <div class="acciones">
+    <a class="btn" href="{% url 'mis_reservas' %}">Mis reservas</a>
+    <a class="btn btn-secondary" href="{% url 'buscar' %}">Volver a buscar</a>
+  </div>
 </section>
 {% endblock %}

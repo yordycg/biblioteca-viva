@@ -58,6 +58,26 @@ def buscar(request):
 
 
 @login_required
+def mis_reservas(request):
+    """Lista las reservas del solicitante y permite reabrir su QR (RF-02, RF-03)."""
+    if _es_bibliotecario(request.user):
+        return redirect("bibliotecario")
+
+    reservas = Reserva.objects.filter(usuario=request.user).select_related("recurso")
+    activas = reservas.filter(
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO]
+    ).order_by("fecha", "bloque")
+    historial = reservas.exclude(
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO]
+    ).order_by("-fecha", "-creada_en")
+    return render(
+        request,
+        "reservas/mis_reservas.html",
+        {"activas": activas, "historial": historial},
+    )
+
+
+@login_required
 def confirmar(request, recurso_id):
     """Muestra el detalle y crea la reserva con su QR (RF-02, RF-03, RF-06)."""
     if _es_bibliotecario(request.user):
