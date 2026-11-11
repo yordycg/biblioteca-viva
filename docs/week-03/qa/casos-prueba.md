@@ -1,6 +1,8 @@
-# Casos de prueba — Biblioteca Viva (Semana 2, SEM2-T6)
+# Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
 Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
+
+La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/week-03/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: los resultados siguen en Pendiente hasta que QA ejecute cada CP y adjunte su evidencia.
 
 Fuentes usadas: requisitos RF/RNF del equipo, diagrama de casos de uso (CU0–CU6) y mockups [SEM2-T1] (Pantalla 1, Pantalla 2 y Vista Bibliotecario). Los textos de botones y mensajes salen de esos mockups; lo que los mockups no definen queda como [COMPLETAR] o [VERIFICAR].
 
@@ -31,12 +33,17 @@ Convención: cada caso parte del *seed* reiniciado (sin reservas ni sanciones), 
 | Vista Resolutor | Visor de cámara con QR, tarjeta con ID, recurso, correo y Estado; botones "Confirmar entrega" y "Registrar devolución" |
 | Sanción (RF-07) | Banner "Devolución tardía: Sanción de 7 días" |
 
-Vacíos detectados en los mockups (a resolver con el equipo antes de semana 3):
+Vacíos detectados en los mockups v1 y cómo se resolvieron en la implementación de semana 3:
 
-- No hay mensaje para QR inválido ni QR duplicado → [COMPLETAR] en CP-04.
-- No hay campo para ingresar el código manualmente (solo visor de cámara), pero el stack lo contempla → [VERIFICAR] en CP-04.
-- No hay mensaje para un usuario sancionado que intenta reservar → [COMPLETAR] en CP-06.
-- Los bloques de los mockups son 09:00–10:30 (90 min); los de estos casos son de 60 min, según la pauta → [VERIFICAR].
+| Vacío del mockup | Resolución implementada |
+|---|---|
+| No hay mensaje para QR inválido ni duplicado ([COMPLETAR] en CP-04) | El panel muestra `No existe una reserva con el código …` y `QR ya utilizado o la reserva no está vigente.` |
+| No hay campo para ingresar el código manualmente ([VERIFICAR] en CP-04) | El panel incluye el campo «Código del QR o identificador de reserva» con ingreso manual |
+| No hay mensaje para un usuario sancionado ([COMPLETAR] en CP-06) | La búsqueda muestra el aviso «Sanción vigente» con la fecha de término |
+| Bloques de 90 min en el mockup ([VERIFICAR]) | Se mantienen bloques de 60 min: `10:00-11:00`, `11:00-12:00`, `15:00-16:00` |
+| No hay pantalla de «Mis reservas» ([VERIFICAR] en CP-13) | Se implementó con secciones Activas e Historial y botón «Ver QR» |
+
+Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes) y §4 (reglas de contenido).
 
 ## CP-01 — Búsqueda de recurso disponible
 
