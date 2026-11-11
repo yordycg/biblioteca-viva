@@ -63,11 +63,42 @@ pila del sistema mantiene la legibilidad.
 - Sombras: `0 1px 3px rgba(0,28,113,.06)` en reposo; `0 4px 10px
   rgba(0,28,113,.10)` al pasar el puntero. Sin sombras difusas grandes.
 
+### 2.4 Origen de la paleta (verificación con el logo oficial)
+
+Los tres colores de marca no se eligieron a ojo: se midieron sobre el logo
+oficial del instituto.
+
+| Dato | Valor |
+|---|---|
+| Archivo | `Logo_IPVG.png` (logo del encabezado de virginiogomez.cl) |
+| Origen | `https://www.virginiogomez.cl/static/assets2/images/Logo_IPVG.png` |
+| Dimensiones | 1648 × 335 px, RGBA con transparencia (ratio 4,92:1) |
+| SHA-256 | `d3f4cb629d5e87207bc27c3fbbd40134a7c7ce531eda1aad22882a7d772edd0d` |
+| Fecha del archivo | 2025-11-19 |
+| Medición | 2026-11-11, píxeles con alfa = 255 |
+
+| Color | Hex | Píxeles | % del logo | Token |
+|---|---|---|---|---|
+| Blanco del logotipo | `#FFFFFF` | 91 081 | 72,65 % | Texto sobre fondos oscuros |
+| Azul institucional | `#001C71` | 12 110 | 9,66 % | `--color-primary` |
+| Amarillo institucional | `#E8C400` | 10 407 | 8,30 % | `--color-warning` |
+| Verde institucional | `#00953B` | 4 651 | 3,71 % | `--color-success` |
+
+Los tokens `--color-primary`, `--color-warning` y `--color-success` coinciden
+exactamente con el logo. `--color-secondary` (`#1C5199`) y `--color-danger`
+(`#C62828`) **no** son colores de marca: son colores funcionales (enlaces, foco y
+errores) y así deben explicarse en el informe y la defensa.
+
+El logo no tiene versión SVG ni variante para fondos claros. Es blanco sobre
+transparente, pensado para fondo oscuro; por eso la barra superior y la cabecera
+del login usan `--color-primary` como fondo.
+
 ## 3. Componentes (implementados en `reservas/static/reservas/styles.css`)
 
 | Componente | Clases | Notas |
 |---|---|---|
 | Shell | `.shell`, `.topbar`, `.main`, `.footer` | Barra superior fija, contenedor de 1280 px |
+| Logo institucional | `.brand`, `.brand__logo`, `.brand__divider`, `.brand__product` | Logo oficial a 36 px de alto (32 px en móvil) sobre fondo `--color-primary` |
 | Navegación | `.nav`, `.nav__link[aria-current]` | Se filtra por rol en `base.html` |
 | Encabezado de página | `.page-head`, `.eyebrow`, `.page-head__aside` | Incluye el medidor de cupo |
 | Filtros | `.filters`, `.field`, `.control` | Grid 4/3/3/auto en desktop |
@@ -85,6 +116,20 @@ pila del sistema mantiene la legibilidad.
 
 Iconografía: sprite SVG inline en `reservas/templates/reservas/_icons.html`
 (16 símbolos). No se usa Material Symbols ni ninguna icon font.
+
+### Logo institucional
+
+- Archivo: `reservas/static/reservas/img/ipvg-logo.png`, copia literal del logo
+  oficial (mismo SHA-256 de la tabla anterior). No se recompila ni se recolorea.
+- Tamaño: 36 px de alto en escritorio (177 px de ancho) y 32 px en móvil; el
+  ancho se calcula con `width: auto` para no deformar la proporción 4,92:1.
+- Fondo: obligatorio `--color-primary`. El logotipo es blanco y sobre blanco
+  desaparece; por eso el login usa una banda navy (`.login__brandbar`).
+- Texto alternativo: «Instituto Profesional Virginio Gómez». El nombre del
+  producto («BibliotecaViva») se mantiene como texto, no dentro de la imagen.
+- Prohibido: recortar el escudo, estirar la imagen, cambiar su color, usarla
+  como marca de agua o enlazarla desde el sitio del instituto (la demo debe
+  funcionar sin internet).
 
 ## 4. Reglas de contenido
 

@@ -26,6 +26,11 @@ fueron renders de un lienzo de 1600 px con contenido móvil; su especificación
 está en `design/design-system.md` y su resultado real se verifica en las capturas
 de `evidence/`.
 
+Los mockups usan un cuadrado amarillo con las iniciales «VG» como marcador de
+posición. La implementación usa el **logo oficial del instituto** en la barra
+superior y en la cabecera del login (procedencia, hash y paleta medida en
+`design/design-system.md` §2.4 y §3).
+
 ## Orden de revisión
 
 1. `design/design-system.md` — tokens, componentes y reglas de contenido.

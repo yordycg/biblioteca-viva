@@ -170,6 +170,8 @@ Google Fonts ni imágenes remotas, así que la aplicación se ve igual sin conex
 
 - Tokens y componentes: [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md).
 - Estilos: `reservas/static/reservas/styles.css`.
+- Logo institucional: `reservas/static/reservas/img/ipvg-logo.png` (copia del
+  logo oficial; procedencia, hash y paleta medida en el sistema de diseño).
 - Iconos: sprite SVG inline en `reservas/templates/reservas/_icons.html`.
 - Interacción opcional: `reservas/static/reservas/app.js` (mostrar contraseña,
   cargar credenciales de demostración, confirmar devolución). Sin JavaScript, los
