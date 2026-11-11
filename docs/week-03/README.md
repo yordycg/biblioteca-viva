@@ -9,6 +9,7 @@
 | Mockups v2 (SEM3-T1) | [`mockups/`](mockups/) |
 | Casos de prueba | [`qa/casos-prueba.md`](qa/casos-prueba.md) |
 | Matriz de trazabilidad | [`qa/matriz-trazabilidad.md`](qa/matriz-trazabilidad.md) |
+| Bitácora de defectos | [`qa/defectos.md`](qa/defectos.md) |
 | Evidencias de ejecución | [`evidence/`](evidence/) |
 | Capturas de interfaz 360/1280 (RNF-02) | [`evidence/rnf-02/`](evidence/rnf-02/) |
 

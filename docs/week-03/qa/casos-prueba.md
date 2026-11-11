@@ -57,7 +57,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | El listado muestra únicamente Sala 3 con etiqueta "Disponible" y botón "Seleccionar". Sala 1 (ocupada) no aparece. No aparecen Proyector ni Notebook (tipo distinto). El encabezado indica fecha y bloque consultados y la cantidad de resultados coincide con las tarjetas mostradas. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-01.png` |
+| Evidencia | `docs/week-03/evidence/CP-01.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-02 — Reserva exitosa y generación de QR
@@ -72,7 +72,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | Reserva registrada con estado Reservada. Se muestra un QR único cuyo contenido decodificado incluye el ID de la reserva, junto con el resumen del recurso y su horario. En la nueva búsqueda, Sala 3 ya no aparece para 10:00–11:00. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-02.png` |
+| Evidencia | `docs/week-03/evidence/CP-02.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-03 — Tercera reserva del mismo día rechazada
@@ -87,7 +87,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | La 3ª reserva se rechaza con el mensaje "Límite alcanzado: Ya tienes 2 reservas activas para hoy." [VERIFICAR texto: el mockup dice "hoy"; la fecha de prueba es 2026-11-10]. "Mis Reservas" muestra solo ID-A e ID-B, con los mismos datos y estado Reservada. Sala 3 sigue disponible en 15:00–16:00. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-03.png` |
+| Evidencia | `docs/week-03/evidence/CP-03.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-04 — QR inválido o duplicado rechazado
@@ -102,7 +102,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | A: se rechaza NO-EXISTE con mensaje de QR inválido [COMPLETAR texto]; no se muestra tarjeta de reserva y ninguna reserva cambia de estado. B: el primer ingreso deja la reserva En Uso; el segundo se rechaza con mensaje de QR ya utilizado [COMPLETAR texto] y la reserva permanece En Uso, sin cambios en su hora de inicio. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-04.png` (captura de ambos mensajes; si hace falta, dos capturas con sufijo -A y -B) |
+| Evidencia | `docs/week-03/evidence/CP-04.png` (captura de ambos mensajes; si hace falta, dos capturas con sufijo -A y -B) |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-05 — Devolución dentro del bloque horario
@@ -117,7 +117,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | La reserva pasa a Finalizada. Sala 3 vuelve a aparecer disponible en la búsqueda. No aparece el banner de sanción. estudiante1@example.com puede reservar normalmente (paso 7), sin sanción. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-05.png` |
+| Evidencia | `docs/week-03/evidence/CP-05.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-06 — Devolución 1 minuto después del bloque → sanción
@@ -132,7 +132,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | La reserva pasa a Finalizada. Se muestra "Devolución tardía: Sanción de 7 días" y estudiante1@example.com queda "Sancionado" por 7 días (hasta 2026-11-17 [VERIFICAR regla de cómputo]). El intento de reserva del paso 7 se rechaza con mensaje que indica la sanción vigente [COMPLETAR texto]. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-06.png` |
+| Evidencia | `docs/week-03/evidence/CP-06.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-13 — Mis reservas lista las reservas del usuario y reabre su QR
@@ -147,7 +147,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | "Mis reservas" muestra solo las reservas del usuario: ID-A en "Activas" con estado Reservada y la reserva finalizada en "Historial". El botón "Ver QR" abre el QR de ID-A y el código coincide con el ID de la reserva. Al volver, la lista se mantiene. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-13.png` |
+| Evidencia | `docs/week-03/evidence/CP-13.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## CP-14 — Un usuario no puede ver ni abrir el QR de una reserva ajena
@@ -162,7 +162,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado esperado | "Mis reservas" de estudiante2@example.com muestra el estado vacío o solo sus propias reservas, sin ID-A. La URL forzada no expone el QR ajeno: el sistema responde 404 (no encontrado) y no muestra datos de la reserva de estudiante1@example.com. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
-| Evidencia | `docs/week-02/evidence/CP-14.png` |
+| Evidencia | `docs/week-03/evidence/CP-14.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## (a) Distribución por tipo
@@ -198,14 +198,14 @@ Casos agregados en semana 3:
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
 |---|---|---|---|---|---|
-| CP-07 | Login con credenciales ficticias inválidas rechazado; con credenciales válidas carga la vista según rol | Negativo | RF-08 | 3 | `docs/week-02/evidence/CP-07.png` |
-| CP-11 | Búsqueda sin resultados muestra mensaje claro | Negativo | RF-01 | 3 | `docs/week-02/evidence/CP-11.png` |
-| CP-12 | Devolución exactamente a las 11:00 (bloque hasta 11:00) no genera sanción | Límite | RF-07 | 3 | `docs/week-02/evidence/CP-12.png` |
-| CP-13 | "Mis reservas" lista las reservas propias con su estado y reabre el QR | Positivo | RF-02, RF-03 | 3 | `docs/week-02/evidence/CP-13.png` |
-| CP-14 | Un usuario no ve ni abre el QR de una reserva ajena | Negativo | RF-03, RF-08 | 3 | `docs/week-02/evidence/CP-14.png` |
-| CP-08 | Reserva + QR en ≤ 1,5 s: promedio de 20 peticiones concurrentes con script/curl | Límite | RNF-01 | 4 | `docs/week-02/evidence/CP-08.txt` |
-| CP-09 | Layout sin scroll horizontal ni textos cortados en 3 resoluciones (360 px, 1280 px y una intermedia [COMPLETAR]) y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | 4 | `docs/week-02/evidence/CP-09.png` |
-| CP-10 | Contraseñas con hash; datos ficticios; credenciales excluidas por .gitignore | Positivo | RNF-03 | 4 | `docs/week-02/evidence/CP-10.md` |
+| CP-07 | Login con credenciales ficticias inválidas rechazado; con credenciales válidas carga la vista según rol | Negativo | RF-08 | 3 | `docs/week-03/evidence/CP-07.png` |
+| CP-11 | Búsqueda sin resultados muestra mensaje claro | Negativo | RF-01 | 3 | `docs/week-03/evidence/CP-11.png` |
+| CP-12 | Devolución exactamente a las 11:00 (bloque hasta 11:00) no genera sanción | Límite | RF-07 | 3 | `docs/week-03/evidence/CP-12.png` |
+| CP-13 | "Mis reservas" lista las reservas propias con su estado y reabre el QR | Positivo | RF-02, RF-03 | 3 | `docs/week-03/evidence/CP-13.png` |
+| CP-14 | Un usuario no ve ni abre el QR de una reserva ajena | Negativo | RF-03, RF-08 | 3 | `docs/week-03/evidence/CP-14.png` |
+| CP-08 | Reserva + QR en ≤ 1,5 s: promedio de 20 peticiones concurrentes con script/curl | Límite | RNF-01 | 4 | `docs/week-03/evidence/CP-08.txt` |
+| CP-09 | Layout sin scroll horizontal ni textos cortados en 3 resoluciones (360 px, 1280 px y una intermedia [COMPLETAR]) y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | 4 | `docs/week-03/evidence/CP-09.png` |
+| CP-10 | Contraseñas con hash; datos ficticios; credenciales excluidas por .gitignore | Positivo | RNF-03 | 4 | `docs/week-03/evidence/CP-10.md` |
 
 Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) · Semana 4: CP-08, CP-09, CP-10 (3).
 

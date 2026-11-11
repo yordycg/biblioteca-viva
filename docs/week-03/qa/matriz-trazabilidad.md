@@ -52,6 +52,7 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 - Cambiar "Resultado" solo con evidencia real. Pasar de Pendiente a otro valor exige el archivo de evidencia existente en `docs/week-03/evidence/` y el registro de quién ejecutó y cuándo en `casos-prueba.md`.
 - La columna «Estado de implementación» describe el código, no la calidad verificada: "Implementado" no equivale a "Aprobado".
 - Declarar explícitamente lo no implementado. Mientras un requisito no tenga código, su estado debe decir "No implementado (semana N)"; no dejar celdas vacías.
+- Los defectos hallados al ejecutar se registran en `qa/defectos.md` con `DEF-XX` y se enlazan desde la ficha del caso. Un caso con defecto queda "Fallido" hasta su re-prueba.
 - Actualizar la matriz en el PR de la semana correspondiente. Cada PR que implemente o pruebe un requisito actualiza la matriz y `casos-prueba.md` en el mismo cambio.
 
 ## Checklist de aceptación
