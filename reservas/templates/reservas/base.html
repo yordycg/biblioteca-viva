@@ -4,41 +4,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
   <title>{% block title %}BibliotecaViva{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'reservas/styles.css' %}">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="{% url 'home' %}">BibliotecaViva</a>
-    {% if user.is_authenticated %}
-      <nav class="nav" aria-label="Navegación principal">
-        {% if user.rol == "BIBLIOTECARIO" %}
-          <a href="{% url 'bibliotecario' %}">Panel</a>
-        {% else %}
-          <a href="{% url 'buscar' %}">Buscar</a>
-          <a href="{% url 'mis_reservas' %}">Mis reservas</a>
-        {% endif %}
-      </nav>
-      <div class="user">
-        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
-        <span class="badge">{{ user.get_rol_display }}</span>
-        <form method="post" action="{% url 'logout' %}">
-          {% csrf_token %}
-          <button class="link" type="submit">Salir</button>
-        </form>
-      </div>
-    {% endif %}
-  </header>
+  {% include "reservas/_icons.html" %}
+  <a class="skip-link" href="#contenido">Ir al contenido</a>
 
-  <main class="container">
-    {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-          <p class="msg {{ message.tags }}">{{ message }}</p>
-        {% endfor %}
+  <div class="shell">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="{% url 'home' %}">
+          <span class="brand__mark" aria-hidden="true">VG</span>
+          <span>
+            <span class="brand__name">BibliotecaViva</span>
+            <span class="brand__sub">Inst. Prof. Virginio Gómez</span>
+          </span>
+        </a>
+
+        {% if user.is_authenticated %}
+          <nav class="nav" aria-label="Navegación principal">
+            {% if user.rol == "BIBLIOTECARIO" %}
+              <a class="nav__link" href="{% url 'bibliotecario' %}"
+                 {% if request.resolver_match.url_name == "bibliotecario" %}aria-current="page"{% endif %}>Panel</a>
+            {% else %}
+              <a class="nav__link" href="{% url 'buscar' %}"
+                 {% if request.resolver_match.url_name == "buscar" %}aria-current="page"{% endif %}>Buscar</a>
+              <a class="nav__link" href="{% url 'mis_reservas' %}"
+                 {% if request.resolver_match.url_name == "mis_reservas" %}aria-current="page"{% endif %}>Mis reservas</a>
+            {% endif %}
+          </nav>
+
+          <div class="user">
+            <span class="user__name">{{ user.get_full_name|default:user.username }}</span>
+            <span class="user__role">{{ user.get_rol_display }}</span>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button class="user__logout" type="submit">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-logout"></use></svg>
+                Salir
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <div class="user">
+            <span class="user__name">Acceso institucional</span>
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
-    {% block content %}{% endblock %}
-  </main>
+    </header>
+
+    <main class="main" id="contenido">
+      {% if messages %}
+        <div class="alerts" role="status" aria-live="polite">
+          {% for message in messages %}
+            <p class="alert alert--{{ message.tags }}">
+              {% if message.tags == "success" %}
+                <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+              {% elif message.tags == "error" %}
+                <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+              {% else %}
+                <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+              {% endif %}
+              <span>{{ message }}</span>
+            </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <p>BibliotecaViva · Instituto Profesional Virginio Gómez · Evaluación 3, Ingeniería de Software.</p>
+        <p>Datos ficticios para evaluación curricular. <span class="footer__req">Alcance: RF-01 a RF-08</span></p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="{% static 'reservas/app.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

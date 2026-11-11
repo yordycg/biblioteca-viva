@@ -2,30 +2,118 @@
 {% block title %}Confirmar reserva · BibliotecaViva{% endblock %}
 
 {% block content %}
-<h1>Confirmar reserva</h1>
+<nav class="row" aria-label="Miga de pan">
+  <a class="btn btn--ghost btn--sm" href="{% url 'buscar' %}?tipo={{ recurso.tipo }}&amp;fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">
+    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-back"></use></svg>
+    Volver a la búsqueda
+  </a>
+</nav>
 
-<article class="card">
-  <div class="resource-head">
-    <h2>{{ recurso.nombre }}</h2>
-    <span class="badge badge-ok">Disponible</span>
-  </div>
-  <p class="small">
-    {{ recurso.get_tipo_display }}
-    {% if recurso.ubicacion %} · {{ recurso.ubicacion }}{% endif %}
-    {% if recurso.capacidad %} · Capacidad {{ recurso.capacidad }} personas{% endif %}
-    {% if recurso.codigo %} · Código {{ recurso.codigo }}{% endif %}
-  </p>
-  <p>Fecha: <strong>{{ form.fecha.value }}</strong> · Bloque: <strong>{{ form.bloque.value }}</strong></p>
-
-  <form method="post" class="form">
-    {% csrf_token %}
-    {{ form.fecha }}
-    {{ form.bloque }}
-    {{ form.errors }}
-    <div class="acciones">
-      <button class="btn" type="submit">Confirmar reserva</button>
-      <a class="btn btn-secondary" href="{% url 'buscar' %}">Volver</a>
+<div class="grid-2">
+  <section class="card" aria-labelledby="recurso-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-layers"></use></svg>
+        <h2 id="recurso-title" style="font-size: 1.125rem;">Recurso seleccionado</h2>
+      </div>
+      <span class="badge badge--en-uso">Disponible</span>
     </div>
-  </form>
-</article>
+
+    <div class="resource__title">
+      <h1 style="font-size: 1.5rem;">{{ recurso.nombre }}</h1>
+      {% if recurso.codigo %}<span class="resource__code">{{ recurso.codigo }}</span>{% endif %}
+    </div>
+
+    <dl class="data-list">
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-layers"></use></svg></span>
+        <div>
+          <dt>Tipo</dt>
+          <dd>{{ recurso.get_tipo_display }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"></use></svg></span>
+        <div>
+          <dt>Ubicación</dt>
+          <dd>{{ recurso.ubicacion|default:"—" }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg></span>
+        <div>
+          <dt>Capacidad</dt>
+          <dd>{% if recurso.capacidad %}{{ recurso.capacidad }} personas{% else %}No aplica{% endif %}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-badge"></use></svg></span>
+        <div>
+          <dt>Código</dt>
+          <dd>{{ recurso.codigo|default:"—" }}</dd>
+        </div>
+      </div>
+    </dl>
+  </section>
+
+  <section class="card" aria-labelledby="confirmar-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+        <h2 id="confirmar-title" style="font-size: 1.125rem;">Datos de la reserva</h2>
+      </div>
+      <span class="req">RF-02</span>
+    </div>
+
+    <dl class="data-list">
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
+        <div>
+          <dt>Fecha</dt>
+          <dd>{{ fecha|date:"d-m-Y"|default:"—" }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+        <div>
+          <dt>Bloque horario</dt>
+          <dd>{{ bloque }}</dd>
+        </div>
+      </div>
+    </dl>
+
+    <div class="notice">
+      <span class="notice__icon" aria-hidden="true">
+        <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+      </span>
+      <div>
+        <p class="notice__title">Antes de confirmar <span class="req">RF-06</span></p>
+        <p class="notice__text">
+          Se permite un máximo de 2 reservas activas por día. Al confirmar, el
+          bloque queda bloqueado para el resto de los usuarios.
+        </p>
+      </div>
+    </div>
+
+    {% if form.errors %}
+      <p class="alert alert--error" role="alert">
+        <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+        <span>No se pudo confirmar: revisa la fecha y el bloque seleccionados.</span>
+      </p>
+    {% endif %}
+
+    <form method="post" class="stack">
+      {% csrf_token %}
+      {{ form.fecha }}
+      {{ form.bloque }}
+      <div class="card__foot">
+        <button class="btn" type="submit">
+          <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+          Confirmar reserva
+        </button>
+        <a class="btn btn--secondary" href="{% url 'buscar' %}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</div>
 {% endblock %}

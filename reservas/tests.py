@@ -81,3 +81,64 @@ class ReglasDeNegocioTests(TestCase):
         self.assertTrue(Sancion.objects.filter(reserva=reserva).exists())
         self.usuario.refresh_from_db()
         self.assertIsNotNone(self.usuario.sancionado_hasta)
+
+    def test_cupo_diario_calculado(self):
+        services.crear_reserva(self.usuario, self.sala, self.fecha, "10:00-11:00")
+        cupo = services.cupo_diario(self.usuario, self.fecha)
+        self.assertEqual(cupo["usadas"], 1)
+        self.assertEqual(cupo["max"], services.MAX_RESERVAS_DIA)
+        self.assertEqual(cupo["restantes"], 1)
+        self.assertEqual(cupo["porcentaje"], 50)
+
+
+class InterfazTests(TestCase):
+    """Comprobaciones de las vistas que sostienen la interfaz (RNF-02)."""
+
+    def setUp(self):
+        self.hoy = timezone.localdate()
+        self.estudiante = Usuario.objects.create_user(
+            username="e@example.com",
+            email="e@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.bibliotecario = Usuario.objects.create_user(
+            username="b@example.com",
+            email="b@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.BIBLIOTECARIO,
+        )
+        self.sala = Recurso.objects.create(
+            nombre="Sala 3",
+            tipo=Recurso.Tipo.SALA,
+            ubicacion="Piso 1",
+            capacidad=8,
+        )
+        self.reserva = services.crear_reserva(
+            self.estudiante, self.sala, self.hoy, "10:00-11:00"
+        )
+
+    def test_busqueda_muestra_cupo_diario(self):
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/buscar/")
+        self.assertContains(respuesta, "1/2")
+        self.assertContains(respuesta, "1 reserva disponible")
+
+    def test_panel_bibliotecario_lista_reservas_del_dia(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/bibliotecario/")
+        self.assertContains(respuesta, self.reserva.codigo)
+        self.assertContains(respuesta, "Reservas del día")
+        self.assertContains(respuesta, "Sala 3")
+
+    def test_estudiante_no_accede_al_panel(self):
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/bibliotecario/")
+        self.assertEqual(respuesta.status_code, 403)
+
+    def test_qr_muestra_codigo_y_estado(self):
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get(f"/reserva/{self.reserva.pk}/qr/")
+        self.assertContains(respuesta, self.reserva.codigo)
+        self.assertContains(respuesta, "Comprobante de reserva")
+        self.assertContains(respuesta, "Reservada")

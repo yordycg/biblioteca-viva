@@ -3,22 +3,35 @@ Vistas de BibliotecaViva.
 
 Cubre: RF-01, RF-02, RF-03, RF-04, RF-05, RF-07, RF-08.
 """
+from datetime import date
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from . import services
 from .forms import BusquedaForm, CodigoQRForm, ReservaForm
-from .models import Reserva, Recurso, Usuario
+from .models import Reserva, Recurso, Sancion, Usuario
 
 
 def _es_bibliotecario(usuario):
     return usuario.rol == Usuario.Rol.BIBLIOTECARIO
+
+
+def _fecha_legible(valor):
+    """Normaliza una fecha ISO recibida por URL para mostrarla formateada."""
+    if isinstance(valor, date):
+        return valor
+    if not valor:
+        return None
+    try:
+        return date.fromisoformat(str(valor))
+    except ValueError:
+        return None
 
 
 @login_required
@@ -37,7 +50,7 @@ def buscar(request):
 
     inicial = {
         "tipo": Recurso.Tipo.SALA,
-        "fecha": timezone.localdate(),
+        "fecha": services.ahora().date(),
         "bloque": "10:00-11:00",
     }
     form = BusquedaForm(request.GET or None, initial=inicial)
@@ -53,7 +66,18 @@ def buscar(request):
     return render(
         request,
         "reservas/buscar.html",
-        {"form": form, "resultados": resultados, "fecha": fecha, "bloque": bloque},
+        {
+            "form": form,
+            "resultados": resultados,
+            "fecha": fecha,
+            "bloque": bloque,
+            "cupo": services.cupo_diario(request.user, services.ahora().date()),
+            "sancion_hasta": (
+                request.user.sancionado_hasta
+                if request.user.esta_sancionado(services.ahora())
+                else None
+            ),
+        },
     )
 
 
@@ -97,15 +121,16 @@ def confirmar(request, recurso_id):
                 messages.error(request, error.messages[0])
                 return redirect("buscar")
             return redirect("qr", reserva_id=reserva.pk)
+        fecha = _fecha_legible(request.POST.get("fecha"))
+        bloque = request.POST.get("bloque", "")
     else:
-        form = ReservaForm(
-            initial={
-                "fecha": request.GET.get("fecha", timezone.localdate()),
-                "bloque": request.GET.get("bloque", "10:00-11:00"),
-            }
-        )
+        fecha = _fecha_legible(request.GET.get("fecha")) or services.ahora().date()
+        bloque = request.GET.get("bloque", "10:00-11:00")
+        form = ReservaForm(initial={"fecha": fecha, "bloque": bloque})
     return render(
-        request, "reservas/confirmar.html", {"recurso": recurso, "form": form}
+        request,
+        "reservas/confirmar.html",
+        {"recurso": recurso, "form": form, "fecha": fecha, "bloque": bloque},
     )
 
 
@@ -120,7 +145,12 @@ def qr_view(request, reserva_id):
     return render(
         request,
         "reservas/qr.html",
-        {"reserva": reserva, "qr": qr, "qr_img": services.qr_base64(qr.codigo)},
+        {
+            "reserva": reserva,
+            "qr": qr,
+            "qr_img": services.qr_base64(qr.codigo),
+            "cupo": services.cupo_diario(request.user, reserva.fecha),
+        },
     )
 
 
@@ -140,10 +170,46 @@ def bibliotecario(request):
             reserva = qr.reserva
         else:
             messages.error(request, "QR inválido: no existe una reserva con ese código.")
+
+    hoy = services.ahora().date()
+    reservas_dia = list(
+        Reserva.objects.filter(fecha=hoy)
+        .select_related("recurso", "usuario", "qr")
+        .order_by("bloque", "recurso__nombre")
+    )
+    resumen = {
+        "total": len(reservas_dia),
+        "reservadas": sum(
+            1 for r in reservas_dia if r.estado == Reserva.Estado.RESERVADA
+        ),
+        "en_uso": sum(1 for r in reservas_dia if r.estado == Reserva.Estado.EN_USO),
+        "finalizadas": sum(
+            1 for r in reservas_dia if r.estado == Reserva.Estado.FINALIZADA
+        ),
+    }
+    resumen["porcentaje"] = (
+        round(resumen["finalizadas"] * 100 / resumen["total"])
+        if resumen["total"]
+        else 0
+    )
+    sanciones_hoy = (
+        Sancion.objects.filter(inicio__date=hoy)
+        .select_related("usuario")
+        .order_by("-inicio")[:3]
+    )
     return render(
         request,
         "reservas/bibliotecario.html",
-        {"form": form, "qr": qr, "reserva": reserva, "codigo": codigo},
+        {
+            "form": form,
+            "qr": qr,
+            "reserva": reserva,
+            "codigo": codigo,
+            "hoy": hoy,
+            "reservas_dia": reservas_dia,
+            "resumen": resumen,
+            "sanciones_hoy": sanciones_hoy,
+        },
     )
 
 

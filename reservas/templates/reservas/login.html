@@ -1,27 +1,148 @@
 {% extends "reservas/base.html" %}
-{% block title %}Ingresar · BibliotecaViva{% endblock %}
+{% block title %}Acceso al sistema · BibliotecaViva{% endblock %}
 
 {% block content %}
-<section class="card card-login">
-  <h1>Ingresar</h1>
-  <p class="small">Usa las credenciales ficticias del seed.</p>
+<div class="login">
+  <section class="card login__card" aria-labelledby="login-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <span class="brand__mark" aria-hidden="true" style="background: var(--color-primary); color: #fff;">VG</span>
+        <div>
+          <p class="eyebrow">Campus Central</p>
+          <h1 id="login-title" style="font-size: 1.5rem;">Acceso al sistema</h1>
+        </div>
+      </div>
+      <span class="req">RF-08</span>
+    </div>
 
-  <form method="post" class="form">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <label for="{{ form.username.id_for_label }}">Usuario o correo</label>
-    {{ form.username }}
-    {{ form.username.errors }}
-    <label for="{{ form.password.id_for_label }}">Contraseña</label>
-    {{ form.password }}
-    {{ form.password.errors }}
-    <button class="btn" type="submit">Entrar</button>
-  </form>
+    <p class="page-head__sub">
+      Sistema de reserva de recursos y salas de la biblioteca. Autenticación y
+      roles mínimos sobre cuentas ficticias del seed.
+    </p>
 
-  <div class="demo-box">
-    <strong>Credenciales de demostración</strong>
-    <p>Estudiante: <code>estudiante1@example.com</code> / <code>demo1234</code></p>
-    <p>Bibliotecario: <code>bibliotecario1@example.com</code> / <code>demo1234</code></p>
-  </div>
-</section>
+    <form method="post" class="stack" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <p class="alert alert--error">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+          <span>Correo o contraseña incorrectos. Revisa los datos e intenta otra vez.</span>
+        </p>
+      {% endif %}
+
+      <div class="field">
+        <label class="field__label" for="{{ form.username.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-user"></use></svg>
+          Correo institucional
+        </label>
+        <div class="input-group">
+          <svg class="icon input-group__icon" aria-hidden="true"><use href="#i-user"></use></svg>
+          {{ form.username }}
+        </div>
+        {% for error in form.username.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+        <p class="field__help">Cuentas <code>@example.com</code> definidas en el seed.</p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="{{ form.password.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-lock"></use></svg>
+          Contraseña
+        </label>
+        <div class="input-group">
+          <svg class="icon input-group__icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+          {{ form.password }}
+          <button class="input-group__action" type="button" data-toggle-password="id_password"
+                  aria-label="Mostrar contraseña" aria-pressed="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg>
+          </button>
+        </div>
+        {% for error in form.password.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+        <p class="field__help">Contraseña de demostración: <code>demo1234</code></p>
+      </div>
+
+      <button class="btn btn--block" type="submit">
+        Iniciar sesión
+        <svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg>
+      </button>
+
+      <hr class="divider">
+      <p class="hint-inline">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg>
+        Sesión de demostración local. Datos ficticios, sin información personal real.
+      </p>
+    </form>
+  </section>
+
+  <aside class="login__alt" aria-label="Credenciales de prueba y arquitectura">
+    <section class="card">
+      <div class="card__head">
+        <div class="card__head-icon">
+          <svg class="icon" aria-hidden="true"><use href="#i-badge"></use></svg>
+          <h2>Credenciales de prueba</h2>
+        </div>
+        <span class="req">RF-08</span>
+      </div>
+      <p class="hint-inline">Selecciona una credencial para completar el formulario.</p>
+      <div class="demo-creds">
+        <button class="demo-creds__item" type="button"
+                data-demo-user="estudiante1@example.com" data-demo-pass="demo1234">
+          <span class="demo-creds__avatar" aria-hidden="true">E1</span>
+          <span class="demo-creds__body">
+            <span class="demo-creds__name">Estudiante 1 <span class="badge badge--plain">Reserva</span></span>
+            <span class="demo-creds__mail">estudiante1@example.com</span>
+          </span>
+          <span class="demo-creds__hint">Cargar</span>
+        </button>
+        <button class="demo-creds__item" type="button"
+                data-demo-user="estudiante2@example.com" data-demo-pass="demo1234">
+          <span class="demo-creds__avatar" aria-hidden="true">E2</span>
+          <span class="demo-creds__body">
+            <span class="demo-creds__name">Estudiante 2 <span class="badge badge--plain">Reserva</span></span>
+            <span class="demo-creds__mail">estudiante2@example.com</span>
+          </span>
+          <span class="demo-creds__hint">Cargar</span>
+        </button>
+        <button class="demo-creds__item" type="button"
+                data-demo-user="bibliotecario1@example.com" data-demo-pass="demo1234">
+          <span class="demo-creds__avatar demo-creds__avatar--staff" aria-hidden="true">BA</span>
+          <span class="demo-creds__body">
+            <span class="demo-creds__name">Bibliotecario 1 <span class="badge badge--plain">Gestión</span></span>
+            <span class="demo-creds__mail">bibliotecario1@example.com</span>
+          </span>
+          <span class="demo-creds__hint">Cargar</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card__head">
+        <div class="card__head-icon">
+          <svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg>
+          <h2>Arquitectura y configuración</h2>
+        </div>
+      </div>
+      <p class="hint-inline">
+        Monolito Django con persistencia SQLite local. Sin servicios externos ni
+        registros públicos.
+      </p>
+      <dl class="meta-grid">
+        <div>
+          <dt>Framework</dt>
+          <dd>Django 5.2 LTS</dd>
+        </div>
+        <div>
+          <dt>Base de datos</dt>
+          <dd>SQLite 3</dd>
+        </div>
+        <div>
+          <dt>Interfaz</dt>
+          <dd>HTML + CSS propio</dd>
+        </div>
+        <div>
+          <dt>Validación</dt>
+          <dd>QR con ID de reserva</dd>
+        </div>
+      </dl>
+    </section>
+  </aside>
+</div>
 {% endblock %}

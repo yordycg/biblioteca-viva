@@ -2,72 +2,145 @@
 {% block title %}Mis reservas · BibliotecaViva{% endblock %}
 
 {% block content %}
-<h1>Mis reservas</h1>
+<section class="page-head">
+  <div class="page-head__body">
+    <p class="eyebrow">Historial personal</p>
+    <h1>Mis reservas</h1>
+    <p class="page-head__sub">
+      Revisa tus reservas activas y abre el código QR de cada una cuando el
+      bibliotecario lo solicite.
+    </p>
+  </div>
+  <div class="page-head__aside">
+    <div class="quota">
+      <div class="quota__ring" style="--pct: 0%;"><span>{{ activas|length }}</span></div>
+      <div>
+        <span class="quota__label">Reservas activas</span>
+        <span class="quota__value">Historial: {{ historial|length }}</span>
+      </div>
+    </div>
+    <span class="req">RF-02</span>
+  </div>
+</section>
 
 {% if not activas and not historial %}
-  <div class="card empty">
-    <p>Aún no tienes reservas.</p>
-    <p class="small">Busca un recurso disponible para crear tu primera reserva.</p>
-    <a class="btn" href="{% url 'buscar' %}">Buscar recursos</a>
+  <div class="empty">
+    <span class="empty__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+    </span>
+    <p><strong>Aún no tienes reservas.</strong></p>
+    <p class="hint-inline">Busca un recurso disponible para crear tu primera reserva.</p>
+    <a class="btn" href="{% url 'buscar' %}">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+      Buscar recursos
+    </a>
   </div>
 {% else %}
-  <section aria-labelledby="titulo-activas">
-    <h2 id="titulo-activas">Activas</h2>
+  <section class="stack" aria-labelledby="activas-title">
+    <div class="section-title">
+      <h2 id="activas-title">Reservas activas</h2>
+      <span class="badge badge--plain">{{ activas|length }}</span>
+    </div>
+
     {% if activas %}
-      <div class="grid">
+      <div class="results">
         {% for reserva in activas %}
           <article class="card">
-            <div class="resource-head">
-              <h2>{{ reserva.codigo }}</h2>
+            <div class="card__head">
+              <div>
+                <h3>{{ reserva.recurso.nombre }}</h3>
+                <p class="hint-inline">{{ reserva.codigo }} · {{ reserva.recurso.get_tipo_display }}</p>
+              </div>
               {% if reserva.estado == "RESERVADA" %}
-                <span class="badge badge-ok">{{ reserva.get_estado_display }}</span>
+                <span class="badge badge--reservada">{{ reserva.get_estado_display }}</span>
               {% else %}
-                <span class="badge badge-warn">{{ reserva.get_estado_display }}</span>
+                <span class="badge badge--en-uso">{{ reserva.get_estado_display }}</span>
               {% endif %}
             </div>
-            <p class="small">
-              {{ reserva.recurso.nombre }} · {{ reserva.recurso.get_tipo_display }}
-              {% if reserva.recurso.ubicacion %} · {{ reserva.recurso.ubicacion }}{% endif %}
-            </p>
-            <p class="small">
-              {{ reserva.fecha|date:"d-m-Y" }} · {{ reserva.get_bloque_display }}
-            </p>
-            <div class="acciones">
-              <a class="btn" href="{% url 'qr' reserva.id %}">Ver QR</a>
+
+            <dl class="data-list">
+              <div>
+                <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
+                <div>
+                  <dt>Fecha</dt>
+                  <dd>{{ reserva.fecha|date:"d-m-Y" }}</dd>
+                </div>
+              </div>
+              <div>
+                <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+                <div>
+                  <dt>Bloque</dt>
+                  <dd>{{ reserva.get_bloque_display }}</dd>
+                </div>
+              </div>
+            </dl>
+
+            <div class="card__foot">
+              <a class="btn" href="{% url 'qr' reserva.id %}">
+                <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
+                Ver QR
+              </a>
+              <span class="hint-inline">{{ reserva.recurso.ubicacion|default:"" }}</span>
             </div>
           </article>
         {% endfor %}
       </div>
     {% else %}
-      <p class="small">No tienes reservas activas.</p>
+      <p class="hint-inline">No tienes reservas activas.</p>
     {% endif %}
   </section>
 
-  <section aria-labelledby="titulo-historial">
-    <h2 id="titulo-historial">Historial</h2>
+  <section class="stack" aria-labelledby="historial-title">
+    <div class="section-title">
+      <h2 id="historial-title">Historial</h2>
+      <span class="badge badge--plain">{{ historial|length }}</span>
+    </div>
+
     {% if historial %}
-      <div class="grid">
+      <div class="results">
         {% for reserva in historial %}
           <article class="card">
-            <div class="resource-head">
-              <h2>{{ reserva.codigo }}</h2>
-              <span class="badge">{{ reserva.get_estado_display }}</span>
+            <div class="card__head">
+              <div>
+                <h3>{{ reserva.recurso.nombre }}</h3>
+                <p class="hint-inline">{{ reserva.codigo }} · {{ reserva.recurso.get_tipo_display }}</p>
+              </div>
+              {% if reserva.estado == "CANCELADA" %}
+                <span class="badge badge--sancion">{{ reserva.get_estado_display }}</span>
+              {% else %}
+                <span class="badge badge--finalizada">{{ reserva.get_estado_display }}</span>
+              {% endif %}
             </div>
-            <p class="small">
-              {{ reserva.recurso.nombre }} · {{ reserva.recurso.get_tipo_display }}
-              {% if reserva.recurso.ubicacion %} · {{ reserva.recurso.ubicacion }}{% endif %}
-            </p>
-            <p class="small">
-              {{ reserva.fecha|date:"d-m-Y" }} · {{ reserva.get_bloque_display }}
-            </p>
+
+            <dl class="data-list">
+              <div>
+                <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
+                <div>
+                  <dt>Fecha</dt>
+                  <dd>{{ reserva.fecha|date:"d-m-Y" }}</dd>
+                </div>
+              </div>
+              <div>
+                <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+                <div>
+                  <dt>Bloque</dt>
+                  <dd>{{ reserva.get_bloque_display }}</dd>
+                </div>
+              </div>
+            </dl>
           </article>
         {% endfor %}
       </div>
     {% else %}
-      <p class="small">Todavía no tienes reservas finalizadas.</p>
+      <p class="hint-inline">Todavía no tienes reservas finalizadas.</p>
     {% endif %}
   </section>
-{% endif %}
 
-<a class="btn btn-secondary" href="{% url 'buscar' %}">Buscar recursos</a>
+  <div class="row">
+    <a class="btn btn--secondary" href="{% url 'buscar' %}">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+      Buscar recursos
+    </a>
+  </div>
+{% endif %}
 {% endblock %}

@@ -2,54 +2,194 @@
 {% block title %}Buscar recursos · BibliotecaViva{% endblock %}
 
 {% block content %}
-<h1>Buscar recursos</h1>
+<section class="page-head">
+  <div class="page-head__body">
+    <p class="eyebrow">Catálogo de préstamos</p>
+    <h1>Buscar salas y equipos disponibles</h1>
+    <p class="page-head__sub">
+      Filtra por tipo de recurso, fecha y bloque horario. Solo se muestran los
+      recursos libres para el bloque consultado.
+    </p>
+  </div>
+  <div class="page-head__aside">
+    <div class="quota">
+      <div class="quota__ring" style="--pct: {{ cupo.porcentaje }}%;">
+        <span>{{ cupo.usadas }}/{{ cupo.max }}</span>
+      </div>
+      <div>
+        <span class="quota__label">Cupo diario</span>
+        <span class="quota__value">{{ cupo.restantes }} reserva{{ cupo.restantes|pluralize:"s" }} disponible{{ cupo.restantes|pluralize:"s" }}</span>
+      </div>
+    </div>
+    <span class="req">RF-06</span>
+  </div>
+</section>
 
-<form method="get" action="{% url 'buscar' %}" class="card form">
-  <div class="fila">
+{% if sancion_hasta %}
+  <div class="notice notice--danger" role="alert">
+    <span class="notice__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </span>
     <div>
-      <label for="{{ form.tipo.id_for_label }}">Tipo de recurso</label>
-      {{ form.tipo }}
-    </div>
-    <div>
-      <label for="{{ form.fecha.id_for_label }}">Fecha</label>
-      {{ form.fecha }}
-    </div>
-    <div>
-      <label for="{{ form.bloque.id_for_label }}">Bloque horario</label>
-      {{ form.bloque }}
+      <p class="notice__title">Sanción vigente <span class="req">RF-07</span></p>
+      <p class="notice__text">
+        Tienes una sanción por devolución tardía hasta el
+        <strong>{{ sancion_hasta|date:"d-m-Y H:i" }}</strong>. Mientras esté activa no
+        puedes crear reservas.
+      </p>
     </div>
   </div>
-  {{ form.errors }}
-  <button class="btn" type="submit">Buscar</button>
-</form>
+{% endif %}
+
+<section class="card" aria-labelledby="filtros-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+      <h2 id="filtros-title" style="font-size: 1.125rem;">Filtros de búsqueda</h2>
+    </div>
+    <span class="req">RF-01</span>
+  </div>
+
+  <form method="get" action="{% url 'buscar' %}">
+    <div class="filters">
+      <div class="field">
+        <label class="field__label" for="{{ form.tipo.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-layers"></use></svg>
+          Tipo de recurso
+        </label>
+        {{ form.tipo }}
+      </div>
+      <div class="field">
+        <label class="field__label" for="{{ form.fecha.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
+          Fecha
+        </label>
+        {{ form.fecha }}
+      </div>
+      <div class="field">
+        <label class="field__label" for="{{ form.bloque.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
+          Bloque horario
+        </label>
+        {{ form.bloque }}
+      </div>
+      <div class="field">
+        <div class="row">
+          <button class="btn" type="submit">
+            <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+            Filtrar
+          </button>
+          <a class="btn btn--ghost" href="{% url 'buscar' %}" aria-label="Limpiar filtros" title="Limpiar filtros">
+            <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% if form.errors %}
+      <p class="alert alert--error" role="alert">
+        <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+        <span>Revisa los filtros: la fecha y el bloque son obligatorios.</span>
+      </p>
+    {% endif %}
+  </form>
+</section>
+
+<div class="notice">
+  <span class="notice__icon" aria-hidden="true">
+    <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+  </span>
+  <div>
+    <p class="notice__title">Regla de préstamos <span class="req">RF-06</span></p>
+    <p class="notice__text">
+      Máximo 2 reservas activas por usuario y por día. Hoy tienes
+      <strong>{{ cupo.usadas }} de {{ cupo.max }}</strong>.
+    </p>
+  </div>
+</div>
 
 {% if resultados is not None %}
-  {% if resultados %}
-    <p class="small">Recursos disponibles para {{ fecha|date:"d-m-Y" }}, bloque {{ bloque }}.</p>
-    <div class="grid">
-      {% for recurso in resultados %}
-        <article class="card resource">
-          <div class="resource-head">
-            <h2>{{ recurso.nombre }}</h2>
-            <span class="badge badge-ok">Disponible</span>
-          </div>
-          <p class="small">
-            {{ recurso.get_tipo_display }}
-            {% if recurso.ubicacion %} · {{ recurso.ubicacion }}{% endif %}
-            {% if recurso.capacidad %} · Capacidad {{ recurso.capacidad }} personas{% endif %}
-            {% if recurso.codigo %} · Código {{ recurso.codigo }}{% endif %}
-          </p>
-          <a class="btn" href="{% url 'confirmar' recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">Seleccionar</a>
-        </article>
-      {% endfor %}
+  <section aria-labelledby="resultados-title" class="stack">
+    <div class="section-title">
+      <h2 id="resultados-title">
+        {% if resultados %}
+          {{ resultados|length }} recurso{{ resultados|length|pluralize:"s" }} disponible{{ resultados|length|pluralize:"s" }}
+        {% else %}
+          Sin resultados
+        {% endif %}
+      </h2>
+      <p class="section-title__meta">
+        {{ fecha|date:"d-m-Y" }} · bloque {{ bloque }} · solo recursos libres
+      </p>
     </div>
-  {% else %}
-    <div class="card empty">
-      <p>No hay recursos disponibles para ese tipo, fecha y bloque.</p>
-      <p class="small">Prueba con otro bloque o revisa la fecha.</p>
-    </div>
-  {% endif %}
+
+    {% if resultados %}
+      <div class="results">
+        {% for recurso in resultados %}
+          <article class="resource">
+            <div class="resource__media {% if recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
+              <span class="resource__type">{{ recurso.get_tipo_display }}</span>
+              <span class="resource__status"><span class="badge badge--en-uso">Disponible</span></span>
+              <span class="resource__icon">
+                {% if recurso.tipo == "EQUIPO" %}
+                  <svg class="icon icon--lg" aria-hidden="true"><use href="#i-panel"></use></svg>
+                {% else %}
+                  <svg class="icon icon--lg" aria-hidden="true"><use href="#i-building"></use></svg>
+                {% endif %}
+              </span>
+            </div>
+            <div class="resource__body">
+              <div class="resource__title">
+                <h3>{{ recurso.nombre }}</h3>
+                {% if recurso.codigo %}<span class="resource__code">{{ recurso.codigo }}</span>{% endif %}
+              </div>
+              <dl class="resource__meta">
+                <div>
+                  <dt>{% if recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
+                  <dd>{% if recurso.capacidad %}{{ recurso.capacidad }} personas{% else %}{{ recurso.get_tipo_display }}{% endif %}</dd>
+                </div>
+                <div>
+                  <dt>Ubicación</dt>
+                  <dd>{{ recurso.ubicacion|default:"—" }}</dd>
+                </div>
+              </dl>
+              <p class="hint-inline row">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                {{ fecha|date:"d-m-Y" }}
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
+                {{ bloque }}
+              </p>
+              <div class="resource__foot">
+                <a class="btn btn--block"
+                   href="{% url 'confirmar' recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">
+                  <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+                  Reservar bloque {{ bloque }}
+                </a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <span class="empty__icon" aria-hidden="true">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        </span>
+        <p><strong>No hay recursos libres para esa combinación.</strong></p>
+        <p class="hint-inline">
+          Todos los recursos del tipo elegido están reservados o en uso para el
+          {{ fecha|date:"d-m-Y" }} en el bloque {{ bloque }}. Prueba con otro bloque
+          u otra fecha.
+        </p>
+        <a class="btn btn--secondary" href="{% url 'buscar' %}">Volver a los filtros</a>
+      </div>
+    {% endif %}
+  </section>
 {% else %}
-  <p class="small">Selecciona tipo, fecha y bloque para ver la disponibilidad.</p>
+  <div class="empty">
+    <span class="empty__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+    </span>
+    <p>Selecciona tipo de recurso, fecha y bloque para ver la disponibilidad.</p>
+  </div>
 {% endif %}
 {% endblock %}

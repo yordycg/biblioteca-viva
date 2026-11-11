@@ -16,6 +16,8 @@ from django.utils.dateparse import parse_datetime
 
 from .models import QR, Reserva, Recurso, Sancion
 
+MAX_RESERVAS_DIA = 2
+
 
 def ahora():
     """Hora de la aplicación; permite fijarla en modo demostración."""
@@ -55,6 +57,19 @@ def reservas_activas(usuario, fecha):
     ).count()
 
 
+def cupo_diario(usuario, fecha=None):
+    """Cupo diario del solicitante listo para la interfaz (RF-06)."""
+    fecha = fecha or timezone.localdate()
+    usadas = reservas_activas(usuario, fecha)
+    restantes = max(0, MAX_RESERVAS_DIA - usadas)
+    return {
+        "usadas": usadas,
+        "max": MAX_RESERVAS_DIA,
+        "restantes": restantes,
+        "porcentaje": round(usadas * 100 / MAX_RESERVAS_DIA),
+    }
+
+
 def crear_reserva(usuario, recurso, fecha, bloque):
     """Crea una reserva y su QR, validando sanción, tope y disponibilidad."""
     momento = ahora()
@@ -63,7 +78,7 @@ def crear_reserva(usuario, recurso, fecha, bloque):
             "No puedes reservar: tienes una sanción vigente hasta "
             f"{timezone.localtime(usuario.sancionado_hasta):%d-%m-%Y %H:%M}."
         )
-    if reservas_activas(usuario, fecha) >= 2:
+    if reservas_activas(usuario, fecha) >= MAX_RESERVAS_DIA:
         raise ValidationError(
             "Límite alcanzado: ya tienes 2 reservas activas para ese día."
         )

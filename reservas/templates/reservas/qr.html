@@ -1,19 +1,147 @@
 {% extends "reservas/base.html" %}
-{% block title %}Reserva confirmada · BibliotecaViva{% endblock %}
+{% block title %}Reserva {{ reserva.codigo }} · BibliotecaViva{% endblock %}
 
 {% block content %}
-<section class="card card-qr">
-  <p class="badge badge-ok">Reserva confirmada</p>
-  <h1>{{ reserva.codigo }}</h1>
-  <p>{{ reserva.recurso.nombre }} · {{ reserva.fecha|date:"d-m-Y" }} · {{ reserva.get_bloque_display }}</p>
-  <p class="small">Estado: {{ reserva.get_estado_display }}</p>
-
-  <img class="qr" src="{{ qr_img }}" alt="Código QR de la reserva {{ reserva.codigo }}">
-  <p class="small">Muestra este código al bibliotecario. También puedes dictar el ID: <strong>{{ qr.codigo }}</strong>.</p>
-
-  <div class="acciones">
-    <a class="btn" href="{% url 'mis_reservas' %}">Mis reservas</a>
-    <a class="btn btn-secondary" href="{% url 'buscar' %}">Volver a buscar</a>
+<section class="page-head">
+  <div class="page-head__body">
+    <p class="eyebrow">Comprobante de reserva</p>
+    <h1>Reserva confirmada</h1>
+    <p class="page-head__sub">
+      Presenta el código QR al bibliotecario para iniciar el préstamo. El bloque
+      queda reservado a tu nombre.
+    </p>
+  </div>
+  <div class="page-head__aside">
+    <div class="quota">
+      <div class="quota__ring" style="--pct: {{ cupo.porcentaje }}%;">
+        <span>{{ cupo.usadas }}/{{ cupo.max }}</span>
+      </div>
+      <div>
+        <span class="quota__label">Cupo diario</span>
+        <span class="quota__value">{{ cupo.restantes }} reserva{{ cupo.restantes|pluralize:"s" }} disponible{{ cupo.restantes|pluralize:"s" }}</span>
+      </div>
+    </div>
+    <span class="req">RF-06</span>
   </div>
 </section>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="comprobante-title">
+    <div class="card__head">
+      <div>
+        <p class="eyebrow">Identificador único</p>
+        <h2 id="comprobante-title" style="font-size: 2rem; letter-spacing: 0.02em;">{{ reserva.codigo }}</h2>
+      </div>
+      {% if reserva.estado == "RESERVADA" %}
+        <span class="badge badge--reservada">{{ reserva.get_estado_display }}</span>
+      {% elif reserva.estado == "EN_USO" %}
+        <span class="badge badge--en-uso">{{ reserva.get_estado_display }}</span>
+      {% else %}
+        <span class="badge badge--finalizada">{{ reserva.get_estado_display }}</span>
+      {% endif %}
+    </div>
+
+    <ol class="stepper" aria-label="Estado de la reserva">
+      <li class="{% if reserva.estado == 'RESERVADA' %}is-current{% else %}is-done{% endif %}">
+        <span>1. Reservada</span>
+      </li>
+      <li class="{% if reserva.estado == 'EN_USO' %}is-current{% elif reserva.estado == 'FINALIZADA' %}is-done{% endif %}">
+        <span>2. En Uso</span>
+      </li>
+      <li class="{% if reserva.estado == 'FINALIZADA' %}is-done{% endif %}">
+        <span>3. Finalizada</span>
+      </li>
+    </ol>
+
+    <dl class="data-list">
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-layers"></use></svg></span>
+        <div>
+          <dt>Recurso</dt>
+          <dd>{{ reserva.recurso.nombre }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"></use></svg></span>
+        <div>
+          <dt>Ubicación</dt>
+          <dd>{{ reserva.recurso.ubicacion|default:"—" }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
+        <div>
+          <dt>Fecha</dt>
+          <dd>{{ reserva.fecha|date:"d-m-Y" }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+        <div>
+          <dt>Bloque horario</dt>
+          <dd>{{ reserva.get_bloque_display }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg></span>
+        <div>
+          <dt>Solicitante</dt>
+          <dd>{{ reserva.usuario.get_full_name|default:reserva.usuario.email }}</dd>
+        </div>
+      </div>
+      <div>
+        <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-badge"></use></svg></span>
+        <div>
+          <dt>Estado</dt>
+          <dd>{{ reserva.get_estado_display }}</dd>
+        </div>
+      </div>
+    </dl>
+
+    <div class="card__foot">
+      <a class="btn btn--secondary" href="{% url 'mis_reservas' %}">
+        <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg>
+        Mis reservas
+      </a>
+      <a class="btn btn--ghost" href="{% url 'buscar' %}">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        Buscar otro recurso
+      </a>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="qr-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
+        <h2 id="qr-title" style="font-size: 1.125rem;">Código de acceso</h2>
+      </div>
+      <span class="req">RF-03 · RF-04</span>
+    </div>
+
+    <div class="qr-panel">
+      <span class="qr-panel__tag">Código único de reserva</span>
+      <img class="qr-panel__image" src="{{ qr_img }}"
+           alt="Código QR de la reserva {{ reserva.codigo }}">
+      <p class="qr-panel__code">{{ qr.codigo }}</p>
+      <p class="qr-panel__note">
+        Muestra este código al bibliotecario al inicio del bloque. También puede
+        validarlo ingresando el identificador <strong>{{ qr.codigo }}</strong>.
+      </p>
+    </div>
+
+    <div class="notice">
+      <span class="notice__icon" aria-hidden="true">
+        <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+      </span>
+      <div>
+        <p class="notice__title">Devolución <span class="req">RF-05</span></p>
+        <p class="notice__text">
+          Devuelve el recurso dentro del bloque. Una devolución posterior al
+          término del bloque genera una sanción de 7 días.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
 {% endblock %}

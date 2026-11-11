@@ -6,12 +6,13 @@ Aplicación web responsiva para buscar, reservar y validar salas y equipos de la
 
 - Semana 1: ficha, requisitos y plan de calidad.
 - Semana 2: diseño y QA base (mockups, UML, checklist, matriz y 6 casos).
-- Semana 3: MVP Django de F1–F3.
+- Semana 3: MVP Django de F1–F3 con interfaz institucional (port del rediseño SEM3-T1 a CSS propio).
 
 ## Stack
 
 - Python 3.12 + Django 5.2 LTS + SQLite.
-- Templates de Django + CSS propio, mobile-first.
+- Templates de Django + CSS propio mobile-first (sin Tailwind, sin CDN, sin fuentes ni imágenes remotas).
+- Iconografía con sprite SVG inline; JavaScript mínimo y progresivo.
 - QR generado en el servidor con `qrcode`.
 - Validación del QR por ingreso manual del código.
 - Monolito modular: `config/` + `reservas/`.
@@ -26,8 +27,8 @@ reservas/
   views.py              # login, búsqueda, reserva, QR, bibliotecario
   forms.py
   urls.py
-  templates/reservas/
-  static/reservas/
+  templates/reservas/     # base, login, búsqueda, reserva, QR, mis reservas, panel
+  static/reservas/        # styles.css, app.js
   management/commands/seed.py
 scripts/
   demo_flujo.py
@@ -97,9 +98,10 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 |---|---|---|
 | Login | `/login/` | Formulario, mensajes de error |
 | Búsqueda | `/buscar/` | Filtros, tarjetas, estado vacío |
-| Reserva | clic en “Seleccionar” | Detalle y confirmación |
+| Reserva | clic en “Reservar bloque” | Detalle y confirmación |
 | QR | `/reserva/<id>/qr/` | QR legible e ID |
-| Bibliotecario | `/bibliotecario/` | Código manual, confirmar entrega y devolución |
+| Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
+| Bibliotecario | `/bibliotecario/` | Código manual, tabla del día, entrega y devolución |
 | Admin | `/admin/` | Solo para desarrollo; no es parte del flujo |
 
 ## Revisión por rol
@@ -109,7 +111,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Vicente (UI) | `/login/`, `/buscar/`, reserva, QR y `/bibliotecario/`; DevTools en 360 y 1280 | 3 capturas + 3 observaciones |
 | Héctor (backend) | `reservas/models.py`, `reservas/services.py`, `reservas/management/commands/seed.py`, `scripts/`; ejecutar `seed`, `demo_flujo` y `simular_retraso` | Nota de 1 página + salida de scripts |
 | Héctor (medición) | `python scripts/medir_rendimiento.py` | Salida con promedio y máximo |
-| Gerald (QA) | App + `docs/week-02/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
+| Gerald (QA) | App + `docs/week-03/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
 | Lucas (docs) | `README.md` + informe SEM-03 | Documentos finales en Drive |
 | Yordy (integración) | `manage.py check`, `manage.py test` y flujo completo | PR actualizado, demo y tag |
 
@@ -158,6 +160,24 @@ DEMO_MODE=1 DEMO_NOW=2026-11-12T11:01:00 python manage.py runserver 0.0.0.0:8000
 
 `DEMO_MODE` desactiva la validación estricta de fecha/hora y `DEMO_NOW` fija la hora de la aplicación. No usar en producción.
 
+Con `DEMO_MODE=1`, la búsqueda y el panel del bibliotecario abren en la fecha de
+`DEMO_NOW`, de modo que la reserva de ejemplo del seed queda a la vista.
+
+## Interfaz
+
+El rediseño de la semana 3 se implementó con CSS propio: no hay Tailwind, CDN,
+Google Fonts ni imágenes remotas, así que la aplicación se ve igual sin conexión.
+
+- Tokens y componentes: [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md).
+- Estilos: `reservas/static/reservas/styles.css`.
+- Iconos: sprite SVG inline en `reservas/templates/reservas/_icons.html`.
+- Interacción opcional: `reservas/static/reservas/app.js` (mostrar contraseña,
+  cargar credenciales de demostración, confirmar devolución). Sin JavaScript, los
+  formularios siguen funcionando.
+
+Para revisar la responsividad, abre las pantallas a 360×800 y 1280×800 y compara
+con `docs/week-03/evidence/rnf-02/`.
+
 ## Datos y seguridad
 
 - Todos los datos son ficticios.
@@ -172,8 +192,10 @@ DEMO_MODE=1 DEMO_NOW=2026-11-12T11:01:00 python manage.py runserver 0.0.0.0:8000
 - [`docs/week-01/02-requisitos.md`](docs/week-01/02-requisitos.md)
 - [`docs/week-01/03-plan-calidad.md`](docs/week-01/03-plan-calidad.md)
 - [`docs/week-02/README.md`](docs/week-02/README.md)
-- [`docs/week-02/qa/casos-prueba.md`](docs/week-02/qa/casos-prueba.md)
-- [`docs/week-02/qa/matriz-trazabilidad.md`](docs/week-02/qa/matriz-trazabilidad.md)
+- [`docs/week-03/README.md`](docs/week-03/README.md)
+- [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md)
+- [`docs/week-03/qa/casos-prueba.md`](docs/week-03/qa/casos-prueba.md)
+- [`docs/week-03/qa/matriz-trazabilidad.md`](docs/week-03/qa/matriz-trazabilidad.md)
 
 ## Uso de IA
 
