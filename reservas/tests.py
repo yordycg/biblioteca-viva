@@ -1,5 +1,5 @@
 """Pruebas automáticas de las reglas principales (RF-01, RF-03, RF-06, RF-07)."""
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
@@ -142,3 +142,23 @@ class InterfazTests(TestCase):
         self.assertContains(respuesta, self.reserva.codigo)
         self.assertContains(respuesta, "Comprobante de reserva")
         self.assertContains(respuesta, "Reservada")
+
+    def test_login_valido_redirige(self):
+        respuesta = self.client.post(
+            "/login/", {"username": "e@example.com", "password": "demo1234"}
+        )
+        self.assertRedirects(respuesta, "/", fetch_redirect_response=False)
+
+    def test_login_invalido_muestra_error(self):
+        respuesta = self.client.post(
+            "/login/", {"username": "e@example.com", "password": "incorrecta"}
+        )
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertContains(respuesta, "Correo o contraseña incorrectos")
+
+    def test_busqueda_muestra_aviso_de_sancion(self):
+        self.estudiante.sancionado_hasta = timezone.now() + timedelta(days=7)
+        self.estudiante.save(update_fields=["sancionado_hasta"])
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/buscar/")
+        self.assertContains(respuesta, "Sanción vigente")

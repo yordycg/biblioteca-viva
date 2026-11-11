@@ -2,7 +2,7 @@
 
 Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". Todos los resultados están en Pendiente; ningún requisito está aprobado ni tiene evidencia ejecutada de CP. Las rutas de evidencia de CP son propuestas hasta que QA las genere.
 
-La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (10 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (13 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
 
 ## Matriz principal
 
@@ -77,5 +77,5 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | 7 | Tipos de CP-07 a CP-12 propuestos para completar la distribución del plan. | Detalle final a confirmar al diseñarlos en semanas 3 y 4 [VERIFICAR]. |
 | 8 | Rutas de evidencia son propuestas. | Los archivos se crearán solo al ejecutar las pruebas. |
 | 9 | CP-13 y CP-14 se agregan en semana 3 (pantalla "Mis reservas"). | La pantalla figura en los mockups y CP-03 la referencia; se enlazan a RF-02/RF-03 y RF-03/RF-08 y siguen en Pendiente hasta su ejecución. |
-| 10 | «Estado de implementación» pasa de «No implementado» a «Implementado» en semana 3. | Lo respalda el código de F1–F3 y 10 pruebas automáticas; ningún CP se marca aprobado hasta su ejecución con evidencia. |
+| 10 | «Estado de implementación» pasa de «No implementado» a «Implementado» en semana 3. | Lo respalda el código de F1–F3 y 13 pruebas automáticas; ningún CP se marca aprobado hasta su ejecución con evidencia. |
 | 11 | Se agregan capturas de `evidence/rnf-02/` (360 y 1280 px). | Verifican el renderizado real de la interfaz; no reemplazan la ejecución de CP-09 ni la medición Lighthouse. |
