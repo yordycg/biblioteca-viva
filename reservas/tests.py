@@ -143,6 +143,16 @@ class InterfazTests(TestCase):
         self.assertContains(respuesta, "Comprobante de reserva")
         self.assertContains(respuesta, "Reservada")
 
+    def test_login_muestra_logo_institucional(self):
+        respuesta = self.client.get("/login/")
+        self.assertContains(respuesta, "reservas/img/ipvg-logo.png")
+
+    def test_barra_superior_muestra_logo_institucional(self):
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/buscar/")
+        self.assertContains(respuesta, "reservas/img/ipvg-logo.png")
+        self.assertContains(respuesta, "BibliotecaViva")
+
     def test_login_valido_redirige(self):
         respuesta = self.client.post(
             "/login/", {"username": "e@example.com", "password": "demo1234"}

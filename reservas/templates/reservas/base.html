@@ -16,11 +16,12 @@
     <header class="topbar">
       <div class="topbar__inner">
         <a class="brand" href="{% url 'home' %}">
-          <span class="brand__mark" aria-hidden="true">VG</span>
-          <span>
-            <span class="brand__name">BibliotecaViva</span>
-            <span class="brand__sub">Inst. Prof. Virginio Gómez</span>
-          </span>
+          <img class="brand__logo"
+               src="{% static 'reservas/img/ipvg-logo.png' %}"
+               alt="Instituto Profesional Virginio Gómez"
+               width="1648" height="335">
+          <span class="brand__divider" aria-hidden="true"></span>
+          <span class="brand__product">BibliotecaViva</span>
         </a>
 
         {% if user.is_authenticated %}

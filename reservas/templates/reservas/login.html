@@ -1,16 +1,20 @@
 {% extends "reservas/base.html" %}
+{% load static %}
 {% block title %}Acceso al sistema · BibliotecaViva{% endblock %}
 
 {% block content %}
 <div class="login">
   <section class="card login__card" aria-labelledby="login-title">
+    <div class="login__brandbar">
+      <img class="brand__logo"
+           src="{% static 'reservas/img/ipvg-logo.png' %}"
+           alt="Instituto Profesional Virginio Gómez"
+           width="1648" height="335">
+    </div>
     <div class="card__head">
-      <div class="card__head-icon">
-        <span class="brand__mark" aria-hidden="true" style="background: var(--color-primary); color: #fff;">VG</span>
-        <div>
-          <p class="eyebrow">Campus Central</p>
-          <h1 id="login-title" style="font-size: 1.5rem;">Acceso al sistema</h1>
-        </div>
+      <div>
+        <p class="eyebrow">Campus Central</p>
+        <h1 id="login-title" style="font-size: 1.5rem;">Acceso al sistema</h1>
       </div>
       <span class="req">RF-08</span>
     </div>

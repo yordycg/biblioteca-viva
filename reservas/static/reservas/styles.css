@@ -196,31 +196,25 @@ code {
   margin-right: auto;
 }
 
-.brand__mark {
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: var(--radius-sm);
-  background: var(--color-warning);
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 0.875rem;
-  letter-spacing: 0.02em;
+.brand__logo {
+  display: block;
+  height: 2rem;
+  width: auto;
 }
 
-.brand__name {
+.brand__divider {
+  width: 1px;
+  height: 1.5rem;
+  background: rgba(255, 255, 255, 0.28);
+  flex: none;
+}
+
+.brand__product {
   font-size: 1.0625rem;
   font-weight: 700;
-  line-height: 1.1;
-}
-
-.brand__sub {
-  display: block;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #c7d2fe;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
+  color: #fff;
+  white-space: nowrap;
 }
 
 .nav {
@@ -1238,6 +1232,16 @@ select:focus {
   max-width: 32rem;
 }
 
+.login__brandbar {
+  display: flex;
+  justify-content: center;
+  margin: calc(-1 * var(--space-4) - 1px) calc(-1 * var(--space-4) - 1px)
+    var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
 .login__alt {
   display: flex;
   flex-direction: column;
@@ -1429,6 +1433,10 @@ select:focus {
     gap: var(--space-5);
   }
 
+  .brand__logo {
+    height: 2.25rem;
+  }
+
   .page-head {
     flex-direction: row;
     align-items: center;
@@ -1476,6 +1484,10 @@ select:focus {
   .brand {
     margin-right: 0;
     width: 100%;
+  }
+
+  .brand__product {
+    font-size: 0.9375rem;
   }
 
   .nav {
