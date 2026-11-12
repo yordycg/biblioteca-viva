@@ -10,6 +10,7 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 - Revisión docente (MVP 1): login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
 - Revisión docente (MVP 2): ventana de reserva (15 minutos de antelación, 7 días de horizonte) y catálogo de libros con carátulas, ficha y préstamo.
 - Revisión docente (MVP 2): catálogo inicial con estado, filtro “Solo disponibles” y horario de 09:00 a 22:00 en bloques de una hora.
+- Panel del bibliotecario v2: KPIs, agenda de entregas/devoluciones, ocupación por bloque, sanciones activas y filtros de la tabla.
 
 ## Stack
 
