@@ -34,6 +34,7 @@ class Recurso(models.Model):
     class Tipo(models.TextChoices):
         SALA = "SALA", "Sala"
         EQUIPO = "EQUIPO", "Equipo"
+        LIBRO = "LIBRO", "Libro"
 
     class Estado(models.TextChoices):
         DISPONIBLE = "DISPONIBLE", "Disponible"
@@ -53,6 +54,33 @@ class Recurso(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.get_tipo_display()})"
+
+
+class Libro(Recurso):
+    """Libro reservable con ficha bibliográfica y carátula local (RF-01, RF-02)."""
+
+    autor = models.CharField(max_length=120)
+    editorial = models.CharField(max_length=120, blank=True)
+    anio = models.PositiveSmallIntegerField("año", null=True, blank=True)
+    isbn = models.CharField("ISBN", max_length=20, blank=True)
+    genero = models.CharField("género", max_length=60, blank=True)
+    paginas = models.PositiveIntegerField("páginas", null=True, blank=True)
+    sinopsis = models.TextField(blank=True)
+    portada = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Ruta relativa dentro de static/reservas/.",
+    )
+
+    class Meta:
+        ordering = ["nombre"]
+
+    def save(self, *args, **kwargs):
+        self.tipo = Recurso.Tipo.LIBRO
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.nombre} · {self.autor}"
 
 
 class Reserva(models.Model):

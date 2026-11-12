@@ -11,10 +11,11 @@ import qrcode
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
-from .models import QR, Reserva, Recurso, Sancion
+from .models import Libro, QR, Reserva, Recurso, Sancion
 
 MAX_RESERVAS_DIA = 2
 MIN_ANTELACION_MIN = 15
@@ -208,26 +209,12 @@ def estado_inventario(fecha):
         reservas = por_recurso.get(recurso.id, [])
         estado, etiqueta = _estado_recurso(recurso, reservas)
 
-        fila = {"recurso": recurso, "estado": estado, "etiqueta": etiqueta, "bloques": []}
-        reservas_por_bloque = {reserva.bloque: reserva for reserva in reservas}
-        for valor, etiqueta_bloque in Reserva.BLOQUES:
-            reserva = reservas_por_bloque.get(valor)
-            if recurso.estado != Recurso.Estado.DISPONIBLE:
-                estado_bloque = "NO_DISPONIBLE"
-            elif reserva is None:
-                estado_bloque = "DISPONIBLE"
-            elif reserva.estado == Reserva.Estado.EN_USO:
-                estado_bloque = "EN_USO"
-            else:
-                estado_bloque = "RESERVADO"
-            fila["bloques"].append(
-                {
-                    "clave": valor,
-                    "etiqueta": etiqueta_bloque,
-                    "estado": estado_bloque,
-                    "reserva": reserva,
-                }
-            )
+        fila = {
+            "recurso": recurso,
+            "estado": estado,
+            "etiqueta": etiqueta,
+            "bloques": disponibilidad_recurso(recurso, fecha, reservas),
+        }
         filas.append(fila)
 
         resumen["total"] += 1
@@ -258,6 +245,83 @@ def estado_inventario(fecha):
         "resumen": resumen,
         "por_tipo": list(por_tipo.values()),
     }
+
+
+def _estado_bloque(recurso, reserva):
+    """Estado de un recurso en un bloque concreto."""
+    if recurso.estado != Recurso.Estado.DISPONIBLE:
+        return "NO_DISPONIBLE"
+    if reserva is None:
+        return "DISPONIBLE"
+    if reserva.estado == Reserva.Estado.EN_USO:
+        return "EN_USO"
+    return "RESERVADO"
+
+
+def disponibilidad_recurso(recurso, fecha, reservas=None):
+    """Disponibilidad de un recurso en los bloques de una fecha (RF-01)."""
+    if reservas is None:
+        reservas = Reserva.objects.filter(
+            recurso=recurso,
+            fecha=fecha,
+            estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+        )
+    por_bloque = {reserva.bloque: reserva for reserva in reservas}
+    return [
+        {
+            "clave": valor,
+            "etiqueta": etiqueta,
+            "estado": _estado_bloque(recurso, por_bloque.get(valor)),
+            "reserva": por_bloque.get(valor),
+        }
+        for valor, etiqueta in Reserva.BLOQUES
+    ]
+
+
+def catalogo_libros(fecha, texto="", genero=""):
+    """Catálogo de libros con su disponibilidad para la fecha (RF-01).
+
+    `texto` busca por título o autor; `genero` filtra por género literario.
+    """
+    libros = Libro.objects.all()
+    if texto:
+        libros = libros.filter(Q(nombre__icontains=texto) | Q(autor__icontains=texto))
+    if genero:
+        libros = libros.filter(genero=genero)
+    libros = list(libros)
+
+    activas = Reserva.objects.filter(
+        fecha=fecha,
+        recurso__in=libros,
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+    )
+    por_recurso = {}
+    for reserva in activas:
+        por_recurso.setdefault(reserva.recurso_id, []).append(reserva)
+
+    tarjetas = []
+    for libro in libros:
+        bloques = disponibilidad_recurso(
+            libro, fecha, por_recurso.get(libro.id, [])
+        )
+        tarjetas.append(
+            {
+                "libro": libro,
+                "bloques": bloques,
+                "libres": sum(1 for b in bloques if b["estado"] == "DISPONIBLE"),
+            }
+        )
+    return tarjetas
+
+
+def generos_libros():
+    """Géneros disponibles en el catálogo, ordenados alfabéticamente."""
+    return list(
+        Libro.objects.exclude(genero="")
+        .values_list("genero", flat=True)
+        .distinct()
+        .order_by("genero")
+    )
 
 
 def obtener_por_codigo(codigo):

@@ -1,14 +1,16 @@
 {% extends "reservas/base.html" %}
+{% load static %}
 {% block title %}Buscar recursos · BibliotecaViva{% endblock %}
 
 {% block content %}
 <section class="page-head">
   <div class="page-head__body">
     <p class="eyebrow">Catálogo de préstamos</p>
-    <h1>Buscar salas y equipos disponibles</h1>
+    <h1>Buscar salas, equipos y libros disponibles</h1>
     <p class="page-head__sub">
       Filtra por tipo de recurso, fecha y bloque horario. Solo se muestran los
-      recursos libres para el bloque consultado.
+      recursos libres para el bloque consultado. Para explorar la colección
+      completa de libros, abre el <a href="{% url 'catalogo' %}">catálogo</a>.
     </p>
   </div>
   <div class="page-head__aside">
@@ -146,31 +148,59 @@
       <div class="results">
         {% for recurso in resultados %}
           <article class="resource">
-            <div class="resource__media {% if recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
-              <span class="resource__type">{{ recurso.get_tipo_display }}</span>
-              <span class="resource__status"><span class="badge badge--en-uso">Disponible</span></span>
-              <span class="resource__icon">
-                {% if recurso.tipo == "EQUIPO" %}
-                  <svg class="icon icon--lg" aria-hidden="true"><use href="#i-panel"></use></svg>
+            {% if recurso.tipo == "LIBRO" %}
+              <div class="resource__media resource__media--libro">
+                <span class="resource__type">{{ recurso.get_tipo_display }}</span>
+                <span class="resource__status"><span class="badge badge--en-uso">Disponible</span></span>
+                {% if recurso.libro.portada %}
+                  <img class="resource__cover"
+                       src="{% static recurso.libro.portada %}"
+                       alt="Portada de {{ recurso.nombre }}"
+                       width="300" height="420" loading="lazy">
                 {% else %}
-                  <svg class="icon icon--lg" aria-hidden="true"><use href="#i-building"></use></svg>
+                  <span class="resource__icon">
+                    <svg class="icon icon--lg" aria-hidden="true"><use href="#i-book"></use></svg>
+                  </span>
                 {% endif %}
-              </span>
-            </div>
+              </div>
+            {% else %}
+              <div class="resource__media {% if recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
+                <span class="resource__type">{{ recurso.get_tipo_display }}</span>
+                <span class="resource__status"><span class="badge badge--en-uso">Disponible</span></span>
+                <span class="resource__icon">
+                  {% if recurso.tipo == "EQUIPO" %}
+                    <svg class="icon icon--lg" aria-hidden="true"><use href="#i-panel"></use></svg>
+                  {% else %}
+                    <svg class="icon icon--lg" aria-hidden="true"><use href="#i-building"></use></svg>
+                  {% endif %}
+                </span>
+              </div>
+            {% endif %}
             <div class="resource__body">
               <div class="resource__title">
                 <h3>{{ recurso.nombre }}</h3>
                 {% if recurso.codigo %}<span class="resource__code">{{ recurso.codigo }}</span>{% endif %}
               </div>
               <dl class="resource__meta">
-                <div>
-                  <dt>{% if recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
-                  <dd>{% if recurso.capacidad %}{{ recurso.capacidad }} personas{% else %}{{ recurso.get_tipo_display }}{% endif %}</dd>
-                </div>
-                <div>
-                  <dt>Ubicación</dt>
-                  <dd>{{ recurso.ubicacion|default:"—" }}</dd>
-                </div>
+                {% if recurso.tipo == "LIBRO" %}
+                  <div>
+                    <dt>Autor</dt>
+                    <dd>{{ recurso.libro.autor }}</dd>
+                  </div>
+                  <div>
+                    <dt>Editorial</dt>
+                    <dd>{{ recurso.libro.editorial|default:"—" }}</dd>
+                  </div>
+                {% else %}
+                  <div>
+                    <dt>{% if recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
+                    <dd>{% if recurso.capacidad %}{{ recurso.capacidad }} personas{% else %}{{ recurso.get_tipo_display }}{% endif %}</dd>
+                  </div>
+                  <div>
+                    <dt>Ubicación</dt>
+                    <dd>{{ recurso.ubicacion|default:"—" }}</dd>
+                  </div>
+                {% endif %}
               </dl>
               <p class="hint-inline row">
                 <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>

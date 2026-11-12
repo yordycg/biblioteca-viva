@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 
 from . import services
 from .forms import BusquedaForm, CodigoQRForm, ReservaForm
-from .models import Reserva, Recurso, Sancion, Usuario
+from .models import Libro, Reserva, Recurso, Sancion, Usuario
 
 
 def _es_bibliotecario(usuario):
@@ -108,6 +108,55 @@ def bloques(request):
             "antelacion": services.MIN_ANTELACION_MIN,
             "horizonte": services.MAX_DIAS_RESERVA,
         }
+    )
+
+
+@login_required
+def catalogo(request):
+    """Catálogo de libros con disponibilidad para hoy (RF-01)."""
+    if _es_bibliotecario(request.user):
+        return redirect("bibliotecario")
+    hoy = services.hoy()
+    texto = (request.GET.get("q") or "").strip()
+    genero = (request.GET.get("genero") or "").strip()
+    return render(
+        request,
+        "reservas/catalogo.html",
+        {
+            "hoy": hoy,
+            "tarjetas": services.catalogo_libros(hoy, texto, genero),
+            "generos": services.generos_libros(),
+            "q": texto,
+            "genero": genero,
+            "cupo": services.cupo_diario(request.user, hoy),
+            "sancion_hasta": (
+                request.user.sancionado_hasta
+                if request.user.esta_sancionado(services.ahora())
+                else None
+            ),
+        },
+    )
+
+
+@login_required
+def libro_detalle(request, libro_id):
+    """Ficha bibliográfica y disponibilidad de hoy (RF-01, RF-02)."""
+    libro = get_object_or_404(Libro, pk=libro_id)
+    hoy = services.hoy()
+    return render(
+        request,
+        "reservas/libro.html",
+        {
+            "libro": libro,
+            "hoy": hoy,
+            "bloques": services.disponibilidad_recurso(libro, hoy),
+            "cupo": services.cupo_diario(request.user, hoy),
+            "sancion_hasta": (
+                request.user.sancionado_hasta
+                if request.user.esta_sancionado(services.ahora())
+                else None
+            ),
+        },
     )
 
 

@@ -1,4 +1,5 @@
 {% extends "reservas/base.html" %}
+{% load static %}
 {% block title %}Confirmar reserva · BibliotecaViva{% endblock %}
 
 {% block content %}
@@ -54,6 +55,52 @@
         </div>
       </div>
     </dl>
+
+    {% if recurso.tipo == "LIBRO" %}
+      <div class="confirm-book">
+        <div class="confirm-book__cover">
+          {% if recurso.libro.portada %}
+            <img src="{% static recurso.libro.portada %}"
+                 alt="Portada de {{ recurso.nombre }}"
+                 width="300" height="420">
+          {% else %}
+            <span class="book__placeholder">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="#i-book"></use></svg>
+            </span>
+          {% endif %}
+        </div>
+        <dl class="data-list">
+          <div>
+            <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg></span>
+            <div>
+              <dt>Autor</dt>
+              <dd>{{ recurso.libro.autor }}</dd>
+            </div>
+          </div>
+          <div>
+            <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg></span>
+            <div>
+              <dt>Editorial</dt>
+              <dd>{{ recurso.libro.editorial|default:"—" }}</dd>
+            </div>
+          </div>
+          <div>
+            <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
+            <div>
+              <dt>Año</dt>
+              <dd>{% if recurso.libro.anio %}{{ recurso.libro.anio }}{% else %}—{% endif %}</dd>
+            </div>
+          </div>
+          <div>
+            <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-badge"></use></svg></span>
+            <div>
+              <dt>ISBN</dt>
+              <dd>{{ recurso.libro.isbn|default:"—" }}</dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    {% endif %}
   </section>
 
   <section class="card" aria-labelledby="confirmar-title">

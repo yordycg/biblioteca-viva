@@ -32,6 +32,8 @@
             {% else %}
               <a class="nav__link" href="{% url 'buscar' %}"
                  {% if request.resolver_match.url_name == "buscar" %}aria-current="page"{% endif %}>Buscar</a>
+              <a class="nav__link" href="{% url 'catalogo' %}"
+                 {% if request.resolver_match.url_name == "catalogo" or request.resolver_match.url_name == "libro" %}aria-current="page"{% endif %}>Catálogo</a>
               <a class="nav__link" href="{% url 'mis_reservas' %}"
                  {% if request.resolver_match.url_name == "mis_reservas" %}aria-current="page"{% endif %}>Mis reservas</a>
             {% endif %}

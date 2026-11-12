@@ -1,0 +1,135 @@
+{% extends "reservas/base.html" %}
+{% load static %}
+{% block title %}{{ libro.nombre }} · BibliotecaViva{% endblock %}
+
+{% block content %}
+<nav class="row" aria-label="Miga de pan">
+  <a class="btn btn--ghost btn--sm" href="{% url 'catalogo' %}">
+    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-back"></use></svg>
+    Volver al catálogo
+  </a>
+</nav>
+
+{% if sancion_hasta %}
+  <div class="notice notice--danger" role="alert">
+    <span class="notice__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </span>
+    <div>
+      <p class="notice__title">Sanción vigente <span class="req">RF-07</span></p>
+      <p class="notice__text">
+        Tienes una sanción por devolución tardía hasta el
+        <strong>{{ sancion_hasta|date:"d-m-Y H:i" }}</strong>. Mientras esté activa no
+        puedes crear reservas.
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+<div class="grid-2">
+  <section class="card book-detail" aria-labelledby="libro-title">
+    <div class="book-detail__cover">
+      {% if libro.portada %}
+        <img src="{% static libro.portada %}"
+             alt="Portada de {{ libro.nombre }}"
+             width="300" height="420">
+      {% else %}
+        <span class="book__placeholder">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-book"></use></svg>
+        </span>
+      {% endif %}
+    </div>
+    <div class="book-detail__meta">
+      <span class="book__genre">{{ libro.genero|default:"General" }}</span>
+      <h1 id="libro-title" style="font-size: 1.5rem;">{{ libro.nombre }}</h1>
+      <p class="book__author">{{ libro.autor }}{% if libro.anio %} · {{ libro.anio }}{% endif %}</p>
+
+      <dl class="data-list">
+        <div>
+          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-badge"></use></svg></span>
+          <div>
+            <dt>ISBN</dt>
+            <dd>{{ libro.isbn|default:"—" }}</dd>
+          </div>
+        </div>
+        <div>
+          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg></span>
+          <div>
+            <dt>Editorial</dt>
+            <dd>{{ libro.editorial|default:"—" }}</dd>
+          </div>
+        </div>
+        <div>
+          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg></span>
+          <div>
+            <dt>Páginas</dt>
+            <dd>{% if libro.paginas %}{{ libro.paginas }}{% else %}—{% endif %}</dd>
+          </div>
+        </div>
+        <div>
+          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"></use></svg></span>
+          <div>
+            <dt>Ubicación</dt>
+            <dd>{{ libro.ubicacion|default:"—" }}{% if libro.codigo %} · {{ libro.codigo }}{% endif %}</dd>
+          </div>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="stack" aria-labelledby="disponibilidad-title">
+    <div class="card">
+      <div class="card__head">
+        <div class="card__head-icon">
+          <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+          <h2 id="disponibilidad-title" style="font-size: 1.125rem;">Disponibilidad de hoy</h2>
+        </div>
+        <span class="req">RF-01 · RF-02</span>
+      </div>
+      <p class="hint-inline">
+        {{ hoy|date:"d-m-Y" }} · Cupo diario: {{ cupo.restantes }} de {{ cupo.max }}
+        reservas disponibles.
+      </p>
+
+      <div class="blocks">
+        {% for bloque in bloques %}
+          <div class="block-slot">
+            <span class="block-slot__time">{{ bloque.etiqueta }}</span>
+            {% if bloque.estado == "DISPONIBLE" %}
+              <span class="badge badge--libre">Disponible</span>
+              <a class="btn btn--sm"
+                 href="{% url 'confirmar' libro.id %}?fecha={{ hoy|date:'Y-m-d' }}&amp;bloque={{ bloque.clave }}">
+                <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+                Reservar
+              </a>
+            {% elif bloque.estado == "RESERVADO" %}
+              <span class="badge badge--reservada">Reservado</span>
+            {% elif bloque.estado == "EN_USO" %}
+              <span class="badge badge--uso">En uso</span>
+            {% else %}
+              <span class="badge badge--no-disponible">No disponible</span>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <p class="hint-inline">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"></use></svg>
+        La reserva se retira en biblioteca presentando el código QR. Para otra
+        fecha, usa
+        <a href="{% url 'buscar' %}?tipo=LIBRO&amp;fecha={{ hoy|date:'Y-m-d' }}&amp;bloque=10:00-11:00">la búsqueda por fecha y bloque</a>.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card__head">
+        <div class="card__head-icon">
+          <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg>
+          <h2 style="font-size: 1.125rem;">Sinopsis</h2>
+        </div>
+      </div>
+      <p>{{ libro.sinopsis|default:"Sin sinopsis registrada." }}</p>
+    </div>
+  </section>
+</div>
+{% endblock %}
