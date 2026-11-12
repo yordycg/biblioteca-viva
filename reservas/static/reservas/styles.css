@@ -637,8 +637,10 @@ select:focus {
   align-items: center;
 }
 
-.input-group .control {
+.input-group .control,
+.input-group input {
   padding-left: 2.2rem;
+  padding-right: 2.6rem;
 }
 
 .input-group__icon {
