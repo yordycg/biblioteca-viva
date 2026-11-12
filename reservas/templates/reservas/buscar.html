@@ -1,27 +1,40 @@
 {% extends "reservas/base.html" %}
-{% block title %}Buscar recursos · BibliotecaViva{% endblock %}
+{% load static form_tags %}
+{% block title %}Buscar en la biblioteca · BibliotecaViva{% endblock %}
 
 {% block content %}
 <section class="page-head">
   <div class="page-head__body">
-    <p class="eyebrow">Catálogo de préstamos</p>
-    <h1>Buscar salas y equipos disponibles</h1>
+    <p class="eyebrow">Catálogo y disponibilidad</p>
+    <h1>Buscar en la biblioteca</h1>
     <p class="page-head__sub">
-      Filtra por tipo de recurso, fecha y bloque horario. Solo se muestran los
-      recursos libres para el bloque consultado.
+      Reserva salas y equipos por bloque horario, o solicita un libro en
+      préstamo por 3, 7 o 14 días.
     </p>
   </div>
   <div class="page-head__aside">
-    <div class="quota">
-      <div class="quota__ring" style="--pct: {{ cupo.porcentaje }}%;">
-        <span>{{ cupo.usadas }}/{{ cupo.max }}</span>
+    {% if vista == "libros" %}
+      <div class="quota">
+        <div class="quota__ring" style="--pct: {% widthratio prestamos max_prestamos 100 %}%;">
+          <span>{{ prestamos }}/{{ max_prestamos }}</span>
+        </div>
+        <div>
+          <span class="quota__label">Préstamos activos</span>
+          <span class="quota__value">Máximo {{ max_prestamos }} préstamos</span>
+        </div>
       </div>
-      <div>
-        <span class="quota__label">Cupo diario</span>
-        <span class="quota__value">{{ cupo.restantes }} reserva{{ cupo.restantes|pluralize:"s" }} disponible{{ cupo.restantes|pluralize:"s" }}</span>
+    {% else %}
+      <div class="quota">
+        <div class="quota__ring" style="--pct: {{ cupo.porcentaje }}%;">
+          <span>{{ cupo.usadas }}/{{ cupo.max }}</span>
+        </div>
+        <div>
+          <span class="quota__label">Cupo diario</span>
+          <span class="quota__value">{{ cupo.restantes }} reserva{{ cupo.restantes|pluralize:"s" }} disponible{{ cupo.restantes|pluralize:"s" }}</span>
+        </div>
       </div>
-    </div>
-    <span class="req">RF-06</span>
+    {% endif %}
+    <span class="req">RF-01 · RF-02</span>
   </div>
 </section>
 
@@ -41,80 +54,232 @@
   </div>
 {% endif %}
 
-<section class="card" aria-labelledby="filtros-title">
-  <div class="card__head">
-    <div class="card__head-icon">
-      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
-      <h2 id="filtros-title" style="font-size: 1.125rem;">Filtros de búsqueda</h2>
-    </div>
-    <span class="req">RF-01</span>
-  </div>
+<nav class="tabs" aria-label="Tipo de búsqueda">
+  <a class="tabs__link" href="{% url 'buscar' %}?vista=recursos"
+     {% if vista != "libros" %}aria-current="page"{% endif %}>Salas y equipos</a>
+  <a class="tabs__link" href="{% url 'buscar' %}?vista=libros"
+     {% if vista == "libros" %}aria-current="page"{% endif %}>Libros</a>
+</nav>
 
-  <form method="get" action="{% url 'buscar' %}">
-    <div class="filters">
-      <div class="field">
-        <label class="field__label" for="{{ form.tipo.id_for_label }}">
-          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-layers"></use></svg>
-          Tipo de recurso
-        </label>
-        {{ form.tipo }}
+{% if vista == "libros" %}
+  <section class="card" aria-labelledby="filtros-libros">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+        <h2 id="filtros-libros" style="font-size: 1.125rem;">Buscar un libro</h2>
       </div>
-      <div class="field">
-        <label class="field__label" for="{{ form.fecha.id_for_label }}">
-          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
-          Fecha
-        </label>
-        {{ form.fecha }}
-      </div>
-      <div class="field">
-        <label class="field__label" for="{{ form.bloque.id_for_label }}">
-          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
-          Bloque horario
-        </label>
-        {{ form.bloque }}
-      </div>
-      <div class="field">
-        <div class="row">
-          <button class="btn" type="submit">
-            <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
-            Filtrar
-          </button>
-          <a class="btn btn--ghost" href="{% url 'buscar' %}" aria-label="Limpiar filtros" title="Limpiar filtros">
-            <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
-          </a>
+      <span class="req">RF-01</span>
+    </div>
+
+    <form method="get" action="{% url 'buscar' %}">
+      <input type="hidden" name="vista" value="libros">
+      <input type="hidden" name="filtrar" value="1">
+      <div class="filters filters--libros">
+        <div class="field{% if form_libros.fecha.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form_libros.fecha.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
+            Fecha de retiro
+          </label>
+          {{ form_libros.fecha|widget_con_error:"error-fecha" }}
+          {% for error in form_libros.fecha.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-fecha"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field{% if form_libros.dias.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form_libros.dias.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
+            Duración
+          </label>
+          {{ form_libros.dias|widget_con_error:"error-dias" }}
+          {% for error in form_libros.dias.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-dias"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field{% if form_libros.q.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form_libros.q.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"></use></svg>
+            Título o autor
+          </label>
+          {{ form_libros.q|widget_con_error:"error-q" }}
+          {% for error in form_libros.q.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-q"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field{% if form_libros.genero.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form_libros.genero.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-layers"></use></svg>
+            Género
+          </label>
+          {{ form_libros.genero|widget_con_error:"error-genero" }}
+          {% for error in form_libros.genero.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-genero"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field field--check">
+          {{ form_libros.solo_disponibles }}
+          <label class="field__label" for="{{ form_libros.solo_disponibles.id_for_label }}">
+            Solo disponibles
+          </label>
+        </div>
+        <div class="field field--actions">
+          <div class="row">
+            <button class="btn" type="submit">
+              <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+              Filtrar
+            </button>
+            <a class="btn btn--ghost" href="{% url 'buscar' %}?vista=libros"
+               aria-label="Limpiar filtros" title="Limpiar filtros">
+              <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+            </a>
+          </div>
         </div>
       </div>
+      {% if form_libros.non_field_errors %}
+        <p class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+          <span>{{ form_libros.non_field_errors.0 }}</span>
+        </p>
+      {% endif %}
+    </form>
+  </section>
+
+  <section class="stack" aria-labelledby="libros-title">
+      <div class="section-title">
+        <h2 id="libros-title">
+          {% if tarjetas %}{{ tarjetas|length }} libro{{ tarjetas|length|pluralize:"s" }}
+          {% else %}Sin resultados{% endif %}
+        </h2>
+        <p class="section-title__meta">
+          {{ fecha|date:"d-m-Y" }} · préstamo de {{ dias }} días
+        </p>
+      </div>
+
+      {% if tarjetas %}
+        <div class="book-grid">
+          {% for tarjeta in tarjetas %}
+            <article class="book-card">
+              <a class="book-card__cover" href="{% url 'libro' tarjeta.libro.id %}"
+                 aria-label="Ver ficha de {{ tarjeta.libro.nombre }}">
+                {% if tarjeta.libro.portada %}
+                  <img src="{% static tarjeta.libro.portada %}"
+                       alt="Portada de {{ tarjeta.libro.nombre }}"
+                       width="300" height="420" loading="lazy">
+                {% else %}
+                  <span class="book-card__placeholder">
+                    <svg class="icon icon--lg" aria-hidden="true"><use href="#i-book"></use></svg>
+                  </span>
+                {% endif %}
+                <span class="book-card__genre">{{ tarjeta.libro.genero|default:"General" }}</span>
+                {% if tarjeta.disponible %}
+                  <span class="book-card__status">Disponible</span>
+                {% else %}
+                  <span class="book-card__status book-card__status--out">En préstamo</span>
+                {% endif %}
+              </a>
+              <div class="book-card__body">
+                <h3 class="book-card__title">
+                  <a href="{% url 'libro' tarjeta.libro.id %}">{{ tarjeta.libro.nombre }}</a>
+                </h3>
+                <p class="book-card__author">{{ tarjeta.libro.autor }}{% if tarjeta.libro.anio %} · {{ tarjeta.libro.anio }}{% endif %}</p>
+                <p class="book-card__meta">
+                  {{ tarjeta.libro.editorial|default:"—" }}
+                  {% if tarjeta.libro.paginas %} · {{ tarjeta.libro.paginas }} págs.{% endif %}
+                </p>
+                {% if not tarjeta.disponible and tarjeta.desde %}
+                  <p class="book-card__avail">Disponible desde {{ tarjeta.desde|date:"d-m-Y" }}</p>
+                {% endif %}
+                <div class="book-card__cta">
+                  <a href="{% url 'libro' tarjeta.libro.id %}">Ver ficha →</a>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          <span class="empty__icon" aria-hidden="true">
+            <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+          </span>
+          <p><strong>No encontramos libros con ese filtro.</strong></p>
+          <p class="hint-inline">Prueba con otro título, autor o género.</p>
+          <a class="btn btn--secondary" href="{% url 'buscar' %}?vista=libros">Ver todo el catálogo</a>
+        </div>
+      {% endif %}
+    </section>
+{% else %}
+  <section class="card" aria-labelledby="filtros-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        <h2 id="filtros-title" style="font-size: 1.125rem;">Filtros de búsqueda</h2>
+      </div>
+      <span class="req">RF-01</span>
     </div>
-    {% if form.errors %}
-      <p class="alert alert--error" role="alert">
-        <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
-        <span>
-          {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
-          {% elif form.tipo.errors %}{{ form.tipo.errors.0 }}
-          {% elif form.bloque.errors %}{{ form.bloque.errors.0 }}
-          {% elif form.non_field_errors %}{{ form.non_field_errors.0 }}
-          {% else %}Revisa los filtros: la fecha y el bloque son obligatorios.{% endif %}
-        </span>
-      </p>
-    {% endif %}
-  </form>
-</section>
 
-<div class="notice">
-  <span class="notice__icon" aria-hidden="true">
-    <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
-  </span>
-  <div>
-    <p class="notice__title">Regla de préstamos <span class="req">RF-06</span></p>
-    <p class="notice__text">
-      Máximo 2 reservas activas por usuario y por día. Hoy tienes
-      <strong>{{ cupo.usadas }} de {{ cupo.max }}</strong>.
-    </p>
-  </div>
-</div>
+    <form method="get" action="{% url 'buscar' %}">
+      <input type="hidden" name="vista" value="recursos">
+      <input type="hidden" name="filtrar" value="1">
+      <div class="filters">
+        <div class="field{% if form.tipo.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form.tipo.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-layers"></use></svg>
+            Tipo de recurso
+          </label>
+          {{ form.tipo|widget_con_error:"error-tipo" }}
+          {% for error in form.tipo.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-tipo"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field{% if form.fecha.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form.fecha.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
+            Fecha
+          </label>
+          {{ form.fecha|widget_con_error:"error-fecha-recursos" }}
+          {% for error in form.fecha.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-fecha-recursos"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field{% if form.bloque.errors %} field--error{% endif %}">
+          <label class="field__label" for="{{ form.bloque.id_for_label }}">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
+            Bloque horario
+          </label>
+          {{ form.bloque|widget_con_error:"error-bloque" }}
+          {% for error in form.bloque.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-bloque"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field field--check">
+          {{ form.solo_disponibles }}
+          <label class="field__label" for="{{ form.solo_disponibles.id_for_label }}">
+            Solo disponibles
+          </label>
+        </div>
+        <div class="field field--actions">
+          <div class="row">
+            <button class="btn" type="submit">
+              <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+              Filtrar
+            </button>
+            <a class="btn btn--ghost" href="{% url 'buscar' %}?vista=recursos"
+               aria-label="Limpiar filtros" title="Limpiar filtros">
+              <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% if form.non_field_errors %}
+        <p class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+          <span>{{ form.non_field_errors.0 }}</span>
+        </p>
+      {% endif %}
+    </form>
+  </section>
 
-<div class="notice notice--warning" id="aviso-sin-bloques"
-     role="alert"{% if not sin_bloques %} style="display: none;"{% endif %}>
+  <div class="notice notice--warning" id="aviso-sin-bloques"
+       role="alert"{% if not sin_bloques %} style="display: none;"{% endif %}>
     <span class="notice__icon" aria-hidden="true">
       <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
     </span>
@@ -127,30 +292,65 @@
     </div>
   </div>
 
-{% if resultados is not None %}
+  <div class="notice">
+    <span class="notice__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+    </span>
+    <div>
+      <p class="notice__title">Regla de préstamos <span class="req">RF-06</span></p>
+      <p class="notice__text">
+        Máximo 2 reservas activas por usuario y por día. Hoy tienes
+        <strong>{{ cupo.usadas }} de {{ cupo.max }}</strong>.
+      </p>
+    </div>
+  </div>
+
   <section aria-labelledby="resultados-title" class="stack">
     <div class="section-title">
       <h2 id="resultados-title">
-        {% if resultados %}
-          {{ resultados|length }} recurso{{ resultados|length|pluralize:"s" }} disponible{{ resultados|length|pluralize:"s" }}
-        {% else %}
-          Sin resultados
-        {% endif %}
+        {% if recursos %}{{ recursos|length }} recurso{{ recursos|length|pluralize:"s" }}
+        {% else %}Sin resultados{% endif %}
       </h2>
       <p class="section-title__meta">
-        {{ fecha|date:"d-m-Y" }} · bloque {{ bloque }} · solo recursos libres
+        {{ fecha|date:"d-m-Y" }} · bloque {{ bloque }}
+        {% if form.solo_disponibles.value %} · solo disponibles{% endif %}
       </p>
     </div>
 
-    {% if resultados %}
+    {% if cambio_dia %}
+      <div class="notice notice--warning" role="status">
+        <span class="notice__icon" aria-hidden="true">
+          <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+        </span>
+        <div>
+          <p class="notice__title">Mostrando mañana</p>
+          <p class="notice__text">
+            Hoy ya no quedan bloques con la antelación mínima. Te mostramos el
+            primer bloque disponible de mañana.
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if recursos %}
       <div class="results">
-        {% for recurso in resultados %}
+        {% for item in recursos %}
           <article class="resource">
-            <div class="resource__media {% if recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
-              <span class="resource__type">{{ recurso.get_tipo_display }}</span>
-              <span class="resource__status"><span class="badge badge--en-uso">Disponible</span></span>
+            <div class="resource__media {% if item.recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
+              <span class="resource__type">{{ item.recurso.get_tipo_display }}</span>
+              <span class="resource__status">
+                {% if item.estado == "DISPONIBLE" %}
+                  <span class="badge badge--libre">Disponible</span>
+                {% elif item.estado == "RESERVADO" %}
+                  <span class="badge badge--reservada">Reservado</span>
+                {% elif item.estado == "EN_USO" %}
+                  <span class="badge badge--uso">En uso</span>
+                {% else %}
+                  <span class="badge badge--no-disponible">No disponible</span>
+                {% endif %}
+              </span>
               <span class="resource__icon">
-                {% if recurso.tipo == "EQUIPO" %}
+                {% if item.recurso.tipo == "EQUIPO" %}
                   <svg class="icon icon--lg" aria-hidden="true"><use href="#i-panel"></use></svg>
                 {% else %}
                   <svg class="icon icon--lg" aria-hidden="true"><use href="#i-building"></use></svg>
@@ -159,17 +359,17 @@
             </div>
             <div class="resource__body">
               <div class="resource__title">
-                <h3>{{ recurso.nombre }}</h3>
-                {% if recurso.codigo %}<span class="resource__code">{{ recurso.codigo }}</span>{% endif %}
+                <h3>{{ item.recurso.nombre }}</h3>
+                {% if item.recurso.codigo %}<span class="resource__code">{{ item.recurso.codigo }}</span>{% endif %}
               </div>
               <dl class="resource__meta">
                 <div>
-                  <dt>{% if recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
-                  <dd>{% if recurso.capacidad %}{{ recurso.capacidad }} personas{% else %}{{ recurso.get_tipo_display }}{% endif %}</dd>
+                  <dt>{% if item.recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
+                  <dd>{% if item.recurso.capacidad %}{{ item.recurso.capacidad }} personas{% else %}{{ item.recurso.get_tipo_display }}{% endif %}</dd>
                 </div>
                 <div>
                   <dt>Ubicación</dt>
-                  <dd>{{ recurso.ubicacion|default:"—" }}</dd>
+                  <dd>{{ item.recurso.ubicacion|default:"—" }}</dd>
                 </div>
               </dl>
               <p class="hint-inline row">
@@ -179,11 +379,17 @@
                 {{ bloque }}
               </p>
               <div class="resource__foot">
-                <a class="btn btn--block"
-                   href="{% url 'confirmar' recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">
-                  <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
-                  Reservar bloque {{ bloque }}
-                </a>
+                {% if item.disponible %}
+                  <a class="btn btn--block"
+                     href="{% url 'confirmar' item.recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">
+                    <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+                    Reservar bloque {{ bloque }}
+                  </a>
+                {% else %}
+                  <p class="hint-inline">
+                    No disponible en este bloque. Prueba con otro horario.
+                  </p>
+                {% endif %}
               </div>
             </div>
           </article>
@@ -194,22 +400,13 @@
         <span class="empty__icon" aria-hidden="true">
           <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
         </span>
-        <p><strong>No hay recursos libres para esa combinación.</strong></p>
+        <p><strong>No hay recursos con ese filtro.</strong></p>
         <p class="hint-inline">
-          Todos los recursos del tipo elegido están reservados o en uso para el
-          {{ fecha|date:"d-m-Y" }} en el bloque {{ bloque }}. Prueba con otro bloque
-          u otra fecha.
+          Prueba con otro tipo, fecha, bloque o desmarca “Solo disponibles”.
         </p>
-        <a class="btn btn--secondary" href="{% url 'buscar' %}">Volver a los filtros</a>
+        <a class="btn btn--secondary" href="{% url 'buscar' %}?vista=recursos">Ver todos los recursos</a>
       </div>
     {% endif %}
   </section>
-{% else %}
-  <div class="empty">
-    <span class="empty__icon" aria-hidden="true">
-      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
-    </span>
-    <p>Selecciona tipo de recurso, fecha y bloque para ver la disponibilidad.</p>
-  </div>
 {% endif %}
 {% endblock %}

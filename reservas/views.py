@@ -3,19 +3,26 @@ Vistas de BibliotecaViva.
 
 Cubre: RF-01, RF-02, RF-03, RF-04, RF-05, RF-07, RF-08.
 """
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from . import services
-from .forms import BusquedaForm, CodigoQRForm, ReservaForm
-from .models import Reserva, Recurso, Sancion, Usuario
+from .forms import (
+    BusquedaForm,
+    BusquedaLibrosForm,
+    CodigoQRForm,
+    PrestamoForm,
+    ReservaForm,
+)
+from .models import Libro, Reserva, Recurso, Sancion, Usuario
 
 
 def _es_bibliotecario(usuario):
@@ -44,44 +51,102 @@ def home(request):
 
 @login_required
 def buscar(request):
-    """Búsqueda de recursos libres por tipo, fecha y bloque (RF-01)."""
+    """Catálogo con filtros; valida solo cuando se envía el formulario (RF-01)."""
     if _es_bibliotecario(request.user):
         return redirect("bibliotecario")
 
-    bloques_hoy = services.bloques_disponibles(services.hoy())
+    vista = request.GET.get("vista", "recursos")
+    enviado = request.GET.get("filtrar") == "1"
+    hoy = services.hoy()
+    sancion_hasta = (
+        request.user.sancionado_hasta
+        if request.user.esta_sancionado(services.ahora())
+        else None
+    )
+    cupo = services.cupo_diario(request.user, hoy)
+
+    if vista == "libros":
+        form_libros = BusquedaLibrosForm(
+            request.GET if enviado else None,
+            initial={"fecha": hoy, "dias": 7},
+        )
+        fecha_libros = hoy
+        dias = 7
+        if enviado and form_libros.is_valid():
+            fecha_libros = form_libros.cleaned_data["fecha"]
+            dias = form_libros.cleaned_data["dias"]
+            tarjetas = services.catalogo_libros(
+                fecha_libros,
+                form_libros.cleaned_data["q"],
+                form_libros.cleaned_data["genero"],
+                dias,
+            )
+            if form_libros.cleaned_data["solo_disponibles"]:
+                tarjetas = [t for t in tarjetas if t["disponible"]]
+        elif enviado:
+            tarjetas = []
+        else:
+            tarjetas = services.catalogo_libros(hoy, "", "", 7)
+        return render(
+            request,
+            "reservas/buscar.html",
+            {
+                "vista": "libros",
+                "form_libros": form_libros,
+                "tarjetas": tarjetas,
+                "fecha": fecha_libros,
+                "dias": dias,
+                "enviado": enviado,
+                "cupo": cupo,
+                "sancion_hasta": sancion_hasta,
+                "prestamos": services.prestamos_activos(request.user),
+                "max_prestamos": services.MAX_PRESTAMOS_ACTIVOS,
+            },
+        )
+
+    fecha_default, bloque_default, cambio_dia = services.fecha_y_bloque_por_defecto()
     inicial = {
-        "tipo": Recurso.Tipo.SALA,
-        "fecha": services.hoy(),
-        "bloque": bloques_hoy[0][0] if bloques_hoy else "",
+        "tipo": "",
+        "fecha": fecha_default,
+        "bloque": bloque_default,
+        "solo_disponibles": False,
     }
-    form = BusquedaForm(request.GET or None, initial=inicial)
-    resultados = None
-    fecha = None
-    bloque = None
-    fecha_consulta = services.hoy()
-    if request.GET and form.is_valid():
-        fecha_consulta = form.cleaned_data["fecha"]
-    sin_bloques = not services.bloques_disponibles(fecha_consulta)
-    if request.GET and form.is_valid():
+    form = BusquedaForm(request.GET if enviado else None, initial=inicial)
+    fecha = fecha_default
+    bloque = bloque_default
+    if enviado and form.is_valid():
         fecha = form.cleaned_data["fecha"]
         bloque = form.cleaned_data["bloque"]
-        resultados = services.recursos_disponibles(
-            form.cleaned_data["tipo"], fecha, bloque
+        recursos = services.estado_recursos(
+            fecha,
+            bloque,
+            form.cleaned_data["tipo"],
+            form.cleaned_data["solo_disponibles"],
         )
+    elif enviado:
+        recursos = []
+    else:
+        recursos = services.estado_recursos(fecha_default, bloque_default)
+    sin_bloques = (
+        enviado
+        and not form["fecha"].errors
+        and not services.bloques_disponibles(fecha)
+    )
+    if enviado:
+        cambio_dia = False
     return render(
         request,
         "reservas/buscar.html",
         {
+            "vista": "recursos",
             "form": form,
-            "resultados": resultados,
+            "recursos": recursos,
             "fecha": fecha,
             "bloque": bloque,
-            "cupo": services.cupo_diario(request.user, services.hoy()),
-            "sancion_hasta": (
-                request.user.sancionado_hasta
-                if request.user.esta_sancionado(services.ahora())
-                else None
-            ),
+            "enviado": enviado,
+            "cambio_dia": cambio_dia,
+            "cupo": cupo,
+            "sancion_hasta": sancion_hasta,
             "sin_bloques": sin_bloques,
             "min_antelacion": services.MIN_ANTELACION_MIN,
             "max_dias": services.MAX_DIAS_RESERVA,
@@ -112,6 +177,58 @@ def bloques(request):
 
 
 @login_required
+def catalogo(request):
+    """Compatibilidad: el catálogo vive ahora en la pestaña de libros."""
+    return redirect(f"{reverse('buscar')}?vista=libros")
+
+
+@login_required
+def libro_detalle(request, libro_id):
+    """Ficha bibliográfica y disponibilidad del préstamo (RF-01, RF-02)."""
+    libro = get_object_or_404(Libro, pk=libro_id)
+    hoy = services.hoy()
+    form = PrestamoForm(
+        request.GET or None, initial={"fecha": hoy, "dias": 7}
+    )
+    fecha = hoy
+    dias = 7
+    vencimiento = fecha + timedelta(days=dias)
+    disponible = None
+    if request.GET and form.is_valid():
+        fecha = form.cleaned_data["fecha"]
+        dias = form.cleaned_data["dias"]
+        vencimiento = fecha + timedelta(days=dias)
+        disponible = services.libro_disponible(libro, fecha, dias)
+        if "continuar" in request.GET and disponible:
+            return redirect(
+                f"{reverse('confirmar', args=[libro.id])}"
+                f"?fecha={fecha.isoformat()}&dias={dias}"
+            )
+    return render(
+        request,
+        "reservas/libro.html",
+        {
+            "libro": libro,
+            "hoy": hoy,
+            "form": form,
+            "fecha": fecha,
+            "dias": dias,
+            "vencimiento": vencimiento,
+            "disponible": disponible,
+            "desde": services.proxima_disponibilidad(libro),
+            "cupo": services.cupo_diario(request.user, hoy),
+            "prestamos": services.prestamos_activos(request.user),
+            "max_prestamos": services.MAX_PRESTAMOS_ACTIVOS,
+            "sancion_hasta": (
+                request.user.sancionado_hasta
+                if request.user.esta_sancionado(services.ahora())
+                else None
+            ),
+        },
+    )
+
+
+@login_required
 def mis_reservas(request):
     """Lista las reservas del solicitante y permite reabrir su QR (RF-02, RF-03)."""
     if _es_bibliotecario(request.user):
@@ -133,10 +250,60 @@ def mis_reservas(request):
 
 @login_required
 def confirmar(request, recurso_id):
-    """Muestra el detalle y crea la reserva con su QR (RF-02, RF-03, RF-06)."""
+    """Confirma una reserva por bloque o un préstamo de libro (RF-02, RF-03)."""
     if _es_bibliotecario(request.user):
         return redirect("bibliotecario")
     recurso = get_object_or_404(Recurso, pk=recurso_id)
+
+    if recurso.tipo == Recurso.Tipo.LIBRO:
+        if request.method == "POST":
+            form = PrestamoForm(request.POST)
+            if form.is_valid():
+                try:
+                    reserva = services.crear_reserva(
+                        request.user,
+                        recurso,
+                        form.cleaned_data["fecha"],
+                        dias=form.cleaned_data["dias"],
+                    )
+                except ValidationError as error:
+                    messages.error(request, error.messages[0])
+                    return redirect("libro", libro_id=recurso.id)
+                return redirect("qr", reserva_id=reserva.pk)
+            fecha = _fecha_legible(request.POST.get("fecha")) or services.hoy()
+            try:
+                dias = int(request.POST.get("dias") or 7)
+            except (TypeError, ValueError):
+                dias = 7
+        else:
+            fecha = _fecha_legible(request.GET.get("fecha")) or services.hoy()
+            try:
+                dias = int(request.GET.get("dias") or 7)
+            except (TypeError, ValueError):
+                dias = 7
+            if not services.fecha_reservable(fecha) or not services.libro_disponible(
+                recurso, fecha, dias
+            ):
+                messages.warning(
+                    request,
+                    "El libro no está disponible para ese rango de fechas. "
+                    "Prueba con otra fecha o duración.",
+                )
+                return redirect("libro", libro_id=recurso.id)
+            form = PrestamoForm(initial={"fecha": fecha, "dias": dias})
+        return render(
+            request,
+            "reservas/confirmar.html",
+            {
+                "recurso": recurso,
+                "form": form,
+                "es_prestamo": True,
+                "fecha": fecha,
+                "dias": dias,
+                "vencimiento": fecha + timedelta(days=dias),
+            },
+        )
+
     if request.method == "POST":
         form = ReservaForm(request.POST)
         if form.is_valid():
@@ -159,7 +326,11 @@ def confirmar(request, recurso_id):
         bloque = request.GET.get("bloque", "") or (
             bloques_dia[0][0] if bloques_dia else ""
         )
-        if bloque not in dict(Reserva.BLOQUES) or not services.fecha_reservable(fecha) or not services.bloque_vigente(bloque, fecha):
+        if (
+            bloque not in dict(Reserva.BLOQUES)
+            or not services.fecha_reservable(fecha)
+            or not services.bloque_vigente(bloque, fecha)
+        ):
             messages.error(
                 request,
                 "El bloque seleccionado ya no está disponible. Elige otro horario.",
@@ -169,7 +340,13 @@ def confirmar(request, recurso_id):
     return render(
         request,
         "reservas/confirmar.html",
-        {"recurso": recurso, "form": form, "fecha": fecha, "bloque": bloque},
+        {
+            "recurso": recurso,
+            "form": form,
+            "es_prestamo": False,
+            "fecha": fecha,
+            "bloque": bloque,
+        },
     )
 
 
@@ -212,9 +389,16 @@ def bibliotecario(request):
 
     hoy = services.hoy()
     reservas_dia = list(
-        Reserva.objects.filter(fecha=hoy)
+        Reserva.objects.filter(
+            Q(modalidad=Reserva.Modalidad.BLOQUE, fecha=hoy)
+            | Q(
+                modalidad=Reserva.Modalidad.PRESTAMO,
+                fecha__lte=hoy,
+                fecha_vencimiento__gte=hoy,
+            )
+        )
         .select_related("recurso", "usuario", "qr")
-        .order_by("bloque", "recurso__nombre")
+        .order_by("modalidad", "bloque", "recurso__nombre")
     )
     resumen = {
         "total": len(reservas_dia),

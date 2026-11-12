@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" width="300" height="420" role="img" aria-label="La metamorfosis — Franz Kafka">
+  <title>La metamorfosis — Franz Kafka</title>
+  <rect width="300" height="420" fill="#3c3a4d"/>
+  <rect x="0" y="0" width="14" height="420" fill="#c9c3e6" opacity="0.5"/>
+  <rect x="34" y="28" width="232" height="364" fill="none" stroke="#c9c3e6" stroke-width="1.5" opacity="0.7"/>
+  <text x="150" y="66" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" letter-spacing="3" fill="#c9c3e6">BIBLIOTECA VIVA</text>
+  <line x1="80" y1="84" x2="220" y2="84" stroke="#c9c3e6" stroke-width="1" opacity="0.7"/>
+    <text x="150" y="210" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700" fill="#ffffff">La metamorfosis</text>
+  <line x1="80" y1="330" x2="220" y2="330" stroke="#c9c3e6" stroke-width="1" opacity="0.7"/>
+  <text x="150" y="360" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#ffffff" opacity="0.92">Franz Kafka</text>
+</svg>

@@ -9,7 +9,7 @@ from datetime import date
 
 from django.core.management.base import BaseCommand
 
-from reservas.models import QR, Recurso, Reserva, Sancion, Usuario
+from reservas.models import Libro, QR, Recurso, Reserva, Sancion, Usuario
 
 PASSWORD = "demo1234"
 FECHA_DEMO = date(2026, 11, 10)
@@ -83,6 +83,97 @@ class Command(BaseCommand):
                 recurso.codigo = codigo
                 recurso.save(update_fields=["tipo", "ubicacion", "capacidad", "codigo"])
             self.stdout.write(f"Recurso: {nombre}")
+
+        libros = [
+            {
+                "nombre": "Don Quijote de la Mancha",
+                "autor": "Miguel de Cervantes",
+                "editorial": "Ediciones BibliotecaViva",
+                "anio": 1605,
+                "isbn": "978-956-00-0001-1",
+                "genero": "Novela",
+                "paginas": 863,
+                "ubicacion": "Estante A-1",
+                "codigo": "lib-001",
+                "portada": "reservas/covers/quijote.svg",
+                "sinopsis": "Las aventuras de Alonso Quijano y su escudero Sancho Panza en su viaje por La Mancha.",
+            },
+            {
+                "nombre": "Martín Fierro",
+                "autor": "José Hernández",
+                "editorial": "Ediciones BibliotecaViva",
+                "anio": 1872,
+                "isbn": "978-956-00-0002-8",
+                "genero": "Poesía",
+                "paginas": 240,
+                "ubicacion": "Estante A-2",
+                "codigo": "lib-002",
+                "portada": "reservas/covers/martin-fierro.svg",
+                "sinopsis": "Poema gauchesco sobre la vida del gaucho Martín Fierro en la pampa argentina.",
+            },
+            {
+                "nombre": "La Araucana",
+                "autor": "Alonso de Ercilla",
+                "editorial": "Ediciones BibliotecaViva",
+                "anio": 1569,
+                "isbn": "978-956-00-0003-5",
+                "genero": "Poesía épica",
+                "paginas": 320,
+                "ubicacion": "Estante A-3",
+                "codigo": "lib-003",
+                "portada": "reservas/covers/araucana.svg",
+                "sinopsis": "Epopeya en verso sobre la conquista de Chile y la resistencia del pueblo mapuche.",
+            },
+            {
+                "nombre": "Veinte mil leguas de viaje submarino",
+                "autor": "Julio Verne",
+                "editorial": "Ediciones BibliotecaViva",
+                "anio": 1870,
+                "isbn": "978-956-00-0004-2",
+                "genero": "Aventura",
+                "paginas": 384,
+                "ubicacion": "Estante B-1",
+                "codigo": "lib-004",
+                "portada": "reservas/covers/veinte-mil-leguas.svg",
+                "sinopsis": "El capitán Nemo y el Nautilus recorren los océanos en una expedición científica y fantástica.",
+            },
+            {
+                "nombre": "La metamorfosis",
+                "autor": "Franz Kafka",
+                "editorial": "Ediciones BibliotecaViva",
+                "anio": 1915,
+                "isbn": "978-956-00-0005-9",
+                "genero": "Novela",
+                "paginas": 120,
+                "ubicacion": "Estante B-2",
+                "codigo": "lib-005",
+                "portada": "reservas/covers/metamorfosis.svg",
+                "sinopsis": "Gregor Samsa despierta transformado en un insecto y su familia enfrenta la extrañeza.",
+            },
+            {
+                "nombre": "Frankenstein",
+                "autor": "Mary Shelley",
+                "editorial": "Ediciones BibliotecaViva",
+                "anio": 1818,
+                "isbn": "978-956-00-0006-6",
+                "genero": "Terror",
+                "paginas": 280,
+                "ubicacion": "Estante B-3",
+                "codigo": "lib-006",
+                "portada": "reservas/covers/frankenstein.svg",
+                "sinopsis": "El doctor Victor Frankenstein da vida a una criatura y desata consecuencias que no puede controlar.",
+            },
+        ]
+        for datos in libros:
+            nombre = datos["nombre"]
+            libro, created = Libro.objects.get_or_create(
+                nombre=nombre, defaults=datos
+            )
+            if not created:
+                for campo, valor in datos.items():
+                    setattr(libro, campo, valor)
+                libro.save()
+            self.stdout.write(f"Libro: {nombre}")
 
         estudiante2 = Usuario.objects.get(username="estudiante2@example.com")
         sala1 = Recurso.objects.get(nombre="Sala 1")

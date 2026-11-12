@@ -31,7 +31,7 @@
                  {% if request.resolver_match.url_name == "bibliotecario" %}aria-current="page"{% endif %}>Panel</a>
             {% else %}
               <a class="nav__link" href="{% url 'buscar' %}"
-                 {% if request.resolver_match.url_name == "buscar" %}aria-current="page"{% endif %}>Buscar</a>
+                 {% if request.resolver_match.url_name == "buscar" or request.resolver_match.url_name == "libro" %}aria-current="page"{% endif %}>Buscar</a>
               <a class="nav__link" href="{% url 'mis_reservas' %}"
                  {% if request.resolver_match.url_name == "mis_reservas" %}aria-current="page"{% endif %}>Mis reservas</a>
             {% endif %}

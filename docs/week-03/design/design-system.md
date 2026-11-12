@@ -111,11 +111,17 @@ del login usan `--color-primary` como fondo.
 | Panel QR | `.qr-panel` | QR real generado por Django |
 | Tabla del día | `.table-wrap`, `.data` | Tabla en desktop, tarjetas en móvil vía `data-label` |
 | Indicadores de inventario | `.stats`, `.stat`, `.stat__value`, `.stat__label` | Contadores del panel bibliotecario; borde izquierdo según estado |
+| Pestañas de búsqueda | `.tabs`, `.tabs__link[aria-current]` | Salas/equipos y libros en una sola página |
+| Tarjeta de libro | `.book-grid`, `.book-card`, `.book-card__cover`, `.book-card__title` | Grilla vertical con carátula 3:4 y CTA al pie |
+| Ficha de libro | `.detail-card`, `.detail-card__top`, `.chips`, `.chip` | Una sola tarjeta: carátula, datos, sinopsis y condiciones |
+| Panel de préstamo | `.loan-band`, `.loan-band__grid`, `.loan-band__meta` | Fecha, duración y cupo en una fila; se apila en móvil |
+| Línea de tiempo de bloques | `.timeline`, `.timeline__track`, `.timeline__slot` | 13 bloques de color por recurso; scroll horizontal en móvil |
+| Checkbox de filtro | `.field--check`, `.check` | “Solo disponibles” alineado con los controles |
 | Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |
 
 Iconografía: sprite SVG inline en `reservas/templates/reservas/_icons.html`
-(16 símbolos). No se usa Material Symbols ni ninguna icon font.
+(17 símbolos, incluido `i-book`). No se usa Material Symbols ni ninguna icon font.
 
 ### Logo institucional
 
@@ -144,6 +150,7 @@ prohibidos en plantillas, mockups e informe:
 | «Rutificación verificada» | Implicaría datos personales reales | Se omite |
 | «4 casos verificados», «14 de 28», «RF-01 a RF-08 verificados» | No hay ejecuciones registradas | Sin cifras inventadas |
 | Fotos de salas y equipos | No hay assets propios ni licencia | Bloque de color con icono y nombre |
+| Carátulas de libros | No hay assets propios ni licencia | SVG generados localmente en `static/reservas/covers/` con título y autor |
 
 Datos de recursos: deben coincidir con el seed (`Sala 3`: 8 personas, Piso 1;
 `Sala 1`: 4 personas, Piso 1; `Proyector Epson` `eq-014`; `Notebook Dell`

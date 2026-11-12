@@ -78,8 +78,8 @@
       <div>
         <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
         <div>
-          <dt>Bloque horario</dt>
-          <dd>{{ reserva.get_bloque_display }}</dd>
+          <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque horario{% endif %}</dt>
+          <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
         </div>
       </div>
       <div>
@@ -137,8 +137,7 @@
       <div>
         <p class="notice__title">Devolución <span class="req">RF-05</span></p>
         <p class="notice__text">
-          Devuelve el recurso dentro del bloque. Una devolución posterior al
-          término del bloque genera una sanción de 7 días.
+          {% if reserva.modalidad == "PRESTAMO" %}Devuelve el libro hasta la fecha indicada. Una devolución posterior genera una sanción de 7 días.{% else %}Devuelve el recurso dentro del bloque. Una devolución posterior al término del bloque genera una sanción de 7 días.{% endif %}
         </p>
       </div>
     </div>

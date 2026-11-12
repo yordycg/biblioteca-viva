@@ -49,7 +49,9 @@
             <div class="card__head">
               <div>
                 <h3>{{ reserva.recurso.nombre }}</h3>
-                <p class="hint-inline">{{ reserva.codigo }} · {{ reserva.recurso.get_tipo_display }}</p>
+                <p class="hint-inline">
+                  {{ reserva.codigo }} · {{ reserva.recurso.get_tipo_display }}{% if reserva.recurso.tipo == "LIBRO" %} · {{ reserva.recurso.libro.autor }}{% endif %}
+                </p>
               </div>
               {% if reserva.estado == "RESERVADA" %}
                 <span class="badge badge--reservada">{{ reserva.get_estado_display }}</span>
@@ -69,8 +71,8 @@
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
-                  <dt>Bloque</dt>
-                  <dd>{{ reserva.get_bloque_display }}</dd>
+                  <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
+                  <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
                 </div>
               </div>
             </dl>
@@ -103,7 +105,9 @@
             <div class="card__head">
               <div>
                 <h3>{{ reserva.recurso.nombre }}</h3>
-                <p class="hint-inline">{{ reserva.codigo }} · {{ reserva.recurso.get_tipo_display }}</p>
+                <p class="hint-inline">
+                  {{ reserva.codigo }} · {{ reserva.recurso.get_tipo_display }}{% if reserva.recurso.tipo == "LIBRO" %} · {{ reserva.recurso.libro.autor }}{% endif %}
+                </p>
               </div>
               {% if reserva.estado == "CANCELADA" %}
                 <span class="badge badge--sancion">{{ reserva.get_estado_display }}</span>
@@ -123,8 +127,8 @@
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
-                  <dt>Bloque</dt>
-                  <dd>{{ reserva.get_bloque_display }}</dd>
+                  <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
+                  <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
                 </div>
               </div>
             </dl>
