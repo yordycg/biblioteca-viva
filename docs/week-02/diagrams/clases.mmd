@@ -1,59 +1,67 @@
-%% BibliotecaViva — Modelo de clases del MVP
+%% BibliotecaViva — Modelo de clases del MVP (revisión semana 3)
 %% Fuente de verdad del diagrama. Sintaxis Mermaid (GitHub).
-%% Transcrito el 2026-11-05 desde sem2-t2-diagrama-clases.png (entrega de SEM2-T2
-%% de Héctor Oviedo), para que la fuente y la exportación coincidan.
+%% Actualizado el 2026-11-12: Libro, préstamo y 13 bloques.
 
 classDiagram
   class Usuario {
-    +int idUsuario
-    +string nombre
-    +string correo
+    +int id
+    +string username
+    +string email
     +string rol
-    +realizarReserva()
-    +consultarReservas()
+    +datetime sancionado_hasta
+    +estaSancionado()
   }
 
   class Recurso {
-    +int idRecurso
+    +int id
     +string nombre
     +string tipo
+    +string ubicacion
+    +int capacidad
+    +string codigo
     +string estado
-    +verificarDisponibilidad()
-    +bloquearRecurso()
-    +liberarRecurso()
+  }
+
+  class Libro {
+    +string autor
+    +string editorial
+    +int anio
+    +string isbn
+    +string genero
+    +int paginas
+    +text sinopsis
+    +string portada
   }
 
   class Reserva {
-    +int idReserva
+    +int id
     +date fecha
-    +string bloqueHorario
+    +string modalidad
+    +string bloque
+    +date fecha_vencimiento
     +string estado
-    +datetime fechaCreacion
-    +crearReserva()
-    +iniciarUso()
-    +finalizarReserva()
+    +datetime iniciada_en
+    +datetime finalizada_en
+    +string codigo
   }
 
   class QR {
-    +int idQR
+    +int id
     +string codigo
-    +datetime fechaGeneracion
     +boolean utilizado
-    +generarQR()
-    +validarQR()
+    +datetime generado_en
   }
 
   class Sancion {
-    +int idSancion
-    +date fechaInicio
-    +date fechaFin
+    +int id
+    +datetime inicio
+    +datetime fin
     +string motivo
-    +string estado
-    +registrarSancion()
-    +verificarVigencia()
   }
 
-  Usuario "1" --> "0..*" Sancion : recibe
+  Recurso <|-- Libro : hereda
   Usuario "1" --> "0..*" Reserva : realiza
   Recurso "1" --> "0..*" Reserva : corresponde
   Reserva "1" *-- "1" QR : posee
+  Usuario "1" --> "0..*" Sancion : recibe
+  Sancion "0..1" --> "0..1" Reserva : origen

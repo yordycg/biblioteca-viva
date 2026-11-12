@@ -2270,3 +2270,93 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* Panel del bibliotecario: agenda, ocupación y filtros */
+.agenda {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.agenda li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.agenda__time {
+  flex: none;
+  min-width: 5.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.agenda li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.agenda li .badge {
+  margin-left: auto;
+}
+
+.occupancy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.occupancy__row {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.occupancy__time {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.occupancy__bar {
+  height: 0.7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-tint);
+}
+
+.occupancy__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+
+.filters--panel {
+  grid-template-columns: 1fr 1fr 1.5fr auto;
+}
+
+@media (max-width: 767px) {
+  .occupancy__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .filters--panel {
+    grid-template-columns: 1fr;
+  }
+}
