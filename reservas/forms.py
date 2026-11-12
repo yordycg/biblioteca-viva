@@ -2,9 +2,23 @@
 from datetime import date, timedelta
 
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 
 from . import services
 from .models import Reserva, Recurso
+
+
+class LoginForm(AuthenticationForm):
+    """Login con mensajes de campo en español."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].error_messages["required"] = (
+            "Ingresa tu correo institucional."
+        )
+        self.fields["password"].error_messages["required"] = (
+            "Ingresa tu contraseña."
+        )
 
 
 class FechaDesdeHoyMixin:
@@ -38,10 +52,18 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
             (Recurso.Tipo.SALA, "Sala"),
             (Recurso.Tipo.EQUIPO, "Equipo"),
         ],
+        error_messages={
+            "required": "Elige un tipo de recurso.",
+            "invalid_choice": "Elige un tipo de recurso válido.",
+        },
         widget=forms.Select(attrs={"class": "campo"}),
     )
     fecha = forms.DateField(
         label="Fecha",
+        error_messages={
+            "required": "Elige una fecha.",
+            "invalid": "Ingresa una fecha válida.",
+        },
         widget=forms.DateInput(
             format="%Y-%m-%d",
             attrs={"class": "campo", "type": "date"},
@@ -50,6 +72,10 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
     bloque = forms.ChoiceField(
         label="Bloque horario",
         choices=Reserva.BLOQUES,
+        error_messages={
+            "required": "Elige un bloque horario.",
+            "invalid_choice": "Elige un bloque horario válido.",
+        },
         widget=forms.Select(attrs={"class": "campo"}),
     )
 
@@ -67,7 +93,10 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
                 except ValueError:
                     fecha = None
             if fecha:
-                self.fields["bloque"].choices = services.bloques_disponibles(fecha)
+                disponibles = services.bloques_disponibles(fecha)
+                self.fields["bloque"].choices = [
+                    ("", "Elige un bloque")
+                ] + disponibles
 
     def clean(self):
         data = super().clean()
@@ -117,6 +146,10 @@ class DiasPrestamoMixin:
 class PrestamoForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
     fecha = forms.DateField(
         label="Fecha de retiro",
+        error_messages={
+            "required": "Elige una fecha de retiro.",
+            "invalid": "Ingresa una fecha válida.",
+        },
         widget=forms.DateInput(
             format="%Y-%m-%d",
             attrs={"class": "campo", "type": "date"},
@@ -124,8 +157,13 @@ class PrestamoForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
     )
     dias = forms.TypedChoiceField(
         label="Duración",
-        choices=[(dias, f"{dias} días") for dias in services.DIAS_PRESTAMO],
+        choices=[("", "Elige una duración")]
+        + [(dias, f"{dias} días") for dias in services.DIAS_PRESTAMO],
         coerce=int,
+        error_messages={
+            "required": "Elige una duración de 3, 7 o 14 días.",
+            "invalid_choice": "Elige una duración válida.",
+        },
         widget=forms.Select(attrs={"class": "campo"}),
     )
 
@@ -133,6 +171,10 @@ class PrestamoForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
 class BusquedaLibrosForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
     fecha = forms.DateField(
         label="Fecha de retiro",
+        error_messages={
+            "required": "Elige una fecha de retiro.",
+            "invalid": "Ingresa una fecha válida.",
+        },
         widget=forms.DateInput(
             format="%Y-%m-%d",
             attrs={"class": "campo", "type": "date"},
@@ -140,8 +182,13 @@ class BusquedaLibrosForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
     )
     dias = forms.TypedChoiceField(
         label="Duración",
-        choices=[(dias, f"{dias} días") for dias in services.DIAS_PRESTAMO],
+        choices=[("", "Elige una duración")]
+        + [(dias, f"{dias} días") for dias in services.DIAS_PRESTAMO],
         coerce=int,
+        error_messages={
+            "required": "Elige una duración de 3, 7 o 14 días.",
+            "invalid_choice": "Elige una duración válida.",
+        },
         widget=forms.Select(attrs={"class": "campo"}),
     )
     q = forms.CharField(

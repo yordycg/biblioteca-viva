@@ -1,5 +1,5 @@
 {% extends "reservas/base.html" %}
-{% load static %}
+{% load static form_tags %}
 {% block title %}Buscar en la biblioteca · BibliotecaViva{% endblock %}
 
 {% block content %}
@@ -74,33 +74,45 @@
     <form method="get" action="{% url 'buscar' %}">
       <input type="hidden" name="vista" value="libros">
       <div class="filters filters--libros">
-        <div class="field">
+        <div class="field{% if form_libros.fecha.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form_libros.fecha.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
             Fecha de retiro
           </label>
-          {{ form_libros.fecha }}
+          {{ form_libros.fecha|widget_con_error:"error-fecha" }}
+          {% for error in form_libros.fecha.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-fecha"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
-        <div class="field">
+        <div class="field{% if form_libros.dias.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form_libros.dias.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
             Duración
           </label>
-          {{ form_libros.dias }}
+          {{ form_libros.dias|widget_con_error:"error-dias" }}
+          {% for error in form_libros.dias.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-dias"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
-        <div class="field">
+        <div class="field{% if form_libros.q.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form_libros.q.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"></use></svg>
             Título o autor
           </label>
-          {{ form_libros.q }}
+          {{ form_libros.q|widget_con_error:"error-q" }}
+          {% for error in form_libros.q.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-q"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
-        <div class="field">
+        <div class="field{% if form_libros.genero.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form_libros.genero.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-layers"></use></svg>
             Género
           </label>
-          {{ form_libros.genero }}
+          {{ form_libros.genero|widget_con_error:"error-genero" }}
+          {% for error in form_libros.genero.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-genero"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
         <div class="field">
           <div class="row">
@@ -115,14 +127,10 @@
           </div>
         </div>
       </div>
-      {% if form_libros.errors %}
+      {% if form_libros.non_field_errors %}
         <p class="alert alert--error" role="alert">
           <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
-          <span>
-            {% if form_libros.fecha.errors %}{{ form_libros.fecha.errors.0 }}
-            {% elif form_libros.dias.errors %}{{ form_libros.dias.errors.0 }}
-            {% else %}Revisa la fecha y la duración del préstamo.{% endif %}
-          </span>
+          <span>{{ form_libros.non_field_errors.0 }}</span>
         </p>
       {% endif %}
     </form>
@@ -213,26 +221,35 @@
     <form method="get" action="{% url 'buscar' %}">
       <input type="hidden" name="vista" value="recursos">
       <div class="filters">
-        <div class="field">
+        <div class="field{% if form.tipo.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form.tipo.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-layers"></use></svg>
             Tipo de recurso
           </label>
-          {{ form.tipo }}
+          {{ form.tipo|widget_con_error:"error-tipo" }}
+          {% for error in form.tipo.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-tipo"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
-        <div class="field">
+        <div class="field{% if form.fecha.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form.fecha.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
             Fecha
           </label>
-          {{ form.fecha }}
+          {{ form.fecha|widget_con_error:"error-fecha-recursos" }}
+          {% for error in form.fecha.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-fecha-recursos"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
-        <div class="field">
+        <div class="field{% if form.bloque.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form.bloque.id_for_label }}">
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
             Bloque horario
           </label>
-          {{ form.bloque }}
+          {{ form.bloque|widget_con_error:"error-bloque" }}
+          {% for error in form.bloque.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-bloque"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
         <div class="field">
           <div class="row">
@@ -247,16 +264,10 @@
           </div>
         </div>
       </div>
-      {% if form.errors %}
+      {% if form.non_field_errors %}
         <p class="alert alert--error" role="alert">
           <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
-          <span>
-            {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
-            {% elif form.tipo.errors %}{{ form.tipo.errors.0 }}
-            {% elif form.bloque.errors %}{{ form.bloque.errors.0 }}
-            {% elif form.non_field_errors %}{{ form.non_field_errors.0 }}
-            {% else %}Revisa los filtros: la fecha y el bloque son obligatorios.{% endif %}
-          </span>
+          <span>{{ form.non_field_errors.0 }}</span>
         </p>
       {% endif %}
     </form>

@@ -1,5 +1,5 @@
 {% extends "reservas/base.html" %}
-{% load static %}
+{% load static form_tags %}
 {% block title %}Acceso al sistema · BibliotecaViva{% endblock %}
 
 {% block content %}
@@ -33,32 +33,32 @@
         </p>
       {% endif %}
 
-      <div class="field">
+      <div class="field{% if form.username.errors %} field--error{% endif %}">
         <label class="field__label" for="{{ form.username.id_for_label }}">
           <svg class="icon icon--sm" aria-hidden="true"><use href="#i-user"></use></svg>
           Correo institucional
         </label>
         <div class="input-group">
           <svg class="icon input-group__icon" aria-hidden="true"><use href="#i-user"></use></svg>
-          {{ form.username }}
+          {{ form.username|widget_con_error:"error-login-username" }}
         </div>
-        {% for error in form.username.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+        {% for error in form.username.errors %}<p class="field__error"{% if forloop.first %} id="error-login-username"{% endif %}>{{ error }}</p>{% endfor %}
       </div>
 
-      <div class="field">
+      <div class="field{% if form.password.errors %} field--error{% endif %}">
         <label class="field__label" for="{{ form.password.id_for_label }}">
           <svg class="icon icon--sm" aria-hidden="true"><use href="#i-lock"></use></svg>
           Contraseña
         </label>
         <div class="input-group">
           <svg class="icon input-group__icon" aria-hidden="true"><use href="#i-lock"></use></svg>
-          {{ form.password }}
+          {{ form.password|widget_con_error:"error-login-password" }}
           <button class="input-group__action" type="button" data-toggle-password="id_password"
                   aria-label="Mostrar contraseña" aria-pressed="false">
             <svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg>
           </button>
         </div>
-        {% for error in form.password.errors %}<p class="field__error">{{ error }}</p>{% endfor %}
+        {% for error in form.password.errors %}<p class="field__error"{% if forloop.first %} id="error-login-password"{% endif %}>{{ error }}</p>{% endfor %}
       </div>
 
       <button class="btn btn--block" type="submit">

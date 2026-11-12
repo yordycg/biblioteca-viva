@@ -1,5 +1,5 @@
 {% extends "reservas/base.html" %}
-{% load static %}
+{% load static form_tags %}
 {% block title %}{{ libro.nombre }} · BibliotecaViva{% endblock %}
 
 {% block content %}
@@ -83,13 +83,19 @@
 
     <form method="get" action="{% url 'libro' libro.id %}">
       <div class="loan-band__grid">
-        <div class="field">
+        <div class="field{% if form.fecha.errors %} field--error{% endif %}">
           <label for="{{ form.fecha.id_for_label }}">Fecha de retiro</label>
-          {{ form.fecha }}
+          {{ form.fecha|widget_con_error:"error-fecha-prestamo" }}
+          {% for error in form.fecha.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-fecha-prestamo"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
-        <div class="field">
+        <div class="field{% if form.dias.errors %} field--error{% endif %}">
           <label for="{{ form.dias.id_for_label }}">Duración</label>
-          {{ form.dias }}
+          {{ form.dias|widget_con_error:"error-dias-prestamo" }}
+          {% for error in form.dias.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-dias-prestamo"{% endif %}>{{ error }}</p>
+          {% endfor %}
         </div>
         <div class="loan-band__meta">
           <span>Cupo de préstamos</span>
@@ -101,14 +107,10 @@
         </button>
       </div>
 
-      {% if form.errors %}
+      {% if form.non_field_errors %}
         <p class="alert alert--error" role="alert">
           <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
-          <span>
-            {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
-            {% elif form.dias.errors %}{{ form.dias.errors.0 }}
-            {% else %}Revisa la fecha y la duración del préstamo.{% endif %}
-          </span>
+          <span>{{ form.non_field_errors.0 }}</span>
         </p>
       {% endif %}
 

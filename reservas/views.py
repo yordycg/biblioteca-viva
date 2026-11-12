@@ -106,10 +106,12 @@ def buscar(request):
     resultados = None
     fecha = None
     bloque = None
-    fecha_consulta = hoy
+    fecha_consulta = _fecha_legible(request.GET.get("fecha")) or hoy
     if request.GET and form.is_valid():
         fecha_consulta = form.cleaned_data["fecha"]
-    sin_bloques = not services.bloques_disponibles(fecha_consulta)
+    sin_bloques = not form["fecha"].errors and not services.bloques_disponibles(
+        fecha_consulta
+    )
     if request.GET and form.is_valid():
         fecha = form.cleaned_data["fecha"]
         bloque = form.cleaned_data["bloque"]

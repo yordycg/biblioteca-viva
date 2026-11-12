@@ -627,9 +627,27 @@ select:focus {
 }
 
 .field__error {
+  margin: 0.15rem 0 0;
   font-size: 0.8125rem;
   color: var(--color-danger);
   font-weight: 600;
+}
+
+.field--error .campo,
+.field--error input,
+.field--error select {
+  border-color: var(--color-danger);
+}
+
+.field--error .campo:focus,
+.field--error input:focus,
+.field--error select:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.18);
+}
+
+.field--error .field__label {
+  color: var(--color-danger);
 }
 
 .input-group {

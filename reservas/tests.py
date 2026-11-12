@@ -362,6 +362,38 @@ class LibroTests(TestCase):
         tipos = {t["tipo"]: t for t in inventario["por_tipo"]}
         self.assertEqual(tipos[Recurso.Tipo.LIBRO]["total"], 2)
 
+    def test_busqueda_libros_marca_campo_con_error(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/", {"vista": "libros", "fecha": "", "dias": ""}
+        )
+        self.assertContains(respuesta, "field--error")
+        self.assertContains(respuesta, "Elige una fecha de retiro.")
+        self.assertContains(respuesta, "Elige una duración de 3, 7 o 14 días.")
+        self.assertContains(respuesta, 'id="error-fecha"')
+        self.assertContains(respuesta, 'aria-invalid="true"')
+        self.assertNotContains(respuesta, "Este campo es obligatorio.")
+
+    def test_busqueda_recursos_marca_campo_con_error(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/",
+            {"vista": "recursos", "tipo": "SALA", "fecha": "", "bloque": ""},
+        )
+        self.assertContains(respuesta, "field--error")
+        self.assertContains(respuesta, "Elige una fecha.")
+        self.assertContains(respuesta, "Elige un bloque horario.")
+        self.assertContains(respuesta, 'id="error-fecha-recursos"')
+
+    def test_ficha_libro_marca_campo_con_error(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            f"/libros/{self.libro.id}/", {"fecha": "", "dias": ""}
+        )
+        self.assertContains(respuesta, "field--error")
+        self.assertContains(respuesta, "Elige una fecha de retiro.")
+        self.assertContains(respuesta, 'id="error-fecha-prestamo"')
+
     def test_catalogo_lista_libros_con_portada(self):
         self.client.force_login(self.usuario)
         respuesta = self.client.get(
@@ -571,6 +603,14 @@ class InterfazTests(TestCase):
     def test_login_muestra_logo_institucional(self):
         respuesta = self.client.get("/login/")
         self.assertContains(respuesta, "reservas/img/ipvg-logo.png")
+
+    def test_login_vacio_muestra_errores_por_campo(self):
+        respuesta = self.client.post(
+            "/login/", {"username": "", "password": ""}
+        )
+        self.assertContains(respuesta, "Ingresa tu correo institucional.")
+        self.assertContains(respuesta, "Ingresa tu contraseña.")
+        self.assertContains(respuesta, "field--error")
 
     def test_login_no_expone_credenciales_de_demo(self):
         respuesta = self.client.get("/login/")
