@@ -2105,3 +2105,33 @@ select:focus {
 .loan-band .row {
   margin-top: 10px;
 }
+
+
+/* Alinear los controles cuando un campo muestra error debajo */
+.filters {
+  align-items: start;
+}
+
+@media (min-width: 480px) {
+  .filters--libros .field--actions {
+    padding-top: 1.55rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .filters:not(.filters--libros) .field--actions {
+    padding-top: 1.55rem;
+  }
+}
+
+.loan-band__grid {
+  align-items: start;
+}
+
+@media (min-width: 701px) {
+  .loan-band__meta,
+  .loan-band__action {
+    margin-top: 1.55rem;
+    padding-top: 0;
+  }
+}
