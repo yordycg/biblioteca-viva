@@ -299,6 +299,12 @@ class LibroTests(TestCase):
         self.assertEqual(self.libro.tipo, Recurso.Tipo.LIBRO)
         self.assertEqual(self.libro.get_tipo_display(), "Libro")
 
+    def test_busqueda_de_recursos_no_ofrece_libros(self):
+        form = BusquedaForm()
+        self.assertNotIn(
+            Recurso.Tipo.LIBRO, dict(form.fields["tipo"].choices)
+        )
+
     def test_catalogo_filtra_por_autor(self):
         tarjetas = services.catalogo_libros(self.hoy, "Cervantes")
         self.assertEqual([t["libro"].id for t in tarjetas], [self.libro.id])

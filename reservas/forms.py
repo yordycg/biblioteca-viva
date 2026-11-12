@@ -34,7 +34,10 @@ class FechaDesdeHoyMixin:
 class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
     tipo = forms.ChoiceField(
         label="Tipo de recurso",
-        choices=Recurso.Tipo.choices,
+        choices=[
+            (Recurso.Tipo.SALA, "Sala"),
+            (Recurso.Tipo.EQUIPO, "Equipo"),
+        ],
         widget=forms.Select(attrs={"class": "campo"}),
     )
     fecha = forms.DateField(
