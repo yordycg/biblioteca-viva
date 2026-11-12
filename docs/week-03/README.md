@@ -47,7 +47,7 @@ Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas al cerrar e
 - Ficha de libro en una sola tarjeta con carátula, datos bibliográficos, sinopsis, condiciones y panel de préstamo.
 - `Reserva` distingue `BLOQUE` y `PRESTAMO`; QR, estados y sanción se reutilizan sin duplicar el flujo.
 
-Cubierto por CP-18 y por `python manage.py test` (52 pruebas automáticas).
+Cubierto por CP-18 y por `python manage.py test` (65 pruebas automáticas).
 
 ## Ventana de reserva (revisión del MVP 2)
 
@@ -56,7 +56,17 @@ Cubierto por CP-18 y por `python manage.py test` (52 pruebas automáticas).
 - El horizonte de reserva es de **7 días**; fuera de ese rango la fecha se rechaza.
 - El selector de bloques se actualiza al cambiar la fecha sin recargar la página; sin JavaScript, el servidor aplica la misma regla.
 
-Cubierto por CP-17 y por `python manage.py test` (52 pruebas automáticas).
+Cubierto por CP-17 y por `python manage.py test` (65 pruebas automáticas).
+
+## Catálogo inicial y horario 09:00–22:00
+
+- Al entrar se muestran todos los recursos con su estado; el check **Solo disponibles** permite ocultar los ocupados.
+- Los formularios solo validan al presionar **Filtrar**; los errores aparecen bajo el campo, con borde rojo.
+- Los bloques pasan de 3 a **13 bloques de una hora**, de 09:00 a 22:00.
+- Si hoy ya no quedan bloques, la vista abre con el primer bloque de mañana.
+- El panel del bibliotecario muestra una **línea de tiempo** por recurso en lugar de una tabla de 13 columnas.
+
+Cubierto por CP-17 y CP-20, con `python manage.py test` (65 pruebas automáticas).
 
 ## Orden de revisión
 

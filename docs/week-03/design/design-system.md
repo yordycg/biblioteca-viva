@@ -115,6 +115,8 @@ del login usan `--color-primary` como fondo.
 | Tarjeta de libro | `.book-grid`, `.book-card`, `.book-card__cover`, `.book-card__title` | Grilla vertical con carátula 3:4 y CTA al pie |
 | Ficha de libro | `.detail-card`, `.detail-card__top`, `.chips`, `.chip` | Una sola tarjeta: carátula, datos, sinopsis y condiciones |
 | Panel de préstamo | `.loan-band`, `.loan-band__grid`, `.loan-band__meta` | Fecha, duración y cupo en una fila; se apila en móvil |
+| Línea de tiempo de bloques | `.timeline`, `.timeline__track`, `.timeline__slot` | 13 bloques de color por recurso; scroll horizontal en móvil |
+| Checkbox de filtro | `.field--check`, `.check` | “Solo disponibles” alineado con los controles |
 | Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |
 

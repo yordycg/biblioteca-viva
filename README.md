@@ -9,6 +9,7 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 - Semana 3: MVP Django de F1–F3 con interfaz institucional (port del rediseño SEM3-T1 a CSS propio).
 - Revisión docente (MVP 1): login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
 - Revisión docente (MVP 2): ventana de reserva (15 minutos de antelación, 7 días de horizonte) y catálogo de libros con carátulas, ficha y préstamo.
+- Revisión docente (MVP 2): catálogo inicial con estado, filtro “Solo disponibles” y horario de 09:00 a 22:00 en bloques de una hora.
 
 ## Stack
 

@@ -203,9 +203,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
 | Tipo | Límite |
 | Precondiciones | Hora de la aplicación fijada en 2026-11-12 10:50. Sala 3 libre. Sesión como estudiante1@example.com. |
-| Datos de entrada | Fecha hoy · Bloques 10:00–11:00 (ya iniciado), 11:00–12:00 (10 min de antelación) y 15:00–16:00 (más de 15 min) · Fecha hoy + 7 días · Fecha hoy + 8 días |
-| Pasos | 1. Abrir "Buscar" con la fecha de hoy.<br>2. Revisar el selector de bloque: no debe ofrecer 10:00–11:00 ni 11:00–12:00; sí 15:00–16:00.<br>3. Forzar la URL de confirmación con 10:00–11:00 y verificar que no se crea la reserva.<br>4. Confirmar una reserva para hoy 15:00–16:00.<br>5. Repetir la búsqueda con hoy + 7 días y con hoy + 8 días. |
-| Resultado esperado | Hoy solo se ofrecen bloques que comienzan al menos 15 minutos después de la hora actual; un bloque ya iniciado o con menos antelación se rechaza también en el servidor. La reserva de 15:00–16:00 se crea con su QR. La fecha hoy + 7 se acepta y hoy + 8 se rechaza con mensaje de horizonte. |
+| Datos de entrada | Fecha hoy · Bloques de 09:00 a 22:00; 10:00–11:00 (ya iniciado), 11:00–12:00 (10 min de antelación) y 12:00–13:00 (más de 15 min) · Fecha hoy + 7 días · Fecha hoy + 8 días |
+| Pasos | 1. Abrir "Buscar" con la fecha de hoy.<br>2. Revisar el selector de bloque: 13 opciones de 09:00 a 22:00; no debe ofrecer 10:00–11:00 ni 11:00–12:00; sí desde 12:00–13:00.<br>3. Forzar la URL de confirmación con 10:00–11:00 y verificar que no se crea la reserva.<br>4. Confirmar una reserva para hoy 12:00–13:00.<br>5. Repetir la búsqueda con hoy + 7 días y con hoy + 8 días. |
+| Resultado esperado | Hoy solo se ofrecen bloques que comienzan al menos 15 minutos después de la hora actual; un bloque ya iniciado o con menos antelación se rechaza también en el servidor. La reserva de 12:00–13:00 se crea con su QR. La fecha hoy + 7 se acepta y hoy + 8 se rechaza con mensaje de horizonte. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
 | Evidencia | `docs/week-03/evidence/CP-17.png` |
@@ -239,6 +239,21 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
 | Evidencia | `docs/week-03/evidence/CP-19.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-20 — Catálogo inicial con estado y “Solo disponibles”
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01 (CU1 Buscar recurso) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Sala 3 reservada en el bloque por defecto; Proyector Epson libre. Sesión como estudiante1@example.com. |
+| Datos de entrada | Sin filtros enviados · Luego “Solo disponibles” activado |
+| Pasos | 1. Abrir "Buscar" y la pestaña "Salas y equipos".<br>2. Verificar que se listan sala y equipos con su estado, sin mensajes de error.<br>3. Confirmar que Sala 3 aparece como "Reservado" y sin botón de reserva.<br>4. Activar "Solo disponibles" y presionar "Filtrar".<br>5. Verificar que Sala 3 desaparece y Proyector Epson se mantiene. |
+| Resultado esperado | Al entrar se muestran todos los recursos del día con su estado; no aparecen errores hasta presionar "Filtrar". Con “Solo disponibles” activo se ocultan los ocupados. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-20.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## (a) Distribución por tipo
@@ -297,6 +312,15 @@ Casos agregados en la revisión del MVP 2 (libros):
 | Límite | 1 | CP-19 |
 | Total | 2 |  |
 
+Casos agregados en la revisión del MVP 2 (catálogo y horario):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 1 | CP-20 |
+| Negativo | 0 | — |
+| Límite | 0 | — |
+| Total | 1 |  |
+
 ## (b) Plan de CP-07 a CP-14
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
@@ -318,7 +342,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
 - El plan de 14 casos (6 + 5 + 3) está declarado.
-- Los IDs CP-01…CP-19 coinciden con matriz-trazabilidad.md.
+- Los IDs CP-01…CP-20 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -344,3 +368,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 15 | Se agrega CP-17 en la revisión del MVP 2. | Valida los tres bordes de la ventana de reserva: bloque iniciado, antelación de 15 minutos y horizonte de 7 días. |
 | 16 | Se agrega CP-18 en la revisión del MVP 2. | Valida el catálogo de libros, la ficha bibliográfica y el préstamo con el mismo flujo de QR; queda Pendiente hasta su captura. |
 | 17 | Se agrega CP-19 en la revisión del MVP 2. | Cubre los bordes del préstamo de libros: solapamiento y máximo de 2 préstamos activos. |
+| 18 | Se agrega CP-20 en la revisión del MVP 2. | Cubre el catálogo inicial con estado, “Solo disponibles” y la validación solo al presionar Filtrar. |
