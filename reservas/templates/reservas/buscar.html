@@ -88,7 +88,12 @@
     {% if form.errors %}
       <p class="alert alert--error" role="alert">
         <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
-        <span>Revisa los filtros: la fecha y el bloque son obligatorios.</span>
+        <span>
+          {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
+          {% elif form.tipo.errors %}{{ form.tipo.errors.0 }}
+          {% elif form.bloque.errors %}{{ form.bloque.errors.0 }}
+          {% else %}Revisa los filtros: la fecha y el bloque son obligatorios.{% endif %}
+        </span>
       </p>
     {% endif %}
   </form>

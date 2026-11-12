@@ -104,15 +104,15 @@ del login usan `--color-primary` como fondo.
 | Filtros | `.filters`, `.field`, `.control` | Grid 4/3/3/auto en desktop |
 | Aviso normativo | `.notice`, `.notice--warning`, `.notice--danger` | RF-06, RF-07 |
 | Tarjeta de recurso | `.resource`, `.resource__media`, `.resource__meta`, `.resource__foot` | El «media» es un bloque de color con icono, no una foto |
-| Badge de estado | `.badge--reservada`, `.badge--en-uso`, `.badge--finalizada`, `.badge--sancion` | Color + texto |
+| Badge de estado | `.badge--reservada`, `.badge--en-uso`, `.badge--finalizada`, `.badge--sancion`, `.badge--libre`, `.badge--uso`, `.badge--no-disponible` | Color + texto |
 | Badge de requisito | `.req` | RF-01 … RF-08 |
 | Medidor de cupo | `.quota`, `.quota__ring` | `conic-gradient` con porcentaje calculado en el servidor |
 | Pasos de reserva | `.stepper` | Reservada → En Uso → Finalizada |
 | Panel QR | `.qr-panel` | QR real generado por Django |
 | Tabla del día | `.table-wrap`, `.data` | Tabla en desktop, tarjetas en móvil vía `data-label` |
+| Indicadores de inventario | `.stats`, `.stat`, `.stat__value`, `.stat__label` | Contadores del panel bibliotecario; borde izquierdo según estado |
 | Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |
-| Credenciales demo | `.demo-creds` | Solo en login; carga el formulario con JS |
 
 Iconografía: sprite SVG inline en `reservas/templates/reservas/_icons.html`
 (16 símbolos). No se usa Material Symbols ni ninguna icon font.
