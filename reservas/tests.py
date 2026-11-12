@@ -286,6 +286,13 @@ class LibroTests(TestCase):
             ubicacion="Estante A-1",
             codigo="lib-001",
             portada="reservas/covers/quijote.svg",
+            sinopsis="Aventuras de Alonso Quijano.",
+        )
+        self.libro2 = Libro.objects.create(
+            nombre="Martín Fierro",
+            autor="José Hernández",
+            genero="Poesía",
+            portada="reservas/covers/martin-fierro.svg",
         )
 
     def test_libro_se_crea_con_tipo_libro(self):
@@ -303,41 +310,79 @@ class LibroTests(TestCase):
             services.catalogo_libros(self.hoy, genero="Terror"), []
         )
 
-    def test_catalogo_cuenta_bloques_libres(self):
-        services.crear_reserva(
-            self.usuario, self.libro, self.hoy, "10:00-11:00"
+    def test_prestamo_genera_qr_y_vencimiento(self):
+        reserva = services.crear_reserva(
+            self.usuario, self.libro, self.hoy, dias=7
         )
-        tarjeta = services.catalogo_libros(self.hoy)[0]
-        self.assertEqual(tarjeta["libres"], 2)
-        estados = {b["clave"]: b["estado"] for b in tarjeta["bloques"]}
-        self.assertEqual(estados["10:00-11:00"], "RESERVADO")
+        self.assertEqual(reserva.modalidad, Reserva.Modalidad.PRESTAMO)
+        self.assertEqual(reserva.fecha_vencimiento, self.hoy + timedelta(days=7))
+        self.assertTrue(QR.objects.filter(reserva=reserva).exists())
+
+    def test_prestamo_rechaza_duracion_invalida(self):
+        with self.assertRaises(ValidationError):
+            services.crear_reserva(
+                self.usuario, self.libro, self.hoy, dias=5
+            )
+
+    def test_prestamo_solapado_rechazado(self):
+        services.crear_reserva(self.usuario, self.libro, self.hoy, dias=7)
+        with self.assertRaises(ValidationError):
+            services.crear_reserva(
+                self.usuario,
+                self.libro,
+                self.hoy + timedelta(days=3),
+                dias=7,
+            )
+
+    def test_limite_de_prestamos_activos(self):
+        services.crear_reserva(self.usuario, self.libro, self.hoy, dias=7)
+        services.crear_reserva(self.usuario, self.libro2, self.hoy, dias=7)
+        otro = Libro.objects.create(
+            nombre="La Araucana", autor="Alonso de Ercilla"
+        )
+        with self.assertRaises(ValidationError):
+            services.crear_reserva(self.usuario, otro, self.hoy, dias=7)
+
+    def test_catalogo_marca_libro_no_disponible(self):
+        services.crear_reserva(self.usuario, self.libro, self.hoy, dias=7)
+        tarjeta = next(
+            t for t in services.catalogo_libros(self.hoy) if t["libro"] == self.libro
+        )
+        self.assertFalse(tarjeta["disponible"])
+        self.assertIsNotNone(tarjeta["desde"])
 
     def test_inventario_incluye_libros(self):
         inventario = services.estado_inventario(self.hoy)
         tipos = {t["tipo"]: t for t in inventario["por_tipo"]}
-        self.assertEqual(tipos[Recurso.Tipo.LIBRO]["total"], 1)
+        self.assertEqual(tipos[Recurso.Tipo.LIBRO]["total"], 2)
 
     def test_catalogo_lista_libros_con_portada(self):
         self.client.force_login(self.usuario)
-        respuesta = self.client.get("/libros/")
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "vista": "libros",
+                "fecha": self.hoy.isoformat(),
+                "dias": 7,
+            },
+        )
         self.assertContains(respuesta, "Don Quijote de la Mancha")
         self.assertContains(respuesta, "Miguel de Cervantes")
         self.assertContains(respuesta, "reservas/covers/quijote.svg")
-        self.assertContains(respuesta, "Catálogo de libros")
 
-    def test_ficha_libro_muestra_metadatos_y_bloques(self):
+    def test_ficha_libro_muestra_metadatos_y_prestamo(self):
         self.client.force_login(self.usuario)
         respuesta = self.client.get(f"/libros/{self.libro.id}/")
         self.assertContains(respuesta, "978-956-00-0001-1")
         self.assertContains(respuesta, "Miguel de Cervantes")
-        self.assertContains(respuesta, "Disponibilidad de hoy")
-        self.assertContains(respuesta, "Reservar")
+        self.assertContains(respuesta, "Solicitar préstamo")
+        self.assertContains(respuesta, "Devolución estimada")
 
     def test_reservar_libro_genera_qr(self):
         self.client.force_login(self.usuario)
         respuesta = self.client.post(
             f"/reservar/{self.libro.id}/",
-            {"fecha": self.hoy.isoformat(), "bloque": "10:00-11:00"},
+            {"fecha": self.hoy.isoformat(), "dias": 7},
         )
         reserva = Reserva.objects.get(recurso=self.libro)
         self.assertRedirects(
@@ -353,21 +398,74 @@ class LibroTests(TestCase):
         respuesta = self.client.get(
             "/buscar/",
             {
-                "tipo": Recurso.Tipo.LIBRO,
+                "vista": "libros",
                 "fecha": self.hoy.isoformat(),
-                "bloque": "10:00-11:00",
+                "dias": 7,
+                "q": "Cervantes",
             },
         )
         self.assertContains(respuesta, "Don Quijote de la Mancha")
         self.assertContains(respuesta, "Miguel de Cervantes")
         self.assertContains(respuesta, "reservas/covers/quijote.svg")
 
+    def test_ficha_continuar_redirige_a_confirmacion(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            f"/libros/{self.libro.id}/",
+            {
+                "fecha": self.hoy.isoformat(),
+                "dias": 7,
+                "continuar": 1,
+            },
+        )
+        self.assertEqual(respuesta.status_code, 302)
+        self.assertIn(
+            f"/reservar/{self.libro.id}/?fecha={self.hoy.isoformat()}&dias=7",
+            respuesta.url,
+        )
+
+    def test_confirmar_libro_muestra_resumen(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            f"/reservar/{self.libro.id}/",
+            {"fecha": self.hoy.isoformat(), "dias": 7},
+        )
+        self.assertContains(respuesta, "Datos del préstamo")
+        self.assertContains(respuesta, "Devolución")
+
+    def test_devolucion_tardia_de_prestamo_aplica_sancion(self):
+        reserva = services.crear_reserva(
+            self.usuario, self.libro, self.hoy, dias=7
+        )
+        inicio = timezone.make_aware(
+            datetime.combine(self.hoy, time(10, 5))
+        )
+        services.validar_inicio(reserva.codigo, inicio)
+        tarde = timezone.make_aware(
+            datetime.combine(
+                self.hoy + timedelta(days=8), time(10, 0)
+            )
+        )
+        reserva, sancion = services.registrar_devolucion(
+            reserva.codigo, tarde
+        )
+        self.assertEqual(reserva.estado, Reserva.Estado.FINALIZADA)
+        self.assertIsNotNone(sancion)
+        self.usuario.refresh_from_db()
+        self.assertIsNotNone(self.usuario.sancionado_hasta)
+
+    def test_panel_muestra_prestamo_de_libro(self):
+        services.crear_reserva(self.usuario, self.libro, self.hoy, dias=7)
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/bibliotecario/")
+        self.assertContains(respuesta, "En préstamo")
+        self.assertContains(respuesta, "Préstamo hasta")
+
     def test_bibliotecario_no_ve_el_catalogo(self):
         self.client.force_login(self.bibliotecario)
-        respuesta = self.client.get("/libros/")
-        self.assertRedirects(
-            respuesta, "/bibliotecario/", fetch_redirect_response=False
-        )
+        respuesta = self.client.get("/libros/", follow=True)
+        self.assertContains(respuesta, "Panel de gestión")
+        self.assertEqual(respuesta.redirect_chain[-1][0], "/bibliotecario/")
 
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
