@@ -1,0 +1,77 @@
+{% extends "reservas/base.html" %}
+{% load static form_tags %}
+{% block title %}Acceso al sistema · BibliotecaViva{% endblock %}
+
+{% block content %}
+<div class="login">
+  <section class="card login__card" aria-labelledby="login-title">
+    <div class="login__brandbar">
+      <img class="brand__logo"
+           src="{% static 'reservas/img/ipvg-logo.png' %}"
+           alt="Instituto Profesional Virginio Gómez"
+           width="1648" height="335">
+    </div>
+    <div class="card__head">
+      <div>
+        <p class="eyebrow">Campus Los Ángeles</p>
+        <h1 id="login-title" style="font-size: 1.5rem;">Acceso al sistema</h1>
+      </div>
+      <span class="req">RF-08</span>
+    </div>
+
+    <p class="page-head__sub">
+      Sistema de reserva de salas, equipos y libros de la biblioteca. Ingresa
+      con tu correo institucional para continuar.
+    </p>
+
+    <form method="post" class="stack" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <p class="alert alert--error">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+          <span>Correo o contraseña incorrectos. Revisa los datos e intenta otra vez.</span>
+        </p>
+      {% endif %}
+
+      <div class="field{% if form.username.errors %} field--error{% endif %}">
+        <label class="field__label" for="{{ form.username.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-user"></use></svg>
+          Correo institucional
+        </label>
+        <div class="input-group">
+          <svg class="icon input-group__icon" aria-hidden="true"><use href="#i-user"></use></svg>
+          {{ form.username|widget_con_error:"error-login-username" }}
+        </div>
+        {% for error in form.username.errors %}<p class="field__error"{% if forloop.first %} id="error-login-username"{% endif %}>{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="field{% if form.password.errors %} field--error{% endif %}">
+        <label class="field__label" for="{{ form.password.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-lock"></use></svg>
+          Contraseña
+        </label>
+        <div class="input-group">
+          <svg class="icon input-group__icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+          {{ form.password|widget_con_error:"error-login-password" }}
+          <button class="input-group__action" type="button" data-toggle-password="id_password"
+                  aria-label="Mostrar contraseña" aria-pressed="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg>
+          </button>
+        </div>
+        {% for error in form.password.errors %}<p class="field__error"{% if forloop.first %} id="error-login-password"{% endif %}>{{ error }}</p>{% endfor %}
+      </div>
+
+      <button class="btn btn--block" type="submit">
+        Iniciar sesión
+        <svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg>
+      </button>
+
+      <hr class="divider">
+      <p class="hint-inline">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg>
+        Acceso restringido a cuentas institucionales habilitadas.
+      </p>
+    </form>
+  </section>
+</div>
+{% endblock %}

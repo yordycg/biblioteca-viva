@@ -1,0 +1,131 @@
+{% extends "reservas/base.html" %}
+{% load static form_tags %}
+{% block title %}{{ libro.nombre }} · BibliotecaViva{% endblock %}
+
+{% block content %}
+<nav class="row" aria-label="Miga de pan">
+  <a class="btn btn--ghost btn--sm" href="{% url 'buscar' %}?vista=libros">
+    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-back"></use></svg>
+    Volver a los libros
+  </a>
+</nav>
+
+{% if sancion_hasta %}
+  <div class="notice notice--danger" role="alert">
+    <span class="notice__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </span>
+    <div>
+      <p class="notice__title">Sanción vigente <span class="req">RF-07</span></p>
+      <p class="notice__text">
+        Tienes una sanción por devolución tardía hasta el
+        <strong>{{ sancion_hasta|date:"d-m-Y H:i" }}</strong>. Mientras esté activa no
+        puedes solicitar préstamos.
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+<article class="panel detail-card">
+  <div class="detail-card__top">
+    <div class="detail__cover">
+      {% if libro.portada %}
+        <img src="{% static libro.portada %}"
+             alt="Portada de {{ libro.nombre }}"
+             width="300" height="420">
+      {% else %}
+        <span class="book-card__placeholder">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-book"></use></svg>
+        </span>
+      {% endif %}
+    </div>
+    <div class="detail__info">
+      <span class="detail__genre">{{ libro.genero|default:"General" }}</span>
+      <h1 class="detail__title">{{ libro.nombre }}</h1>
+      <p class="detail__author">{{ libro.autor }}{% if libro.anio %} · {{ libro.anio }}{% endif %}</p>
+
+      <ul class="chips">
+        <li class="chip"><strong>Editorial</strong> {{ libro.editorial|default:"—" }}</li>
+        <li class="chip"><strong>Páginas</strong> {% if libro.paginas %}{{ libro.paginas }}{% else %}—{% endif %}</li>
+        <li class="chip"><strong>ISBN</strong> {{ libro.isbn|default:"—" }}</li>
+        <li class="chip"><strong>Ubicación</strong> {{ libro.ubicacion|default:"—" }}{% if libro.codigo %} · {{ libro.codigo }}{% endif %}</li>
+      </ul>
+
+      <div class="synopsis">
+        <h2>Sinopsis</h2>
+        <p>{{ libro.sinopsis|default:"Sin sinopsis registrada." }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-card__conditions">
+    <div class="conditions">
+      <h2>Condiciones del préstamo</h2>
+      <ul>
+        <li>Retira el ejemplar en biblioteca presentando el código QR.</li>
+        <li>Máximo {{ max_prestamos }} préstamos activos por usuario.</li>
+        <li>La devolución tardía aplica una sanción de 7 días.</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="loan-band" aria-label="Solicitar préstamo">
+    <div class="loan-band__head">
+      <h2>Solicitar préstamo</h2>
+      {% if disponible is None %}
+        <span class="badge badge--plain">Consulta la disponibilidad</span>
+      {% elif disponible %}
+        <span class="badge badge--libre">Disponible</span>
+      {% else %}
+        <span class="badge badge--reservada">No disponible</span>
+      {% endif %}
+    </div>
+
+    <form method="get" action="{% url 'libro' libro.id %}">
+      <div class="loan-band__grid">
+        <div class="field{% if form.fecha.errors %} field--error{% endif %}">
+          <label for="{{ form.fecha.id_for_label }}">Fecha de retiro</label>
+          {{ form.fecha|widget_con_error:"error-fecha-prestamo" }}
+          {% for error in form.fecha.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-fecha-prestamo"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="field{% if form.dias.errors %} field--error{% endif %}">
+          <label for="{{ form.dias.id_for_label }}">Duración</label>
+          {{ form.dias|widget_con_error:"error-dias-prestamo" }}
+          {% for error in form.dias.errors %}
+            <p class="field__error"{% if forloop.first %} id="error-dias-prestamo"{% endif %}>{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div class="loan-band__meta">
+          <span>Cupo de préstamos</span>
+          <strong>{{ prestamos }} de {{ max_prestamos }}</strong>
+        </div>
+        <button class="btn loan-band__action" type="submit" name="continuar" value="1">
+          <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+          Solicitar préstamo
+        </button>
+      </div>
+
+      {% if form.non_field_errors %}
+        <p class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+          <span>{{ form.non_field_errors.0 }}</span>
+        </p>
+      {% endif %}
+
+      <div class="row">
+        <button class="btn btn--secondary btn--sm" type="submit">Actualizar disponibilidad</button>
+        <p class="loan-band__hint">Devolución estimada: {{ vencimiento|date:"d-m-Y" }}</p>
+      </div>
+
+      {% if disponible is False %}
+        <p class="hint-inline">
+          No está disponible para ese rango.
+          {% if desde %}Vuelve a estar disponible el {{ desde|date:"d-m-Y" }}.{% endif %}
+        </p>
+      {% endif %}
+    </form>
+  </section>
+</article>
+{% endblock %}

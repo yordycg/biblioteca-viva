@@ -1,0 +1,39 @@
+%% BibliotecaViva — Secuencia de préstamo de libro (revisión semana 3)
+%% Fuente de verdad del diagrama. Sintaxis Mermaid (GitHub).
+%% Duración 3/7/14 días; un ejemplar; máximo 2 préstamos activos.
+
+sequenceDiagram
+  actor U as Usuario
+  participant UI as Interfaz web
+  participant BE as Backend
+  participant SR as Servicio de préstamos
+  participant RRes as Repositorio de reservas
+  participant QR as Servicio QR
+
+  U->>UI: Elige libro, fecha de retiro y duración
+  UI->>BE: Solicitar préstamo
+  BE->>SR: crearPrestamo(usuario, libro, fecha, dias)
+  SR->>SR: validar 3/7/14 días y fecha dentro del horizonte
+  alt Duración o fecha inválida
+    SR-->>BE: Rechazar
+    BE-->>UI: Error bajo el campo
+  else Datos válidos
+    SR->>RRes: contarPrestamosActivos(usuario)
+    alt 2 préstamos activos
+      SR-->>BE: Rechazar
+      BE-->>UI: Error de límite
+    else Cupo disponible
+      SR->>RRes: verificarSolapamiento(libro, fecha, fecha+dias)
+      alt Libro prestado en ese rango
+        SR-->>BE: Rechazar
+        BE-->>UI: Error de disponibilidad
+      else Disponible
+        SR->>RRes: guardarPrestamo(estado=Reservada, vencimiento)
+        SR->>QR: generarQR(idReserva)
+        QR-->>SR: QR único
+        SR-->>BE: Préstamo + QR
+        BE-->>UI: Confirmación
+        UI-->>U: Mostrar QR y fecha de devolución
+      end
+    end
+  end

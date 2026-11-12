@@ -1,19 +1,199 @@
 # BibliotecaViva — Sistema de Gestión y Reservas
 
-Repositorio de la solución informática y documentación para la Evaluación 3 de Ingeniería de Software (IP Virginio Gómez).
+Aplicación web responsiva para buscar, reservar y validar salas, equipos y libros de la biblioteca del Instituto Profesional Virginio Gómez. Es la Evaluación 3 de Ingeniería de Software.
 
 ## Estado actual
 
-- **Semana 1:** ficha del proyecto, requisitos y plan de calidad.
-- **Semana 2:** diseño y QA base (mockups, UML, checklist, matriz y 6 casos de prueba; 12 al cierre).
-- **Semana 3 en adelante:** implementación del MVP de F1–F3, pruebas y cierre.
+- Semana 1: ficha, requisitos y plan de calidad.
+- Semana 2: diseño y QA base (mockups, UML, checklist, matriz y 6 casos).
+- Semana 3: MVP Django de F1–F3 con interfaz institucional (port del rediseño SEM3-T1 a CSS propio).
+- Revisión docente (MVP 1): login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
+- Revisión docente (MVP 2): ventana de reserva (15 minutos de antelación, 7 días de horizonte) y catálogo de libros con carátulas, ficha y préstamo.
+- Revisión docente (MVP 2): catálogo inicial con estado, filtro “Solo disponibles” y horario de 09:00 a 22:00 en bloques de una hora.
+- Panel del bibliotecario v2: KPIs, agenda de entregas/devoluciones, ocupación por bloque, sanciones activas y filtros de la tabla.
 
-## Estructura del repositorio
+## Stack
 
-- `docs/week-01/`: ficha, requisitos y plan de calidad.
-- `docs/week-02/`: diseño y QA base (checklist, mockups, diagramas, matriz y casos).
-- `src/`: código fuente de la aplicación (se incorpora en semana 3).
-- `tests/`: pruebas de software.
+- Python 3.12 + Django 5.2 LTS + SQLite.
+- Templates de Django + CSS propio mobile-first (sin Tailwind, sin CDN, sin fuentes ni imágenes remotas).
+- Iconografía con sprite SVG inline; JavaScript mínimo y progresivo.
+- QR generado en el servidor con `qrcode`.
+- Validación del QR por ingreso manual del código.
+- Monolito modular: `config/` + `reservas/`.
+
+## Estructura
+
+```text
+config/                 # settings y urls
+reservas/
+  models.py             # Usuario, Recurso, Libro, Reserva, QR, Sancion
+  services.py           # búsqueda, reservas, préstamos y reglas RF-06/RF-07
+  views.py              # login, búsqueda unificada, ficha, reserva, préstamo, QR, bibliotecario
+  forms.py
+  urls.py
+  templates/reservas/     # base, login, búsqueda, ficha, confirmación, QR, panel
+  static/reservas/        # styles.css, app.js, covers/ (carátulas SVG locales)
+  management/commands/seed.py
+scripts/
+  demo_flujo.py
+  simular_retraso.py
+  medir_rendimiento.py
+requirements.txt
+.env.example
+```
+
+## Requisitos
+
+- Python 3.12 o superior.
+- pip.
+- No requiere Node, Docker ni servicios externos.
+
+## Inicio rápido
+
+### Primera vez
+
+```bash
+git clone https://github.com/yordycg/biblioteca-viva.git
+cd biblioteca-viva
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed
+python manage.py runserver 0.0.0.0:8000
+```
+
+Abrir `http://localhost:8000`.
+
+### Si ya tienes el entorno
+
+```bash
+cd biblioteca-viva
+source .venv/bin/activate
+python manage.py runserver 0.0.0.0:8000
+```
+
+Si la base está vacía:
+
+```bash
+python manage.py migrate
+python manage.py seed
+```
+
+Para reiniciar los datos: `python manage.py seed --reset`.
+
+Para acceder desde un teléfono en la misma red:
+
+```bash
+DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" python manage.py runserver 0.0.0.0:8000
+```
+
+## Credenciales ficticias
+
+| Rol | Usuario | Contraseña |
+|---|---|---|
+| Estudiante | `estudiante1@example.com` | `demo1234` |
+| Estudiante | `estudiante2@example.com` | `demo1234` |
+| Bibliotecario | `bibliotecario1@example.com` | `demo1234` |
+
+## Pantallas para revisar
+
+| Pantalla | Ruta | Qué revisar |
+|---|---|---|
+| Login | `/login/` | Formulario, mensajes de error |
+| Búsqueda | `/buscar/` | Filtros, tarjetas, estado vacío |
+| Libros | `/buscar/?vista=libros` | Pestaña de libros: carátulas, filtro por título/autor y género |
+| Ficha de libro | `/libros/<id>/` | Datos bibliográficos y préstamo por 3, 7 o 14 días |
+| Reserva | clic en “Reservar bloque” | Detalle y confirmación |
+| QR | `/reserva/<id>/qr/` | QR legible e ID |
+| Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
+| Bibliotecario | `/bibliotecario/` | KPIs, agenda, ocupación por bloque, inventario, filtros y validación QR |
+| Admin | `/admin/` | Solo para desarrollo; no es parte del flujo |
+
+## Revisión por rol
+
+| Rol | Dónde revisar | Qué entregar |
+|---|---|---|
+| Vicente (UI) | `/login/`, `/buscar/`, reserva, QR y `/bibliotecario/`; DevTools en 360 y 1280 | 3 capturas + 3 observaciones |
+| Héctor (backend) | `reservas/models.py`, `reservas/services.py`, `reservas/management/commands/seed.py`, `scripts/`; ejecutar `seed`, `demo_flujo` y `simular_retraso` | Nota de 1 página + salida de scripts |
+| Héctor (medición) | `python scripts/medir_rendimiento.py` | Salida con promedio y máximo |
+| Gerald (QA) | App + `docs/week-03/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
+| Lucas (docs) | `README.md` + informe SEM-03 | Documentos finales en Drive |
+| Yordy (integración) | `manage.py check`, `manage.py test` y flujo completo | PR actualizado, demo y tag |
+
+## Problemas comunes
+
+- **Puerto ocupado:** `python manage.py runserver 8001`.
+- **`DisallowedHost`:** agrega la IP a `DJANGO_ALLOWED_HOSTS`.
+- **CSRF en el teléfono:** agrega el origen a `DJANGO_CSRF_TRUSTED_ORIGINS`.
+- **No hay usuarios:** `python manage.py migrate && python manage.py seed`.
+- **Datos sucios:** `python manage.py seed --reset`.
+- **Login falla:** usa `estudiante1@example.com` / `demo1234`.
+
+## Flujo principal
+
+1. El estudiante inicia sesión.
+2. Busca por tipo, fecha y bloque, o cambia a la pestaña Libros para un préstamo.
+3. Selecciona un recurso disponible y confirma la reserva.
+4. Se muestra el QR con el ID `RSV-NNNN`.
+5. El bibliotecario ingresa el código manualmente y confirma la entrega.
+6. El bibliotecario registra la devolución; si es tardía, se aplica una sanción de 7 días.
+
+## Scripts de demo
+
+```bash
+.venv/bin/python scripts/demo_dashboard.py
+.venv/bin/python scripts/demo_flujo.py
+.venv/bin/python scripts/simular_retraso.py
+.venv/bin/python scripts/medir_rendimiento.py
+```
+
+- `demo_dashboard.py` carga reservas, préstamos y una sanción ficticia para ver el panel del bibliotecario.
+- `demo_flujo.py` recorre búsqueda → reserva → QR → entrega → devolución.
+- `simular_retraso.py` fuerza una devolución a las 11:01 y muestra la sanción.
+- `medir_rendimiento.py` mide 20 reservas + QR a nivel de servicio (medición inicial de RNF-01).
+
+## Modo demostración
+
+Para probar RF-07 sin esperar la hora real:
+
+```bash
+# Entrega y devolución dentro del bloque
+DEMO_MODE=1 DEMO_NOW=2026-11-10T10:45:00 python manage.py runserver 0.0.0.0:8000
+
+# Devolución tardía (sanción)
+DEMO_MODE=1 DEMO_NOW=2026-11-12T11:01:00 python manage.py runserver 0.0.0.0:8000
+```
+
+`DEMO_MODE` desactiva la validación estricta de fecha/hora y `DEMO_NOW` fija la hora de la aplicación. No usar en producción.
+
+Con `DEMO_MODE=1`, la búsqueda y el panel del bibliotecario abren en la fecha de
+`DEMO_NOW`, de modo que la reserva de ejemplo del seed queda a la vista.
+
+## Interfaz
+
+El rediseño de la semana 3 se implementó con CSS propio: no hay Tailwind, CDN,
+Google Fonts ni imágenes remotas, así que la aplicación se ve igual sin conexión.
+
+- Tokens y componentes: [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md).
+- Estilos: `reservas/static/reservas/styles.css`.
+- Logo institucional: `reservas/static/reservas/img/ipvg-logo.png` (copia del
+  logo oficial; procedencia, hash y paleta medida en el sistema de diseño).
+- Iconos: sprite SVG inline en `reservas/templates/reservas/_icons.html`.
+- Interacción opcional: `reservas/static/reservas/app.js` (mostrar contraseña,
+  cargar credenciales de demostración, confirmar devolución). Sin JavaScript, los
+  formularios siguen funcionando.
+
+Para revisar la responsividad, abre las pantallas a 360×800 y 1280×800 y compara
+con `docs/week-03/evidence/rnf-02/`.
+
+## Datos y seguridad
+
+- Todos los datos son ficticios.
+- No se incluyen credenciales, tokens ni datos personales reales.
+- Las contraseñas se almacenan con el hash de Django.
+- `db.sqlite3` y `.env` están fuera de Git.
+- El QR se valida por ingreso manual; la cámara queda como mejora futura.
 
 ## Documentación
 
@@ -21,21 +201,11 @@ Repositorio de la solución informática y documentación para la Evaluación 3 
 - [`docs/week-01/02-requisitos.md`](docs/week-01/02-requisitos.md)
 - [`docs/week-01/03-plan-calidad.md`](docs/week-01/03-plan-calidad.md)
 - [`docs/week-02/README.md`](docs/week-02/README.md)
-- [`docs/week-02/checklist-diseno.md`](docs/week-02/checklist-diseno.md)
-- [`docs/week-02/qa/matriz-trazabilidad.md`](docs/week-02/qa/matriz-trazabilidad.md)
-- [`docs/week-02/qa/casos-prueba.md`](docs/week-02/qa/casos-prueba.md)
+- [`docs/week-03/README.md`](docs/week-03/README.md)
+- [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md)
+- [`docs/week-03/qa/casos-prueba.md`](docs/week-03/qa/casos-prueba.md)
+- [`docs/week-03/qa/matriz-trazabilidad.md`](docs/week-03/qa/matriz-trazabilidad.md)
 
-## Cómo ejecutar (cuando el MVP esté implementado)
+## Uso de IA
 
-```bash
-npm install
-npm start
-```
-
-La aplicación quedará disponible en `http://localhost:3000`. Hasta la semana 3 el repositorio contiene solo documentación y artefactos de diseño.
-
-## Datos y seguridad
-
-- Todos los datos son ficticios.
-- No se incluyen credenciales, tokens ni datos personales reales.
-- Las variables de entorno se documentan en `.env.example`.
+El docente indicó que el equipo podía usar IA para construir el proyecto. El código fue generado con asistencia de IA bajo especificación del equipo y revisado por sus integrantes. La declaración completa se incluye en el informe SEM-03. El material de trabajo interno no se versiona.

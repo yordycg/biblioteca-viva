@@ -1,0 +1,542 @@
+{% extends "reservas/base.html" %}
+{% block title %}Panel bibliotecario · BibliotecaViva{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="page-head__body">
+    <p class="eyebrow">Circulación y préstamos</p>
+    <h1>Panel de gestión</h1>
+    <p class="page-head__sub">
+      Valida el código QR para entregar el recurso y registra la devolución al
+      final del bloque.
+    </p>
+  </div>
+  <div class="page-head__aside">
+    <div class="quota">
+      <div class="quota__ring" style="--pct: {{ resumen.porcentaje }}%;">
+        <span>{{ resumen.finalizadas }}/{{ resumen.total }}</span>
+      </div>
+      <div>
+        <span class="quota__label">Procesadas hoy</span>
+        <span class="quota__value">{{ hoy|date:"d-m-Y" }} · {{ resumen.en_uso }} en uso</span>
+      </div>
+    </div>
+    <span class="req">RF-04 · RF-05</span>
+  </div>
+</section>
+
+{% if sanciones_hoy %}
+  <div class="notice notice--danger" role="alert">
+    <span class="notice__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </span>
+    <div>
+      <p class="notice__title">Sanción aplicada hoy <span class="req">RF-07</span></p>
+      <p class="notice__text">
+        {% for sancion in sanciones_hoy %}
+          {{ sancion.usuario.get_full_name|default:sancion.usuario.email }} queda
+          inhabilitado hasta el {{ sancion.fin|date:"d-m-Y H:i" }}{% if not forloop.last %} · {% endif %}
+        {% endfor %}
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+<section class="stats" aria-label="Resumen operativo de hoy">
+  <div class="stat">
+    <span class="stat__value">{{ resumen_panel.reservas_hoy }}</span>
+    <span class="stat__label">Reservas hoy</span>
+  </div>
+  <div class="stat stat--warn">
+    <span class="stat__value">{{ resumen_panel.pendientes_entrega }}</span>
+    <span class="stat__label">Pendientes de entrega</span>
+  </div>
+  <div class="stat stat--busy">
+    <span class="stat__value">{{ resumen_panel.en_uso }}</span>
+    <span class="stat__label">En uso</span>
+  </div>
+  <div class="stat">
+    <span class="stat__value">{{ resumen_panel.prestamos_activos }}</span>
+    <span class="stat__label">Préstamos de libros</span>
+  </div>
+  <div class="stat stat--warn">
+    <span class="stat__value">{{ resumen_panel.vencen_hoy }}</span>
+    <span class="stat__label">Vencen hoy</span>
+  </div>
+  <div class="stat stat--off">
+    <span class="stat__value">{{ resumen_panel.vencidos }}</span>
+    <span class="stat__label">Préstamos vencidos</span>
+  </div>
+  <div class="stat stat--off">
+    <span class="stat__value">{{ resumen_panel.sanciones_activas }}</span>
+    <span class="stat__label">Sanciones activas</span>
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="entregas-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
+        <h2 id="entregas-title" style="font-size: 1.125rem;">Próximas entregas</h2>
+      </div>
+      <span class="req">RF-04</span>
+    </div>
+    {% if resumen_panel.proximas_entregas %}
+      <ul class="agenda">
+        {% for item in resumen_panel.proximas_entregas %}
+          <li>
+            <span class="agenda__time">{{ item.get_bloque_display }}</span>
+            <div>
+              <strong>{{ item.recurso.nombre }}</strong>
+              <span class="hint-inline">{{ item.codigo }} · {{ item.usuario.get_full_name|default:item.usuario.email }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="hint-inline">No hay entregas pendientes para hoy.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="devoluciones-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+        <h2 id="devoluciones-title" style="font-size: 1.125rem;">Devoluciones de libros</h2>
+      </div>
+      <span class="req">RF-05</span>
+    </div>
+    {% if resumen_panel.devoluciones %}
+      <ul class="agenda">
+        {% for item in resumen_panel.devoluciones %}
+          <li>
+            <span class="agenda__time">{{ item.fecha_vencimiento|date:"d-m" }}</span>
+            <div>
+              <strong>{{ item.recurso.nombre }}</strong>
+              <span class="hint-inline">{{ item.codigo }} · {{ item.usuario.get_full_name|default:item.usuario.email }}</span>
+            </div>
+            {% if item.fecha_vencimiento < hoy %}
+              <span class="badge badge--sancion">Vencido</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="hint-inline">No hay devoluciones de libros pendientes.</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card" aria-labelledby="ocupacion-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+      <h2 id="ocupacion-title" style="font-size: 1.125rem;">Ocupación por bloque</h2>
+    </div>
+    <span class="req">RF-01</span>
+  </div>
+  <div class="occupancy">
+    {% for bloque in resumen_panel.por_bloque %}
+      <div class="occupancy__row">
+        <span class="occupancy__time">{{ bloque.etiqueta }}</span>
+        <div class="occupancy__bar" role="img"
+             aria-label="{{ bloque.etiqueta }}: {{ bloque.reservadas }} reservados, {{ bloque.en_uso }} en uso, {{ bloque.libres }} libres">
+          <span class="occupancy__fill" style="width: {{ bloque.porcentaje }}%;"></span>
+        </div>
+        <span class="hint-inline">
+          {{ bloque.reservadas }} reservados · {{ bloque.en_uso }} en uso · {{ bloque.libres }} libres
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="card" aria-labelledby="sanciones-activas-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+      <h2 id="sanciones-activas-title" style="font-size: 1.125rem;">Sanciones activas</h2>
+    </div>
+    <span class="req">RF-07</span>
+  </div>
+  {% if resumen_panel.sanciones %}
+    <ul class="agenda">
+      {% for sancion in resumen_panel.sanciones %}
+        <li>
+          <span class="agenda__time">Hasta {{ sancion.fin|date:"d-m" }}</span>
+          <div>
+            <strong>{{ sancion.usuario.get_full_name|default:sancion.usuario.email }}</strong>
+            <span class="hint-inline">{{ sancion.motivo }} · vence {{ sancion.fin|date:"d-m-Y H:i" }}</span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="hint-inline">No hay sanciones activas.</p>
+  {% endif %}
+</section>
+
+<section class="card" aria-labelledby="inventario-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg>
+      <h2 id="inventario-title" style="font-size: 1.125rem;">Estado del inventario</h2>
+    </div>
+    <span class="req">RF-01 · RF-04</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat__value">{{ inventario.resumen.total }}</span>
+      <span class="stat__label">Recursos</span>
+    </div>
+    <div class="stat stat--ok">
+      <span class="stat__value">{{ inventario.resumen.disponibles }}</span>
+      <span class="stat__label">Disponibles hoy</span>
+    </div>
+    <div class="stat stat--warn">
+      <span class="stat__value">{{ inventario.resumen.reservados }}</span>
+      <span class="stat__label">Reservados</span>
+    </div>
+    <div class="stat stat--busy">
+      <span class="stat__value">{{ inventario.resumen.en_uso }}</span>
+      <span class="stat__label">En uso</span>
+    </div>
+    <div class="stat stat--off">
+      <span class="stat__value">{{ inventario.resumen.no_disponibles }}</span>
+      <span class="stat__label">No disponibles</span>
+    </div>
+  </div>
+
+  <p class="hint-inline">
+    {{ inventario.fecha|date:"d-m-Y" }} · Ocupación del día:
+    <strong>{{ inventario.resumen.porcentaje }}%</strong>
+    ({{ inventario.resumen.ocupados }} de {{ inventario.resumen.total }} recursos con
+    reserva activa).
+  </p>
+
+  {% if inventario.filas %}
+    <div class="timeline">
+      <div class="timeline__legend" aria-label="Leyenda de estados">
+        <span class="timeline__legend-item timeline__legend-item--disponible">Disponible</span>
+        <span class="timeline__legend-item timeline__legend-item--reservado">Reservado</span>
+        <span class="timeline__legend-item timeline__legend-item--en_uso">En uso</span>
+        <span class="timeline__legend-item timeline__legend-item--no_disponible">No disponible</span>
+      </div>
+
+      {% for fila in inventario.filas %}
+        <div class="timeline__row">
+          <div class="timeline__resource">
+            <strong>{{ fila.recurso.nombre }}</strong>
+            <span class="hint-inline">
+              {{ fila.recurso.get_tipo_display }}{% if fila.recurso.codigo %} · {{ fila.recurso.codigo }}{% endif %}
+            </span>
+          </div>
+
+          {% if fila.recurso.tipo == "LIBRO" %}
+            <div class="timeline__book">
+              {% if fila.estado == "EN_USO" %}
+                <span class="badge badge--uso">En uso</span>
+              {% elif fila.estado == "RESERVADO" %}
+                <span class="badge badge--reservada">Reservado</span>
+              {% else %}
+                <span class="badge badge--libre">Disponible</span>
+              {% endif %}
+              {% if fila.prestamo %}
+                <span class="hint-inline">hasta {{ fila.prestamo.fecha_vencimiento|date:"d-m-Y" }}</span>
+                {% if fila.prestamo.fecha_vencimiento < inventario.fecha %}
+                  <span class="badge badge--sancion">Vencido</span>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="timeline__track" role="list" aria-label="Bloques de {{ fila.recurso.nombre }}">
+              {% for bloque in fila.bloques %}
+                <span class="timeline__slot timeline__slot--{{ bloque.estado|lower }}"
+                      role="listitem"
+                      title="{{ bloque.etiqueta }} — {{ bloque.estado|lower }}{% if bloque.reserva %} · {{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}{% endif %}"
+                      aria-label="{{ bloque.etiqueta }}: {{ bloque.estado|lower }}{% if bloque.reserva %} · {{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}{% endif %}">
+                  <span class="timeline__time">{{ bloque.etiqueta|slice:":2" }}</span>
+                </span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>No hay recursos registrados en el inventario.</p>
+    </div>
+  {% endif %}
+
+  {% if inventario.por_tipo %}
+    <p class="hint-inline">
+      {% for tipo in inventario.por_tipo %}
+        {{ tipo.etiqueta }}: {{ tipo.total }} en total, {{ tipo.disponibles }} disponibles{% if not forloop.last %} · {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
+</section>
+
+<section class="card" aria-labelledby="validacion-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
+      <h2 id="validacion-title" style="font-size: 1.125rem;">Recepción y validación</h2>
+    </div>
+    <span class="req">RF-04</span>
+  </div>
+
+  <form method="get" action="{% url 'bibliotecario' %}">
+    <div class="filters" style="grid-template-columns: 1fr;">
+      <div class="field">
+        <label class="field__label" for="{{ form.codigo.id_for_label }}">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-badge"></use></svg>
+          Código del QR o identificador de reserva
+        </label>
+        <div class="row">
+          <div style="flex: 1 1 14rem;">{{ form.codigo }}</div>
+          <button class="btn" type="submit">
+            <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+            Buscar reserva
+          </button>
+        </div>
+        <p class="field__help">
+          Ingreso manual del código. La lectura con cámara queda como mejora
+          futura.
+        </p>
+      </div>
+    </div>
+  </form>
+
+  {% if reserva %}
+    <hr class="divider">
+    <article class="card" style="border-left: 4px solid var(--color-primary);">
+      <div class="card__head">
+        <div>
+          <p class="eyebrow">Ticket validado</p>
+          <h3>{{ reserva.codigo }} · {{ reserva.recurso.nombre }}</h3>
+        </div>
+        {% if reserva.estado == "RESERVADA" %}
+          <span class="badge badge--reservada">{{ reserva.get_estado_display }}</span>
+        {% elif reserva.estado == "EN_USO" %}
+          <span class="badge badge--en-uso">{{ reserva.get_estado_display }}</span>
+        {% else %}
+          <span class="badge badge--finalizada">{{ reserva.get_estado_display }}</span>
+        {% endif %}
+      </div>
+
+      <dl class="data-list">
+        <div>
+          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg></span>
+          <div>
+            <dt>Solicitante</dt>
+            <dd>{{ reserva.usuario.get_full_name|default:reserva.usuario.email }}</dd>
+          </div>
+        </div>
+        <div>
+          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
+          <div>
+            <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
+            <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }} · {{ reserva.fecha|date:"d-m-Y" }}{% endif %}</dd>
+          </div>
+        </div>
+      </dl>
+
+      {% if qr.utilizado %}
+        <p class="alert alert--info">
+          <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+          <span>Este código ya fue utilizado para iniciar el préstamo.</span>
+        </p>
+      {% endif %}
+
+      <div class="card__foot">
+        {% if reserva.estado == "RESERVADA" %}
+          <form method="post" action="{% url 'validar' %}">
+            {% csrf_token %}
+            <input type="hidden" name="codigo" value="{{ qr.codigo }}">
+            <button class="btn" type="submit">
+              <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+              Confirmar entrega
+            </button>
+          </form>
+        {% elif reserva.estado == "EN_USO" %}
+          <form id="form-devolver-ticket" method="post" action="{% url 'devolver' %}">
+            {% csrf_token %}
+            <input type="hidden" name="codigo" value="{{ qr.codigo }}">
+            <button class="btn btn--danger" type="submit"
+                    data-modal-form="form-devolver-ticket"
+                    data-modal-detail="{{ reserva.codigo }} · {{ reserva.recurso.nombre }}">
+              <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+              Registrar devolución
+            </button>
+          </form>
+        {% else %}
+          <p class="hint-inline">La reserva ya está {{ reserva.get_estado_display|lower }}. No hay acciones pendientes.</p>
+        {% endif %}
+      </div>
+    </article>
+  {% elif codigo %}
+    <p class="alert alert--error" role="alert">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+      <span>No existe una reserva con el código <strong>{{ codigo }}</strong>. Verifica el dato o el QR presentado.</span>
+    </p>
+  {% endif %}
+</section>
+
+<section class="card" aria-labelledby="filtros-panel-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+      <h2 id="filtros-panel-title" style="font-size: 1.125rem;">Filtrar reservas del día</h2>
+    </div>
+    <span class="req">RF-04</span>
+  </div>
+  <form method="get" action="{% url 'bibliotecario' %}" class="filters filters--panel">
+    <div class="field">
+      <label class="field__label" for="id_estado_filtro">Estado</label>
+      <select id="id_estado_filtro" name="estado" class="campo">
+        <option value="">Todos</option>
+        {% for valor, etiqueta in estados %}
+          <option value="{{ valor }}"{% if valor == estado_filtro %} selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="id_bloque_filtro">Bloque</label>
+      <select id="id_bloque_filtro" name="bloque" class="campo">
+        <option value="">Todos</option>
+        {% for valor, etiqueta in bloques %}
+          <option value="{{ valor }}"{% if valor == bloque_filtro %} selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="id_texto_filtro">Buscar</label>
+      <input id="id_texto_filtro" class="campo" type="search" name="q"
+             value="{{ texto_filtro }}" placeholder="Código, recurso o usuario">
+    </div>
+    <div class="field field--actions">
+      <div class="row">
+        <button class="btn" type="submit">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+          Filtrar
+        </button>
+        <a class="btn btn--ghost" href="{% url 'bibliotecario' %}">Limpiar</a>
+      </div>
+    </div>
+  </form>
+</section>
+
+<section class="stack" aria-labelledby="dia-title">
+  <div class="section-title">
+    <h2 id="dia-title">Reservas del día</h2>
+    <p class="section-title__meta">
+      {{ hoy|date:"d-m-Y" }} · {{ total_filtrado }} de {{ resumen.total }} registro{{ resumen.total|pluralize:"s" }}
+    </p>
+  </div>
+
+  {% if reservas_dia %}
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Tabla de control de reservas del {{ hoy|date:"d-m-Y" }}.</caption>
+        <thead>
+          <tr>
+            <th scope="col">ID reserva</th>
+            <th scope="col">Recurso</th>
+            <th scope="col">Solicitante</th>
+            <th scope="col">Bloque / devolución</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in reservas_dia %}
+            <tr>
+              <td data-label="ID reserva">{{ item.codigo }}</td>
+              <td data-label="Recurso">
+                {{ item.recurso.nombre }}
+                {% if item.recurso.codigo %}<br><span class="hint-inline">{{ item.recurso.codigo }}</span>{% endif %}
+              </td>
+              <td data-label="Solicitante">{{ item.usuario.get_full_name|default:item.usuario.email }}</td>
+              <td data-label="Bloque">
+                {% if item.modalidad == "PRESTAMO" %}Préstamo hasta {{ item.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ item.get_bloque_display }}{% endif %}
+              </td>
+              <td data-label="Estado">
+                {% if item.estado == "RESERVADA" %}
+                  <span class="badge badge--reservada">{{ item.get_estado_display }}</span>
+                {% elif item.estado == "EN_USO" %}
+                  <span class="badge badge--en-uso">{{ item.get_estado_display }}</span>
+                {% elif item.estado == "CANCELADA" %}
+                  <span class="badge badge--sancion">{{ item.get_estado_display }}</span>
+                {% else %}
+                  <span class="badge badge--finalizada">{{ item.get_estado_display }}</span>
+                {% endif %}
+              </td>
+              <td data-label="Acciones">
+                <div class="data__actions">
+                  {% if item.estado == "RESERVADA" and item.qr %}
+                    <form method="post" action="{% url 'validar' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="codigo" value="{{ item.qr.codigo }}">
+                      <button class="btn btn--sm" type="submit">Entregar</button>
+                    </form>
+                  {% elif item.estado == "EN_USO" and item.qr %}
+                    <form id="form-devolver-{{ item.id }}" method="post" action="{% url 'devolver' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="codigo" value="{{ item.qr.codigo }}">
+                      <button class="btn btn--sm btn--danger" type="submit"
+                              data-modal-form="form-devolver-{{ item.id }}"
+                              data-modal-detail="{{ item.codigo }} · {{ item.recurso.nombre }}">
+                        Devolución
+                      </button>
+                    </form>
+                  {% else %}
+                    <span class="hint-inline">—</span>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <span class="empty__icon" aria-hidden="true">
+        <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+      </span>
+      <p>No hay reservas que coincidan con el filtro.</p>
+      <p class="hint-inline">Prueba con otro estado, bloque o término de búsqueda.</p>
+      <a class="btn btn--secondary" href="{% url 'bibliotecario' %}">Limpiar filtros</a>
+    </div>
+  {% endif %}
+</section>
+
+<dialog class="modal" id="modal-devolucion" aria-labelledby="modal-title">
+  <div class="modal__head">
+    <h2 id="modal-title" style="font-size: 1.125rem;">Confirmar devolución</h2>
+    <button class="input-group__action" type="button" data-modal-close aria-label="Cerrar">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </button>
+  </div>
+  <div class="modal__body">
+    <p><strong data-modal-detail></strong></p>
+    <p class="hint-inline">
+      La reserva quedará <strong>Finalizada</strong> y el recurso volverá a estar
+      disponible. Si la devolución es posterior al plazo acordado, se aplica una
+      sanción de 7 días al solicitante.
+    </p>
+    <span class="req">RF-05 · RF-07</span>
+  </div>
+  <div class="modal__foot">
+    <button class="btn btn--secondary" type="button" data-modal-close>Cancelar</button>
+    <button class="btn btn--danger" type="button" data-modal-confirm>
+      <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+      Registrar devolución
+    </button>
+  </div>
+</dialog>
+{% endblock %}
