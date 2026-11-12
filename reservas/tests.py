@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from . import services
 from .forms import BusquedaForm, ReservaForm
-from .models import QR, Recurso, Reserva, Sancion, Usuario
+from .models import Libro, QR, Recurso, Reserva, Sancion, Usuario
 
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
@@ -255,6 +255,119 @@ class InventarioTests(TestCase):
         tipos = {t["tipo"]: t for t in inventario["por_tipo"]}
         self.assertEqual(tipos[Recurso.Tipo.SALA]["total"], 2)
         self.assertEqual(tipos[Recurso.Tipo.EQUIPO]["no_disponibles"], 1)
+
+
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
+class LibroTests(TestCase):
+    """Catálogo y reserva de libros (RF-01, RF-02)."""
+
+    def setUp(self):
+        self.hoy = services.hoy()
+        self.usuario = Usuario.objects.create_user(
+            username="libro@example.com",
+            email="libro@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.bibliotecario = Usuario.objects.create_user(
+            username="biblioteca@example.com",
+            email="biblioteca@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.BIBLIOTECARIO,
+        )
+        self.libro = Libro.objects.create(
+            nombre="Don Quijote de la Mancha",
+            autor="Miguel de Cervantes",
+            editorial="Ediciones BibliotecaViva",
+            anio=1605,
+            isbn="978-956-00-0001-1",
+            genero="Novela",
+            paginas=863,
+            ubicacion="Estante A-1",
+            codigo="lib-001",
+            portada="reservas/covers/quijote.svg",
+        )
+
+    def test_libro_se_crea_con_tipo_libro(self):
+        self.assertEqual(self.libro.tipo, Recurso.Tipo.LIBRO)
+        self.assertEqual(self.libro.get_tipo_display(), "Libro")
+
+    def test_catalogo_filtra_por_autor(self):
+        tarjetas = services.catalogo_libros(self.hoy, "Cervantes")
+        self.assertEqual([t["libro"].id for t in tarjetas], [self.libro.id])
+
+    def test_catalogo_filtra_por_genero(self):
+        tarjetas = services.catalogo_libros(self.hoy, genero="Novela")
+        self.assertEqual([t["libro"].id for t in tarjetas], [self.libro.id])
+        self.assertEqual(
+            services.catalogo_libros(self.hoy, genero="Terror"), []
+        )
+
+    def test_catalogo_cuenta_bloques_libres(self):
+        services.crear_reserva(
+            self.usuario, self.libro, self.hoy, "10:00-11:00"
+        )
+        tarjeta = services.catalogo_libros(self.hoy)[0]
+        self.assertEqual(tarjeta["libres"], 2)
+        estados = {b["clave"]: b["estado"] for b in tarjeta["bloques"]}
+        self.assertEqual(estados["10:00-11:00"], "RESERVADO")
+
+    def test_inventario_incluye_libros(self):
+        inventario = services.estado_inventario(self.hoy)
+        tipos = {t["tipo"]: t for t in inventario["por_tipo"]}
+        self.assertEqual(tipos[Recurso.Tipo.LIBRO]["total"], 1)
+
+    def test_catalogo_lista_libros_con_portada(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get("/libros/")
+        self.assertContains(respuesta, "Don Quijote de la Mancha")
+        self.assertContains(respuesta, "Miguel de Cervantes")
+        self.assertContains(respuesta, "reservas/covers/quijote.svg")
+        self.assertContains(respuesta, "Catálogo de libros")
+
+    def test_ficha_libro_muestra_metadatos_y_bloques(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(f"/libros/{self.libro.id}/")
+        self.assertContains(respuesta, "978-956-00-0001-1")
+        self.assertContains(respuesta, "Miguel de Cervantes")
+        self.assertContains(respuesta, "Disponibilidad de hoy")
+        self.assertContains(respuesta, "Reservar")
+
+    def test_reservar_libro_genera_qr(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.post(
+            f"/reservar/{self.libro.id}/",
+            {"fecha": self.hoy.isoformat(), "bloque": "10:00-11:00"},
+        )
+        reserva = Reserva.objects.get(recurso=self.libro)
+        self.assertRedirects(
+            respuesta,
+            f"/reserva/{reserva.pk}/qr/",
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(reserva.estado, Reserva.Estado.RESERVADA)
+        self.assertTrue(QR.objects.filter(reserva=reserva).exists())
+
+    def test_busqueda_tipo_libro_muestra_autor(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "tipo": Recurso.Tipo.LIBRO,
+                "fecha": self.hoy.isoformat(),
+                "bloque": "10:00-11:00",
+            },
+        )
+        self.assertContains(respuesta, "Don Quijote de la Mancha")
+        self.assertContains(respuesta, "Miguel de Cervantes")
+        self.assertContains(respuesta, "reservas/covers/quijote.svg")
+
+    def test_bibliotecario_no_ve_el_catalogo(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/libros/")
+        self.assertRedirects(
+            respuesta, "/bibliotecario/", fetch_redirect_response=False
+        )
 
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
