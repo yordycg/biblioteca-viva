@@ -147,7 +147,21 @@ class VentanaReservaTests(TestCase):
 
     def test_bloques_disponibles_filtra_iniciados_y_sin_antelacion(self):
         valores = [valor for valor, _ in services.bloques_disponibles(self.fecha)]
-        self.assertEqual(valores, ["15:00-16:00"])
+        self.assertEqual(
+            valores,
+            [
+                "12:00-13:00",
+                "13:00-14:00",
+                "14:00-15:00",
+                "15:00-16:00",
+                "16:00-17:00",
+                "17:00-18:00",
+                "18:00-19:00",
+                "19:00-20:00",
+                "20:00-21:00",
+                "21:00-22:00",
+            ],
+        )
 
     def test_crear_reserva_rechaza_bloque_sin_antelacion(self):
         with self.assertRaises(ValidationError):
@@ -191,7 +205,9 @@ class VentanaReservaTests(TestCase):
         )
         self.assertEqual(respuesta.status_code, 200)
         valores = [b["valor"] for b in respuesta.json()["bloques"]]
-        self.assertEqual(valores, ["15:00-16:00"])
+        self.assertEqual(valores[0], "12:00-13:00")
+        self.assertEqual(valores[-1], "21:00-22:00")
+        self.assertEqual(len(valores), 10)
 
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
@@ -365,7 +381,8 @@ class LibroTests(TestCase):
     def test_busqueda_libros_marca_campo_con_error(self):
         self.client.force_login(self.usuario)
         respuesta = self.client.get(
-            "/buscar/", {"vista": "libros", "fecha": "", "dias": ""}
+            "/buscar/",
+            {"vista": "libros", "filtrar": "1", "fecha": "", "dias": ""},
         )
         self.assertContains(respuesta, "field--error")
         self.assertContains(respuesta, "Elige una fecha de retiro.")
@@ -378,7 +395,13 @@ class LibroTests(TestCase):
         self.client.force_login(self.usuario)
         respuesta = self.client.get(
             "/buscar/",
-            {"vista": "recursos", "tipo": "SALA", "fecha": "", "bloque": ""},
+            {
+                "vista": "recursos",
+                "filtrar": "1",
+                "tipo": "SALA",
+                "fecha": "",
+                "bloque": "",
+            },
         )
         self.assertContains(respuesta, "field--error")
         self.assertContains(respuesta, "Elige una fecha.")
@@ -507,6 +530,126 @@ class LibroTests(TestCase):
 
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
+class CatalogoInicialTests(TestCase):
+    """Catálogo inicial con estado y filtros explícitos."""
+
+    def setUp(self):
+        self.hoy = services.hoy()
+        self.usuario = Usuario.objects.create_user(
+            username="catalogo@example.com",
+            email="catalogo@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.bibliotecario = Usuario.objects.create_user(
+            username="panel@example.com",
+            email="panel@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.BIBLIOTECARIO,
+        )
+        self.sala = Recurso.objects.create(
+            nombre="Sala Catálogo", tipo=Recurso.Tipo.SALA, capacidad=6
+        )
+        self.equipo = Recurso.objects.create(
+            nombre="Proyector Catálogo", tipo=Recurso.Tipo.EQUIPO
+        )
+        self.libro = Libro.objects.create(
+            nombre="Libro Catálogo",
+            autor="Autora de Prueba",
+            genero="Novela",
+            portada="reservas/covers/quijote.svg",
+        )
+
+    def test_hay_trece_bloques_de_09_a_22(self):
+        self.assertEqual(len(Reserva.BLOQUES), 13)
+        self.assertEqual(Reserva.BLOQUES[0][0], "09:00-10:00")
+        self.assertEqual(Reserva.BLOQUES[-1][0], "21:00-22:00")
+
+    def test_libros_inicial_muestra_todo_sin_errores(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get("/buscar/", {"vista": "libros"})
+        self.assertContains(respuesta, "Libro Catálogo")
+        self.assertNotContains(respuesta, "field--error")
+        self.assertNotContains(respuesta, "Elige una fecha de retiro.")
+
+    def test_recursos_inicial_muestra_todos_sin_errores(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get("/buscar/", {"vista": "recursos"})
+        self.assertContains(respuesta, "Sala Catálogo")
+        self.assertContains(respuesta, "Proyector Catálogo")
+        self.assertNotContains(respuesta, "field--error")
+        self.assertNotContains(respuesta, "Elige una fecha.")
+
+    def test_filtros_solo_validan_con_filtrar(self):
+        self.client.force_login(self.usuario)
+        sin_enviar = self.client.get(
+            "/buscar/", {"vista": "libros", "fecha": "", "dias": ""}
+        )
+        self.assertNotContains(sin_enviar, "field--error")
+        enviado = self.client.get(
+            "/buscar/",
+            {"vista": "libros", "filtrar": "1", "fecha": "", "dias": ""},
+        )
+        self.assertContains(enviado, "field--error")
+
+    def test_recurso_ocupado_visible_con_estado(self):
+        Reserva.objects.create(
+            usuario=self.usuario,
+            recurso=self.sala,
+            fecha=self.hoy,
+            bloque="10:00-11:00",
+        )
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get("/buscar/", {"vista": "recursos"})
+        self.assertContains(respuesta, "Sala Catálogo")
+        self.assertContains(respuesta, "Reservado")
+
+    def test_solo_disponibles_oculta_ocupados(self):
+        Reserva.objects.create(
+            usuario=self.usuario,
+            recurso=self.sala,
+            fecha=self.hoy,
+            bloque="10:00-11:00",
+        )
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "vista": "recursos",
+                "filtrar": "1",
+                "tipo": "",
+                "fecha": self.hoy.isoformat(),
+                "bloque": "10:00-11:00",
+                "solo_disponibles": "on",
+            },
+        )
+        self.assertNotContains(respuesta, "Sala Catálogo")
+        self.assertContains(respuesta, "Proyector Catálogo")
+
+    def test_panel_muestra_timeline_de_bloques(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/bibliotecario/")
+        html = respuesta.content.decode()
+        self.assertContains(respuesta, "timeline__track")
+        self.assertEqual(html.count('class="timeline__slot'), 26)
+
+    def test_default_salta_a_manana_sin_bloques(self):
+        fecha, bloque, cambio = services.fecha_y_bloque_por_defecto()
+        self.assertEqual(fecha, self.hoy)
+        self.assertEqual(bloque, "10:00-11:00")
+        self.assertFalse(cambio)
+
+
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T21:50:00")
+class SinBloquesHoyTests(TestCase):
+    def test_default_usa_manana(self):
+        fecha, bloque, cambio = services.fecha_y_bloque_por_defecto()
+        self.assertEqual(fecha, date(2026, 11, 13))
+        self.assertEqual(bloque, "09:00-10:00")
+        self.assertTrue(cambio)
+
+
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
 class InterfazTests(TestCase):
     """Comprobaciones de las vistas que sostienen la interfaz (RNF-02)."""
 
@@ -546,13 +689,15 @@ class InterfazTests(TestCase):
         respuesta = self.client.get(
             "/buscar/",
             {
+                "vista": "recursos",
+                "filtrar": "1",
                 "tipo": Recurso.Tipo.SALA,
                 "fecha": ayer.isoformat(),
                 "bloque": "10:00-11:00",
             },
         )
         self.assertContains(respuesta, "no puede ser anterior a hoy")
-        self.assertIsNone(respuesta.context["resultados"])
+        self.assertEqual(respuesta.context["recursos"], [])
 
     def test_confirmar_rechaza_fecha_pasada(self):
         self.client.force_login(self.estudiante)
