@@ -8,7 +8,7 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -48,15 +48,20 @@ def buscar(request):
     if _es_bibliotecario(request.user):
         return redirect("bibliotecario")
 
+    bloques_hoy = services.bloques_disponibles(services.hoy())
     inicial = {
         "tipo": Recurso.Tipo.SALA,
         "fecha": services.hoy(),
-        "bloque": "10:00-11:00",
+        "bloque": bloques_hoy[0][0] if bloques_hoy else "",
     }
     form = BusquedaForm(request.GET or None, initial=inicial)
     resultados = None
     fecha = None
     bloque = None
+    fecha_consulta = services.hoy()
+    if request.GET and form.is_valid():
+        fecha_consulta = form.cleaned_data["fecha"]
+    sin_bloques = not services.bloques_disponibles(fecha_consulta)
     if request.GET and form.is_valid():
         fecha = form.cleaned_data["fecha"]
         bloque = form.cleaned_data["bloque"]
@@ -77,7 +82,32 @@ def buscar(request):
                 if request.user.esta_sancionado(services.ahora())
                 else None
             ),
+            "sin_bloques": sin_bloques,
+            "min_antelacion": services.MIN_ANTELACION_MIN,
+            "max_dias": services.MAX_DIAS_RESERVA,
         },
+    )
+
+
+@login_required
+def bloques(request):
+    """Bloques disponibles para una fecha, para actualizar el filtro sin recargar."""
+    fecha = _fecha_legible(request.GET.get("fecha"))
+    if not fecha:
+        return JsonResponse(
+            {"error": "La fecha no es válida.", "bloques": []}, status=400
+        )
+    disponibles = services.bloques_disponibles(fecha)
+    return JsonResponse(
+        {
+            "fecha": fecha.isoformat(),
+            "bloques": [
+                {"valor": valor, "etiqueta": etiqueta}
+                for valor, etiqueta in disponibles
+            ],
+            "antelacion": services.MIN_ANTELACION_MIN,
+            "horizonte": services.MAX_DIAS_RESERVA,
+        }
     )
 
 
@@ -125,7 +155,16 @@ def confirmar(request, recurso_id):
         bloque = request.POST.get("bloque", "")
     else:
         fecha = _fecha_legible(request.GET.get("fecha")) or services.hoy()
-        bloque = request.GET.get("bloque", "10:00-11:00")
+        bloques_dia = services.bloques_disponibles(fecha)
+        bloque = request.GET.get("bloque", "") or (
+            bloques_dia[0][0] if bloques_dia else ""
+        )
+        if bloque not in dict(Reserva.BLOQUES) or not services.fecha_reservable(fecha) or not services.bloque_vigente(bloque, fecha):
+            messages.error(
+                request,
+                "El bloque seleccionado ya no está disponible. Elige otro horario.",
+            )
+            return redirect("buscar")
         form = ReservaForm(initial={"fecha": fecha, "bloque": bloque})
     return render(
         request,

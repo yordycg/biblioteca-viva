@@ -29,6 +29,54 @@
     });
   });
 
+  /* Actualizar los bloques disponibles al cambiar la fecha (RF-01) */
+  var fecha = document.getElementById("id_fecha");
+  var bloque = document.getElementById("id_bloque");
+  var aviso = document.getElementById("aviso-sin-bloques");
+
+  if (fecha && bloque) {
+    fecha.addEventListener("change", function () {
+      if (!fecha.value) {
+        return;
+      }
+      fetch("/buscar/bloques/?fecha=" + encodeURIComponent(fecha.value))
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          var actual = bloque.value;
+          bloque.innerHTML = "";
+          if (!data.bloques || !data.bloques.length) {
+            var vacio = document.createElement("option");
+            vacio.value = "";
+            vacio.textContent = "Sin bloques disponibles";
+            vacio.disabled = true;
+            vacio.selected = true;
+            bloque.appendChild(vacio);
+            if (aviso) {
+              aviso.style.display = "";
+            }
+            return;
+          }
+          data.bloques.forEach(function (item) {
+            var option = document.createElement("option");
+            option.value = item.valor;
+            option.textContent = item.etiqueta;
+            if (item.valor === actual) {
+              option.selected = true;
+            }
+            bloque.appendChild(option);
+          });
+          if (aviso) {
+            aviso.style.display = "none";
+          }
+        })
+        .catch(function () {
+          /* sin JS el formulario sigue validando en el servidor */
+        });
+    });
+  }
+
   /* Diálogo de confirmación de devolución */
   var dialog = document.getElementById("modal-devolucion");
   var pendingForm = null;

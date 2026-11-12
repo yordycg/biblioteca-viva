@@ -92,6 +92,7 @@
           {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
           {% elif form.tipo.errors %}{{ form.tipo.errors.0 }}
           {% elif form.bloque.errors %}{{ form.bloque.errors.0 }}
+          {% elif form.non_field_errors %}{{ form.non_field_errors.0 }}
           {% else %}Revisa los filtros: la fecha y el bloque son obligatorios.{% endif %}
         </span>
       </p>
@@ -111,6 +112,20 @@
     </p>
   </div>
 </div>
+
+<div class="notice notice--warning" id="aviso-sin-bloques"
+     role="alert"{% if not sin_bloques %} style="display: none;"{% endif %}>
+    <span class="notice__icon" aria-hidden="true">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </span>
+    <div>
+      <p class="notice__title">Sin bloques disponibles <span class="req">RF-01</span></p>
+      <p class="notice__text">
+        Para la fecha seleccionada no quedan bloques con la antelación mínima de
+        {{ min_antelacion }} minutos. Elige otra fecha.
+      </p>
+    </div>
+  </div>
 
 {% if resultados is not None %}
   <section aria-labelledby="resultados-title" class="stack">

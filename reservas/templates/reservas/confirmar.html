@@ -100,6 +100,7 @@
         <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
         <span>
           {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
+          {% elif form.non_field_errors %}{{ form.non_field_errors.0 }}
           {% else %}No se pudo confirmar: revisa la fecha y el bloque seleccionados.{% endif %}
         </span>
       </p>
