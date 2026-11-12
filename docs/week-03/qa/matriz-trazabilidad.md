@@ -2,7 +2,7 @@
 
 Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas" y CP-15 y CP-16 en la revisión docente del MVP 1, CP-17 en la revisión del MVP 2 (ventana de reserva) y CP-18 en la del MVP 2 (catálogo de libros). Todos los resultados están en Pendiente; ningún requisito está aprobado ni tiene evidencia ejecutada de CP. Las rutas de evidencia de CP son propuestas hasta que QA las genere.
 
-La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (51 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (52 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
 
 ## Matriz principal
 

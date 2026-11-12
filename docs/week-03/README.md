@@ -47,7 +47,7 @@ Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas al cerrar e
 - Ficha de libro en una sola tarjeta con carátula, datos bibliográficos, sinopsis, condiciones y panel de préstamo.
 - `Reserva` distingue `BLOQUE` y `PRESTAMO`; QR, estados y sanción se reutilizan sin duplicar el flujo.
 
-Cubierto por CP-18 y por `python manage.py test` (51 pruebas automáticas).
+Cubierto por CP-18 y por `python manage.py test` (52 pruebas automáticas).
 
 ## Ventana de reserva (revisión del MVP 2)
 
@@ -56,7 +56,7 @@ Cubierto por CP-18 y por `python manage.py test` (51 pruebas automáticas).
 - El horizonte de reserva es de **7 días**; fuera de ese rango la fecha se rechaza.
 - El selector de bloques se actualiza al cambiar la fecha sin recargar la página; sin JavaScript, el servidor aplica la misma regla.
 
-Cubierto por CP-17 y por `python manage.py test` (51 pruebas automáticas).
+Cubierto por CP-17 y por `python manage.py test` (52 pruebas automáticas).
 
 ## Orden de revisión
 
