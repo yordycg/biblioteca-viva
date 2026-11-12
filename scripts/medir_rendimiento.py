@@ -37,16 +37,17 @@ def main():
         },
     )
     recurso = Recurso.objects.get(nombre="Sala 3")
-    base = date(2026, 12, 1)
+    base = services.hoy() + timedelta(days=1)
     Reserva.objects.filter(usuario=usuario).delete()
 
     tiempos = []
     for i in range(N):
-        fecha = base + timedelta(days=i)
+        fecha = base
         inicio = time.perf_counter()
         reserva = services.crear_reserva(usuario, recurso, fecha, BLOQUE)
         services.qr_base64(reserva.qr.codigo)
         tiempos.append((time.perf_counter() - inicio) * 1000)
+        reserva.delete()
 
     promedio = sum(tiempos) / len(tiempos)
     print(f"Peticiones: {N}")
