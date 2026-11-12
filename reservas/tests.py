@@ -6,6 +6,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from . import services
+from .forms import BusquedaForm
 from .models import QR, Recurso, Reserva, Sancion, Usuario
 
 
@@ -91,6 +92,41 @@ class ReglasDeNegocioTests(TestCase):
         self.assertEqual(cupo["porcentaje"], 50)
 
 
+class FechaMinimaTests(TestCase):
+    """La búsqueda y la reserva no aceptan fechas pasadas (RF-01, RF-02)."""
+
+    def setUp(self):
+        self.ayer = timezone.localdate() - timedelta(days=1)
+
+    def test_busqueda_rechaza_fecha_pasada(self):
+        form = BusquedaForm(
+            {
+                "tipo": Recurso.Tipo.SALA,
+                "fecha": self.ayer,
+                "bloque": "10:00-11:00",
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("anterior a hoy", form.errors["fecha"][0])
+
+    def test_busqueda_acepta_hoy(self):
+        form = BusquedaForm(
+            {
+                "tipo": Recurso.Tipo.SALA,
+                "fecha": timezone.localdate(),
+                "bloque": "10:00-11:00",
+            }
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_formulario_expone_fecha_minima(self):
+        form = BusquedaForm()
+        self.assertEqual(
+            form.fields["fecha"].widget.attrs["min"],
+            timezone.localdate().isoformat(),
+        )
+
+
 class InterfazTests(TestCase):
     """Comprobaciones de las vistas que sostienen la interfaz (RNF-02)."""
 
@@ -123,6 +159,39 @@ class InterfazTests(TestCase):
         respuesta = self.client.get("/buscar/")
         self.assertContains(respuesta, "1/2")
         self.assertContains(respuesta, "1 reserva disponible")
+
+    def test_busqueda_muestra_error_para_fecha_pasada(self):
+        self.client.force_login(self.estudiante)
+        ayer = timezone.localdate() - timedelta(days=1)
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "tipo": Recurso.Tipo.SALA,
+                "fecha": ayer.isoformat(),
+                "bloque": "10:00-11:00",
+            },
+        )
+        self.assertContains(respuesta, "no puede ser anterior a hoy")
+        self.assertIsNone(respuesta.context["resultados"])
+
+    def test_confirmar_rechaza_fecha_pasada(self):
+        self.client.force_login(self.estudiante)
+        ayer = timezone.localdate() - timedelta(days=1)
+        antes = Reserva.objects.count()
+        respuesta = self.client.post(
+            f"/reservar/{self.sala.pk}/",
+            {"fecha": ayer.isoformat(), "bloque": "10:00-11:00"},
+        )
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertContains(respuesta, "no puede ser anterior a hoy")
+        self.assertEqual(Reserva.objects.count(), antes)
+
+    def test_busqueda_expone_fecha_minima(self):
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/buscar/")
+        self.assertContains(
+            respuesta, f'min="{timezone.localdate().isoformat()}"'
+        )
 
     def test_panel_bibliotecario_lista_reservas_del_dia(self):
         self.client.force_login(self.bibliotecario)

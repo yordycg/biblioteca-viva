@@ -98,7 +98,10 @@
     {% if form.errors %}
       <p class="alert alert--error" role="alert">
         <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
-        <span>No se pudo confirmar: revisa la fecha y el bloque seleccionados.</span>
+        <span>
+          {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
+          {% else %}No se pudo confirmar: revisa la fecha y el bloque seleccionados.{% endif %}
+        </span>
       </p>
     {% endif %}
 

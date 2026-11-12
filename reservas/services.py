@@ -30,6 +30,11 @@ def ahora():
     return timezone.now()
 
 
+def hoy():
+    """Fecha local de la aplicación; coherente con `ahora()` en modo demo."""
+    return timezone.localtime(ahora()).date()
+
+
 def bloque_horas(bloque):
     """Devuelve (hora_inicio, hora_fin) de un bloque 'HH:MM-HH:MM'."""
     inicio, fin = bloque.split("-")

@@ -1,10 +1,29 @@
 """Formularios de BibliotecaViva (RF-01, RF-02, RF-04, RF-05)."""
 from django import forms
 
+from . import services
 from .models import Reserva, Recurso
 
 
-class BusquedaForm(forms.Form):
+class FechaDesdeHoyMixin:
+    """Impide elegir fechas anteriores al día actual (RF-01, RF-02)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        campo = self.fields.get("fecha")
+        if campo:
+            campo.widget.attrs["min"] = services.hoy().isoformat()
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data["fecha"]
+        if fecha < services.hoy():
+            raise forms.ValidationError(
+                "La fecha no puede ser anterior a hoy. Elige hoy o un día posterior."
+            )
+        return fecha
+
+
+class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
     tipo = forms.ChoiceField(
         label="Tipo de recurso",
         choices=Recurso.Tipo.choices,
@@ -21,7 +40,7 @@ class BusquedaForm(forms.Form):
     )
 
 
-class ReservaForm(forms.Form):
+class ReservaForm(FechaDesdeHoyMixin, forms.Form):
     fecha = forms.DateField(widget=forms.HiddenInput)
     bloque = forms.ChoiceField(choices=Reserva.BLOQUES, widget=forms.HiddenInput)
 

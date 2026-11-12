@@ -50,7 +50,7 @@ def buscar(request):
 
     inicial = {
         "tipo": Recurso.Tipo.SALA,
-        "fecha": services.ahora().date(),
+        "fecha": services.hoy(),
         "bloque": "10:00-11:00",
     }
     form = BusquedaForm(request.GET or None, initial=inicial)
@@ -71,7 +71,7 @@ def buscar(request):
             "resultados": resultados,
             "fecha": fecha,
             "bloque": bloque,
-            "cupo": services.cupo_diario(request.user, services.ahora().date()),
+            "cupo": services.cupo_diario(request.user, services.hoy()),
             "sancion_hasta": (
                 request.user.sancionado_hasta
                 if request.user.esta_sancionado(services.ahora())
@@ -124,7 +124,7 @@ def confirmar(request, recurso_id):
         fecha = _fecha_legible(request.POST.get("fecha"))
         bloque = request.POST.get("bloque", "")
     else:
-        fecha = _fecha_legible(request.GET.get("fecha")) or services.ahora().date()
+        fecha = _fecha_legible(request.GET.get("fecha")) or services.hoy()
         bloque = request.GET.get("bloque", "10:00-11:00")
         form = ReservaForm(initial={"fecha": fecha, "bloque": bloque})
     return render(
@@ -171,7 +171,7 @@ def bibliotecario(request):
         else:
             messages.error(request, "QR inválido: no existe una reserva con ese código.")
 
-    hoy = services.ahora().date()
+    hoy = services.hoy()
     reservas_dia = list(
         Reserva.objects.filter(fecha=hoy)
         .select_related("recurso", "usuario", "qr")
