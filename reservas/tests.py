@@ -127,6 +127,68 @@ class FechaMinimaTests(TestCase):
         )
 
 
+class InventarioTests(TestCase):
+    """Estado agregado del inventario para el panel del bibliotecario."""
+
+    def setUp(self):
+        self.hoy = timezone.localdate()
+        self.usuario = Usuario.objects.create_user(
+            username="inv@example.com",
+            email="inv@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.sala_libre = Recurso.objects.create(
+            nombre="Sala 1", tipo=Recurso.Tipo.SALA
+        )
+        self.sala_reservada = Recurso.objects.create(
+            nombre="Sala 3", tipo=Recurso.Tipo.SALA
+        )
+        self.equipo_en_uso = Recurso.objects.create(
+            nombre="Proyector Epson", tipo=Recurso.Tipo.EQUIPO
+        )
+        self.equipo_off = Recurso.objects.create(
+            nombre="Notebook Dell",
+            tipo=Recurso.Tipo.EQUIPO,
+            estado=Recurso.Estado.NO_DISPONIBLE,
+        )
+        services.crear_reserva(
+            self.usuario, self.sala_reservada, self.hoy, "10:00-11:00"
+        )
+        Reserva.objects.create(
+            usuario=self.usuario,
+            recurso=self.equipo_en_uso,
+            fecha=self.hoy,
+            bloque="11:00-12:00",
+            estado=Reserva.Estado.EN_USO,
+        )
+
+    def test_resumen_inventario(self):
+        resumen = services.estado_inventario(self.hoy)["resumen"]
+        self.assertEqual(resumen["total"], 4)
+        self.assertEqual(resumen["disponibles"], 1)
+        self.assertEqual(resumen["reservados"], 1)
+        self.assertEqual(resumen["en_uso"], 1)
+        self.assertEqual(resumen["no_disponibles"], 1)
+        self.assertEqual(resumen["ocupados"], 2)
+        self.assertEqual(resumen["porcentaje"], 50)
+
+    def test_estado_por_bloque(self):
+        inventario = services.estado_inventario(self.hoy)
+        fila = next(
+            f for f in inventario["filas"] if f["recurso"] == self.sala_reservada
+        )
+        estados = {b["clave"]: b["estado"] for b in fila["bloques"]}
+        self.assertEqual(estados["10:00-11:00"], "RESERVADO")
+        self.assertEqual(estados["11:00-12:00"], "DISPONIBLE")
+
+    def test_resumen_por_tipo(self):
+        inventario = services.estado_inventario(self.hoy)
+        tipos = {t["tipo"]: t for t in inventario["por_tipo"]}
+        self.assertEqual(tipos[Recurso.Tipo.SALA]["total"], 2)
+        self.assertEqual(tipos[Recurso.Tipo.EQUIPO]["no_disponibles"], 1)
+
+
 class InterfazTests(TestCase):
     """Comprobaciones de las vistas que sostienen la interfaz (RNF-02)."""
 
@@ -198,6 +260,14 @@ class InterfazTests(TestCase):
         respuesta = self.client.get("/bibliotecario/")
         self.assertContains(respuesta, self.reserva.codigo)
         self.assertContains(respuesta, "Reservas del día")
+        self.assertContains(respuesta, "Sala 3")
+
+    def test_panel_muestra_estado_del_inventario(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/bibliotecario/")
+        self.assertContains(respuesta, "Estado del inventario")
+        self.assertContains(respuesta, "Disponibles hoy")
+        self.assertContains(respuesta, "Ocupación del día")
         self.assertContains(respuesta, "Sala 3")
 
     def test_estudiante_no_accede_al_panel(self):

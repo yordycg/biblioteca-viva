@@ -42,6 +42,102 @@
   </div>
 {% endif %}
 
+<section class="card" aria-labelledby="inventario-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg>
+      <h2 id="inventario-title" style="font-size: 1.125rem;">Estado del inventario</h2>
+    </div>
+    <span class="req">RF-01 · RF-04</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat__value">{{ inventario.resumen.total }}</span>
+      <span class="stat__label">Recursos</span>
+    </div>
+    <div class="stat stat--ok">
+      <span class="stat__value">{{ inventario.resumen.disponibles }}</span>
+      <span class="stat__label">Disponibles hoy</span>
+    </div>
+    <div class="stat stat--warn">
+      <span class="stat__value">{{ inventario.resumen.reservados }}</span>
+      <span class="stat__label">Reservados</span>
+    </div>
+    <div class="stat stat--busy">
+      <span class="stat__value">{{ inventario.resumen.en_uso }}</span>
+      <span class="stat__label">En uso</span>
+    </div>
+    <div class="stat stat--off">
+      <span class="stat__value">{{ inventario.resumen.no_disponibles }}</span>
+      <span class="stat__label">No disponibles</span>
+    </div>
+  </div>
+
+  <p class="hint-inline">
+    {{ inventario.fecha|date:"d-m-Y" }} · Ocupación del día:
+    <strong>{{ inventario.resumen.porcentaje }}%</strong>
+    ({{ inventario.resumen.ocupados }} de {{ inventario.resumen.total }} recursos con
+    reserva activa).
+  </p>
+
+  {% if inventario.filas %}
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Disponibilidad por recurso y bloque para el {{ inventario.fecha|date:"d-m-Y" }}.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Recurso</th>
+            <th scope="col">Tipo</th>
+            {% for bloque in inventario.bloques %}
+              <th scope="col">{{ bloque.1 }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for fila in inventario.filas %}
+            <tr>
+              <td data-label="Recurso">
+                {{ fila.recurso.nombre }}
+                {% if fila.recurso.codigo %}<br><span class="hint-inline">{{ fila.recurso.codigo }}</span>{% endif %}
+              </td>
+              <td data-label="Tipo">{{ fila.recurso.get_tipo_display }}</td>
+              {% for bloque in fila.bloques %}
+                <td data-label="{{ bloque.etiqueta }}">
+                  {% if bloque.estado == "DISPONIBLE" %}
+                    <span class="badge badge--libre">Disponible</span>
+                  {% elif bloque.estado == "RESERVADO" %}
+                    <span class="badge badge--reservada">Reservado</span>
+                  {% elif bloque.estado == "EN_USO" %}
+                    <span class="badge badge--uso">En uso</span>
+                  {% else %}
+                    <span class="badge badge--no-disponible">No disponible</span>
+                  {% endif %}
+                  {% if bloque.reserva %}
+                    <br><span class="hint-inline">{{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}</span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>No hay recursos registrados en el inventario.</p>
+    </div>
+  {% endif %}
+
+  {% if inventario.por_tipo %}
+    <p class="hint-inline">
+      {% for tipo in inventario.por_tipo %}
+        {{ tipo.etiqueta }}: {{ tipo.total }} en total, {{ tipo.disponibles }} disponibles{% if not forloop.last %} · {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
+</section>
+
 <section class="card" aria-labelledby="validacion-title">
   <div class="card__head">
     <div class="card__head-icon">

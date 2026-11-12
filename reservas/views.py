@@ -209,6 +209,7 @@ def bibliotecario(request):
             "reservas_dia": reservas_dia,
             "resumen": resumen,
             "sanciones_hoy": sanciones_hoy,
+            "inventario": services.estado_inventario(hoy),
         },
     )
 

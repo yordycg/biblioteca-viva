@@ -112,6 +112,104 @@ def crear_reserva(usuario, recurso, fecha, bloque):
     return reserva
 
 
+def _estado_recurso(recurso, reservas):
+    """Estado agregado de un recurso para la fecha consultada."""
+    if recurso.estado != Recurso.Estado.DISPONIBLE:
+        return "NO_DISPONIBLE", "No disponible"
+    if any(reserva.estado == Reserva.Estado.EN_USO for reserva in reservas):
+        return "EN_USO", "En uso"
+    if reservas:
+        return "RESERVADO", "Reservado"
+    return "DISPONIBLE", "Disponible"
+
+
+def estado_inventario(fecha):
+    """Estado del inventario para el panel del bibliotecario (RF-04, RF-05).
+
+    Agrupa por recurso el estado del día y por bloque; los totales permiten
+    saber cuántos recursos están libres, reservados, en uso o fuera de servicio.
+    """
+    recursos = list(Recurso.objects.all())
+    activas = Reserva.objects.filter(
+        fecha=fecha,
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+    ).select_related("usuario")
+    por_recurso = {}
+    for reserva in activas:
+        por_recurso.setdefault(reserva.recurso_id, []).append(reserva)
+
+    claves = {
+        "DISPONIBLE": "disponibles",
+        "RESERVADO": "reservados",
+        "EN_USO": "en_uso",
+        "NO_DISPONIBLE": "no_disponibles",
+    }
+    resumen = {
+        "total": 0,
+        "disponibles": 0,
+        "reservados": 0,
+        "en_uso": 0,
+        "no_disponibles": 0,
+    }
+    por_tipo = {}
+    filas = []
+
+    for recurso in recursos:
+        reservas = por_recurso.get(recurso.id, [])
+        estado, etiqueta = _estado_recurso(recurso, reservas)
+
+        fila = {"recurso": recurso, "estado": estado, "etiqueta": etiqueta, "bloques": []}
+        reservas_por_bloque = {reserva.bloque: reserva for reserva in reservas}
+        for valor, etiqueta_bloque in Reserva.BLOQUES:
+            reserva = reservas_por_bloque.get(valor)
+            if recurso.estado != Recurso.Estado.DISPONIBLE:
+                estado_bloque = "NO_DISPONIBLE"
+            elif reserva is None:
+                estado_bloque = "DISPONIBLE"
+            elif reserva.estado == Reserva.Estado.EN_USO:
+                estado_bloque = "EN_USO"
+            else:
+                estado_bloque = "RESERVADO"
+            fila["bloques"].append(
+                {
+                    "clave": valor,
+                    "etiqueta": etiqueta_bloque,
+                    "estado": estado_bloque,
+                    "reserva": reserva,
+                }
+            )
+        filas.append(fila)
+
+        resumen["total"] += 1
+        resumen[claves[estado]] += 1
+        tipo = por_tipo.setdefault(
+            recurso.tipo,
+            {
+                "tipo": recurso.tipo,
+                "etiqueta": recurso.get_tipo_display(),
+                "total": 0,
+                "disponibles": 0,
+                "reservados": 0,
+                "en_uso": 0,
+                "no_disponibles": 0,
+            },
+        )
+        tipo["total"] += 1
+        tipo[claves[estado]] += 1
+
+    resumen["ocupados"] = resumen["reservados"] + resumen["en_uso"]
+    resumen["porcentaje"] = (
+        round(resumen["ocupados"] * 100 / resumen["total"]) if resumen["total"] else 0
+    )
+    return {
+        "fecha": fecha,
+        "bloques": Reserva.BLOQUES,
+        "filas": filas,
+        "resumen": resumen,
+        "por_tipo": list(por_tipo.values()),
+    }
+
+
 def obtener_por_codigo(codigo):
     """Busca una reserva por el código del QR."""
     codigo = (codigo or "").strip().upper()
