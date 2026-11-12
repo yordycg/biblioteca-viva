@@ -519,8 +519,8 @@ class LibroTests(TestCase):
         services.crear_reserva(self.usuario, self.libro, self.hoy, dias=7)
         self.client.force_login(self.bibliotecario)
         respuesta = self.client.get("/bibliotecario/")
-        self.assertContains(respuesta, "En préstamo")
         self.assertContains(respuesta, "Préstamo hasta")
+        self.assertContains(respuesta, "Reservado")
 
     def test_bibliotecario_no_ve_el_catalogo(self):
         self.client.force_login(self.bibliotecario)
