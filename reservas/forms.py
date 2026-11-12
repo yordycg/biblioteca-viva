@@ -39,7 +39,10 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
     )
     fecha = forms.DateField(
         label="Fecha",
-        widget=forms.DateInput(attrs={"class": "campo", "type": "date"}),
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={"class": "campo", "type": "date"},
+        ),
     )
     bloque = forms.ChoiceField(
         label="Bloque horario",
@@ -78,7 +81,7 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
 
 
 class ReservaForm(FechaDesdeHoyMixin, forms.Form):
-    fecha = forms.DateField(widget=forms.HiddenInput)
+    fecha = forms.DateField(widget=forms.HiddenInput())
     bloque = forms.ChoiceField(choices=Reserva.BLOQUES, widget=forms.HiddenInput)
 
     def clean(self):
@@ -94,6 +97,74 @@ class ReservaForm(FechaDesdeHoyMixin, forms.Form):
                     f"{services.MIN_ANTELACION_MIN} minutos. Elige otro bloque."
                 )
         return data
+
+
+class DiasPrestamoMixin:
+    """Valida la duración del préstamo de un libro."""
+
+    def clean_dias(self):
+        dias = self.cleaned_data["dias"]
+        if dias not in services.DIAS_PRESTAMO:
+            raise forms.ValidationError(
+                "La duración debe ser de 3, 7 o 14 días."
+            )
+        return dias
+
+
+class PrestamoForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
+    fecha = forms.DateField(
+        label="Fecha de retiro",
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={"class": "campo", "type": "date"},
+        ),
+    )
+    dias = forms.TypedChoiceField(
+        label="Duración",
+        choices=[(dias, f"{dias} días") for dias in services.DIAS_PRESTAMO],
+        coerce=int,
+        widget=forms.Select(attrs={"class": "campo"}),
+    )
+
+
+class BusquedaLibrosForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
+    fecha = forms.DateField(
+        label="Fecha de retiro",
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={"class": "campo", "type": "date"},
+        ),
+    )
+    dias = forms.TypedChoiceField(
+        label="Duración",
+        choices=[(dias, f"{dias} días") for dias in services.DIAS_PRESTAMO],
+        coerce=int,
+        widget=forms.Select(attrs={"class": "campo"}),
+    )
+    q = forms.CharField(
+        label="Título o autor",
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "campo",
+                "type": "search",
+                "placeholder": "Ej.: Quijote o Cervantes",
+                "autocomplete": "off",
+            }
+        ),
+    )
+    genero = forms.ChoiceField(
+        label="Género",
+        required=False,
+        choices=[("", "Todos los géneros")],
+        widget=forms.Select(attrs={"class": "campo"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["genero"].choices = [("", "Todos los géneros")] + [
+            (genero, genero) for genero in services.generos_libros()
+        ]
 
 
 class CodigoQRForm(forms.Form):

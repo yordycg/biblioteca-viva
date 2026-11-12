@@ -102,22 +102,33 @@
                 {% if fila.recurso.codigo %}<br><span class="hint-inline">{{ fila.recurso.codigo }}</span>{% endif %}
               </td>
               <td data-label="Tipo">{{ fila.recurso.get_tipo_display }}</td>
-              {% for bloque in fila.bloques %}
-                <td data-label="{{ bloque.etiqueta }}">
-                  {% if bloque.estado == "DISPONIBLE" %}
-                    <span class="badge badge--libre">Disponible</span>
-                  {% elif bloque.estado == "RESERVADO" %}
-                    <span class="badge badge--reservada">Reservado</span>
-                  {% elif bloque.estado == "EN_USO" %}
-                    <span class="badge badge--uso">En uso</span>
+              {% if fila.recurso.tipo == "LIBRO" %}
+                <td colspan="3" data-label="Préstamo">
+                  {% if fila.prestamo %}
+                    <span class="badge badge--reservada">En préstamo</span>
+                    <span class="hint-inline">hasta {{ fila.prestamo.fecha_vencimiento|date:"d-m-Y" }}</span>
                   {% else %}
-                    <span class="badge badge--no-disponible">No disponible</span>
-                  {% endif %}
-                  {% if bloque.reserva %}
-                    <br><span class="hint-inline">{{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}</span>
+                    <span class="badge badge--libre">Disponible</span>
                   {% endif %}
                 </td>
-              {% endfor %}
+              {% else %}
+                {% for bloque in fila.bloques %}
+                  <td data-label="{{ bloque.etiqueta }}">
+                    {% if bloque.estado == "DISPONIBLE" %}
+                      <span class="badge badge--libre">Disponible</span>
+                    {% elif bloque.estado == "RESERVADO" %}
+                      <span class="badge badge--reservada">Reservado</span>
+                    {% elif bloque.estado == "EN_USO" %}
+                      <span class="badge badge--uso">En uso</span>
+                    {% else %}
+                      <span class="badge badge--no-disponible">No disponible</span>
+                    {% endif %}
+                    {% if bloque.reserva %}
+                      <br><span class="hint-inline">{{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
@@ -197,8 +208,8 @@
         <div>
           <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
           <div>
-            <dt>Bloque</dt>
-            <dd>{{ reserva.get_bloque_display }} · {{ reserva.fecha|date:"d-m-Y" }}</dd>
+            <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
+            <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }} · {{ reserva.fecha|date:"d-m-Y" }}{% endif %}</dd>
           </div>
         </div>
       </dl>
@@ -261,7 +272,7 @@
             <th scope="col">ID reserva</th>
             <th scope="col">Recurso</th>
             <th scope="col">Solicitante</th>
-            <th scope="col">Bloque</th>
+            <th scope="col">Bloque / devolución</th>
             <th scope="col">Estado</th>
             <th scope="col">Acciones</th>
           </tr>
@@ -275,7 +286,9 @@
                 {% if item.recurso.codigo %}<br><span class="hint-inline">{{ item.recurso.codigo }}</span>{% endif %}
               </td>
               <td data-label="Solicitante">{{ item.usuario.get_full_name|default:item.usuario.email }}</td>
-              <td data-label="Bloque">{{ item.get_bloque_display }}</td>
+              <td data-label="Bloque">
+                {% if item.modalidad == "PRESTAMO" %}Préstamo hasta {{ item.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ item.get_bloque_display }}{% endif %}
+              </td>
               <td data-label="Estado">
                 {% if item.estado == "RESERVADA" %}
                   <span class="badge badge--reservada">{{ item.get_estado_display }}</span>
@@ -337,8 +350,8 @@
     <p><strong data-modal-detail></strong></p>
     <p class="hint-inline">
       La reserva quedará <strong>Finalizada</strong> y el recurso volverá a estar
-      disponible. Si la devolución es posterior al término del bloque, se aplica
-      una sanción de 7 días al solicitante.
+      disponible. Si la devolución es posterior al plazo acordado, se aplica una
+      sanción de 7 días al solicitante.
     </p>
     <span class="req">RF-05 · RF-07</span>
   </div>

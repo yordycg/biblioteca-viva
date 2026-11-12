@@ -4,9 +4,9 @@
 
 {% block content %}
 <nav class="row" aria-label="Miga de pan">
-  <a class="btn btn--ghost btn--sm" href="{% url 'catalogo' %}">
+  <a class="btn btn--ghost btn--sm" href="{% url 'buscar' %}?vista=libros">
     <svg class="icon icon--sm" aria-hidden="true"><use href="#i-back"></use></svg>
-    Volver al catálogo
+    Volver a los libros
   </a>
 </nav>
 
@@ -20,116 +20,110 @@
       <p class="notice__text">
         Tienes una sanción por devolución tardía hasta el
         <strong>{{ sancion_hasta|date:"d-m-Y H:i" }}</strong>. Mientras esté activa no
-        puedes crear reservas.
+        puedes solicitar préstamos.
       </p>
     </div>
   </div>
 {% endif %}
 
-<div class="grid-2">
-  <section class="card book-detail" aria-labelledby="libro-title">
-    <div class="book-detail__cover">
+<article class="panel detail-card">
+  <div class="detail-card__top">
+    <div class="detail__cover">
       {% if libro.portada %}
         <img src="{% static libro.portada %}"
              alt="Portada de {{ libro.nombre }}"
              width="300" height="420">
       {% else %}
-        <span class="book__placeholder">
+        <span class="book-card__placeholder">
           <svg class="icon icon--lg" aria-hidden="true"><use href="#i-book"></use></svg>
         </span>
       {% endif %}
     </div>
-    <div class="book-detail__meta">
-      <span class="book__genre">{{ libro.genero|default:"General" }}</span>
-      <h1 id="libro-title" style="font-size: 1.5rem;">{{ libro.nombre }}</h1>
-      <p class="book__author">{{ libro.autor }}{% if libro.anio %} · {{ libro.anio }}{% endif %}</p>
+    <div class="detail__info">
+      <span class="detail__genre">{{ libro.genero|default:"General" }}</span>
+      <h1 class="detail__title">{{ libro.nombre }}</h1>
+      <p class="detail__author">{{ libro.autor }}{% if libro.anio %} · {{ libro.anio }}{% endif %}</p>
 
-      <dl class="data-list">
-        <div>
-          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-badge"></use></svg></span>
-          <div>
-            <dt>ISBN</dt>
-            <dd>{{ libro.isbn|default:"—" }}</dd>
-          </div>
-        </div>
-        <div>
-          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg></span>
-          <div>
-            <dt>Editorial</dt>
-            <dd>{{ libro.editorial|default:"—" }}</dd>
-          </div>
-        </div>
-        <div>
-          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg></span>
-          <div>
-            <dt>Páginas</dt>
-            <dd>{% if libro.paginas %}{{ libro.paginas }}{% else %}—{% endif %}</dd>
-          </div>
-        </div>
-        <div>
-          <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-pin"></use></svg></span>
-          <div>
-            <dt>Ubicación</dt>
-            <dd>{{ libro.ubicacion|default:"—" }}{% if libro.codigo %} · {{ libro.codigo }}{% endif %}</dd>
-          </div>
-        </div>
-      </dl>
+      <ul class="chips">
+        <li class="chip"><strong>Editorial</strong> {{ libro.editorial|default:"—" }}</li>
+        <li class="chip"><strong>Páginas</strong> {% if libro.paginas %}{{ libro.paginas }}{% else %}—{% endif %}</li>
+        <li class="chip"><strong>ISBN</strong> {{ libro.isbn|default:"—" }}</li>
+        <li class="chip"><strong>Ubicación</strong> {{ libro.ubicacion|default:"—" }}{% if libro.codigo %} · {{ libro.codigo }}{% endif %}</li>
+      </ul>
+
+      <div class="synopsis">
+        <h2>Sinopsis</h2>
+        <p>{{ libro.sinopsis|default:"Sin sinopsis registrada." }}</p>
+      </div>
     </div>
+  </div>
+
+  <div class="detail-card__conditions">
+    <div class="conditions">
+      <h2>Condiciones del préstamo</h2>
+      <ul>
+        <li>Retira el ejemplar en biblioteca presentando el código QR.</li>
+        <li>Máximo {{ max_prestamos }} préstamos activos por usuario.</li>
+        <li>La devolución tardía aplica una sanción de 7 días.</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="loan-band" aria-label="Solicitar préstamo">
+    <div class="loan-band__head">
+      <h2>Solicitar préstamo</h2>
+      {% if disponible is None %}
+        <span class="badge badge--plain">Consulta la disponibilidad</span>
+      {% elif disponible %}
+        <span class="badge badge--libre">Disponible</span>
+      {% else %}
+        <span class="badge badge--reservada">No disponible</span>
+      {% endif %}
+    </div>
+
+    <form method="get" action="{% url 'libro' libro.id %}">
+      <div class="loan-band__grid">
+        <div class="field">
+          <label for="{{ form.fecha.id_for_label }}">Fecha de retiro</label>
+          {{ form.fecha }}
+        </div>
+        <div class="field">
+          <label for="{{ form.dias.id_for_label }}">Duración</label>
+          {{ form.dias }}
+        </div>
+        <div class="loan-band__meta">
+          <span>Cupo de préstamos</span>
+          <strong>{{ prestamos }} de {{ max_prestamos }}</strong>
+        </div>
+        <button class="btn" type="submit" name="continuar" value="1">
+          <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+          Solicitar préstamo
+        </button>
+      </div>
+
+      {% if form.errors %}
+        <p class="alert alert--error" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+          <span>
+            {% if form.fecha.errors %}{{ form.fecha.errors.0 }}
+            {% elif form.dias.errors %}{{ form.dias.errors.0 }}
+            {% else %}Revisa la fecha y la duración del préstamo.{% endif %}
+          </span>
+        </p>
+      {% endif %}
+
+      <div class="row">
+        <button class="btn btn--secondary btn--sm" type="submit">Actualizar disponibilidad</button>
+        <p class="loan-band__hint">Devolución estimada: {{ vencimiento|date:"d-m-Y" }}</p>
+      </div>
+
+      {% if disponible is False %}
+        <p class="hint-inline">
+          No está disponible para ese rango.
+          {% if desde %}Vuelve a estar disponible el {{ desde|date:"d-m-Y" }}.{% endif %}
+        </p>
+      {% endif %}
+    </form>
   </section>
-
-  <section class="stack" aria-labelledby="disponibilidad-title">
-    <div class="card">
-      <div class="card__head">
-        <div class="card__head-icon">
-          <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
-          <h2 id="disponibilidad-title" style="font-size: 1.125rem;">Disponibilidad de hoy</h2>
-        </div>
-        <span class="req">RF-01 · RF-02</span>
-      </div>
-      <p class="hint-inline">
-        {{ hoy|date:"d-m-Y" }} · Cupo diario: {{ cupo.restantes }} de {{ cupo.max }}
-        reservas disponibles.
-      </p>
-
-      <div class="blocks">
-        {% for bloque in bloques %}
-          <div class="block-slot">
-            <span class="block-slot__time">{{ bloque.etiqueta }}</span>
-            {% if bloque.estado == "DISPONIBLE" %}
-              <span class="badge badge--libre">Disponible</span>
-              <a class="btn btn--sm"
-                 href="{% url 'confirmar' libro.id %}?fecha={{ hoy|date:'Y-m-d' }}&amp;bloque={{ bloque.clave }}">
-                <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
-                Reservar
-              </a>
-            {% elif bloque.estado == "RESERVADO" %}
-              <span class="badge badge--reservada">Reservado</span>
-            {% elif bloque.estado == "EN_USO" %}
-              <span class="badge badge--uso">En uso</span>
-            {% else %}
-              <span class="badge badge--no-disponible">No disponible</span>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-
-      <p class="hint-inline">
-        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"></use></svg>
-        La reserva se retira en biblioteca presentando el código QR. Para otra
-        fecha, usa
-        <a href="{% url 'buscar' %}?tipo=LIBRO&amp;fecha={{ hoy|date:'Y-m-d' }}&amp;bloque=10:00-11:00">la búsqueda por fecha y bloque</a>.
-      </p>
-    </div>
-
-    <div class="card">
-      <div class="card__head">
-        <div class="card__head-icon">
-          <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg>
-          <h2 style="font-size: 1.125rem;">Sinopsis</h2>
-        </div>
-      </div>
-      <p>{{ libro.sinopsis|default:"Sin sinopsis registrada." }}</p>
-    </div>
-  </section>
-</div>
+</article>
 {% endblock %}

@@ -20,6 +20,8 @@ from .models import Libro, QR, Reserva, Recurso, Sancion
 MAX_RESERVAS_DIA = 2
 MIN_ANTELACION_MIN = 15
 MAX_DIAS_RESERVA = 7
+DIAS_PRESTAMO = (3, 7, 14)
+MAX_PRESTAMOS_ACTIVOS = 2
 
 
 def ahora():
@@ -114,14 +116,89 @@ def cupo_diario(usuario, fecha=None):
     }
 
 
-def crear_reserva(usuario, recurso, fecha, bloque, momento=None):
-    """Crea una reserva y su QR, validando sanción, ventana, tope y disponibilidad."""
+def prestamos_activos(usuario):
+    """Préstamos de libros activos del usuario (RF-06)."""
+    return Reserva.objects.filter(
+        usuario=usuario,
+        modalidad=Reserva.Modalidad.PRESTAMO,
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+    ).count()
+
+
+def libro_disponible(libro, fecha, dias):
+    """Indica si un libro se puede prestar en el rango fecha → fecha+dias."""
+    fin = fecha + timedelta(days=dias)
+    return not Reserva.objects.filter(
+        recurso=libro,
+        modalidad=Reserva.Modalidad.PRESTAMO,
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+        fecha__lte=fin,
+        fecha_vencimiento__gte=fecha,
+    ).exists()
+
+
+def proxima_disponibilidad(libro):
+    """Primera fecha en que el libro vuelve a estar disponible."""
+    reserva = (
+        Reserva.objects.filter(
+            recurso=libro,
+            modalidad=Reserva.Modalidad.PRESTAMO,
+            estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+        )
+        .order_by("-fecha_vencimiento")
+        .first()
+    )
+    if not reserva or not reserva.fecha_vencimiento:
+        return None
+    return reserva.fecha_vencimiento + timedelta(days=1)
+
+
+def crear_reserva(usuario, recurso, fecha, bloque=None, dias=None, momento=None):
+    """Crea una reserva o préstamo y su QR (RF-02, RF-03, RF-06)."""
     momento = momento or ahora()
+    if usuario.esta_sancionado(momento):
+        raise ValidationError(
+            "No puedes reservar: tienes una sanción vigente hasta "
+            f"{timezone.localtime(usuario.sancionado_hasta):%d-%m-%Y %H:%M}."
+        )
     if not fecha_reservable(fecha, momento):
         raise ValidationError(
             "La fecha debe estar entre hoy y los próximos "
             f"{MAX_DIAS_RESERVA} días."
         )
+    if recurso.estado != Recurso.Estado.DISPONIBLE:
+        raise ValidationError("El recurso no está disponible.")
+
+    if recurso.tipo == Recurso.Tipo.LIBRO:
+        if dias not in DIAS_PRESTAMO:
+            raise ValidationError(
+                "La duración del préstamo debe ser de 3, 7 o 14 días."
+            )
+        if prestamos_activos(usuario) >= MAX_PRESTAMOS_ACTIVOS:
+            raise ValidationError(
+                "Límite alcanzado: ya tienes 2 préstamos de libros activos."
+            )
+        if not libro_disponible(recurso, fecha, dias):
+            raise ValidationError(
+                "El libro no está disponible para ese rango de fechas."
+            )
+        try:
+            with transaction.atomic():
+                reserva = Reserva.objects.create(
+                    usuario=usuario,
+                    recurso=recurso,
+                    fecha=fecha,
+                    modalidad=Reserva.Modalidad.PRESTAMO,
+                    fecha_vencimiento=fecha + timedelta(days=dias),
+                    estado=Reserva.Estado.RESERVADA,
+                )
+                QR.objects.create(reserva=reserva, codigo=reserva.codigo)
+        except IntegrityError:
+            raise ValidationError(
+                "El libro ya está prestado para esa fecha."
+            )
+        return reserva
+
     if bloque not in dict(Reserva.BLOQUES):
         raise ValidationError("El bloque horario seleccionado no es válido.")
     if not bloque_vigente(bloque, fecha, momento):
@@ -129,17 +206,10 @@ def crear_reserva(usuario, recurso, fecha, bloque, momento=None):
             "El bloque ya comenzó o no cumple la antelación mínima de "
             f"{MIN_ANTELACION_MIN} minutos."
         )
-    if usuario.esta_sancionado(momento):
-        raise ValidationError(
-            "No puedes reservar: tienes una sanción vigente hasta "
-            f"{timezone.localtime(usuario.sancionado_hasta):%d-%m-%Y %H:%M}."
-        )
     if reservas_activas(usuario, fecha) >= MAX_RESERVAS_DIA:
         raise ValidationError(
             "Límite alcanzado: ya tienes 2 reservas activas para ese día."
         )
-    if recurso.estado != Recurso.Estado.DISPONIBLE:
-        raise ValidationError("El recurso no está disponible.")
     if Reserva.objects.filter(
         recurso=recurso,
         fecha=fecha,
@@ -182,8 +252,14 @@ def estado_inventario(fecha):
     """
     recursos = list(Recurso.objects.all())
     activas = Reserva.objects.filter(
-        fecha=fecha,
         estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+    ).filter(
+        Q(modalidad=Reserva.Modalidad.BLOQUE, fecha=fecha)
+        | Q(
+            modalidad=Reserva.Modalidad.PRESTAMO,
+            fecha__lte=fecha,
+            fecha_vencimiento__gte=fecha,
+        )
     ).select_related("usuario")
     por_recurso = {}
     for reserva in activas:
@@ -213,8 +289,12 @@ def estado_inventario(fecha):
             "recurso": recurso,
             "estado": estado,
             "etiqueta": etiqueta,
-            "bloques": disponibilidad_recurso(recurso, fecha, reservas),
+            "prestamo": reservas[0] if reservas else None,
         }
+        if recurso.tipo == Recurso.Tipo.LIBRO:
+            fila["bloques"] = []
+        else:
+            fila["bloques"] = disponibilidad_recurso(recurso, fecha, reservas)
         filas.append(fila)
 
         resumen["total"] += 1
@@ -278,8 +358,8 @@ def disponibilidad_recurso(recurso, fecha, reservas=None):
     ]
 
 
-def catalogo_libros(fecha, texto="", genero=""):
-    """Catálogo de libros con su disponibilidad para la fecha (RF-01).
+def catalogo_libros(fecha, texto="", genero="", dias=7):
+    """Catálogo de libros con su disponibilidad para el rango (RF-01).
 
     `texto` busca por título o autor; `genero` filtra por género literario.
     """
@@ -290,25 +370,25 @@ def catalogo_libros(fecha, texto="", genero=""):
         libros = libros.filter(genero=genero)
     libros = list(libros)
 
+    fin = fecha + timedelta(days=dias)
     activas = Reserva.objects.filter(
-        fecha=fecha,
+        modalidad=Reserva.Modalidad.PRESTAMO,
         recurso__in=libros,
         estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+        fecha__lte=fin,
+        fecha_vencimiento__gte=fecha,
     )
-    por_recurso = {}
-    for reserva in activas:
-        por_recurso.setdefault(reserva.recurso_id, []).append(reserva)
+    ocupados = {reserva.recurso_id: reserva for reserva in activas}
 
     tarjetas = []
     for libro in libros:
-        bloques = disponibilidad_recurso(
-            libro, fecha, por_recurso.get(libro.id, [])
-        )
+        prestamo = ocupados.get(libro.id)
         tarjetas.append(
             {
                 "libro": libro,
-                "bloques": bloques,
-                "libres": sum(1 for b in bloques if b["estado"] == "DISPONIBLE"),
+                "disponible": prestamo is None,
+                "prestamo": prestamo,
+                "desde": proxima_disponibilidad(libro),
             }
         )
     return tarjetas
@@ -346,13 +426,14 @@ def validar_inicio(codigo, momento=None):
     if not settings.DEMO_MODE:
         if qr.reserva.fecha != timezone.localdate(momento):
             raise ValidationError("La reserva no corresponde a la fecha de hoy.")
-        inicio, fin = bloque_horas(qr.reserva.bloque)
-        inicio_dt = timezone.make_aware(
-            datetime.combine(qr.reserva.fecha, inicio)
-        ) - timedelta(minutes=15)
-        fin_dt = timezone.make_aware(datetime.combine(qr.reserva.fecha, fin))
-        if not (inicio_dt <= momento <= fin_dt):
-            raise ValidationError("Fuera del horario del bloque reservado.")
+        if qr.reserva.modalidad == Reserva.Modalidad.BLOQUE:
+            inicio, fin = bloque_horas(qr.reserva.bloque)
+            inicio_dt = timezone.make_aware(
+                datetime.combine(qr.reserva.fecha, inicio)
+            ) - timedelta(minutes=15)
+            fin_dt = timezone.make_aware(datetime.combine(qr.reserva.fecha, fin))
+            if not (inicio_dt <= momento <= fin_dt):
+                raise ValidationError("Fuera del horario del bloque reservado.")
 
     qr.utilizado = True
     qr.reserva.estado = Reserva.Estado.EN_USO
@@ -376,8 +457,13 @@ def registrar_devolucion(codigo, momento=None):
     reserva.finalizada_en = momento
     reserva.save(update_fields=["estado", "finalizada_en"])
 
-    _, fin_bloque = bloque_horas(reserva.bloque)
-    limite = timezone.make_aware(datetime.combine(reserva.fecha, fin_bloque))
+    if reserva.modalidad == Reserva.Modalidad.PRESTAMO and reserva.fecha_vencimiento:
+        limite = timezone.make_aware(
+            datetime.combine(reserva.fecha_vencimiento, time.max)
+        )
+    else:
+        _, fin_bloque = bloque_horas(reserva.bloque)
+        limite = timezone.make_aware(datetime.combine(reserva.fecha, fin_bloque))
     sancion = None
     if momento > limite:
         fin_sancion = momento + timedelta(days=7)

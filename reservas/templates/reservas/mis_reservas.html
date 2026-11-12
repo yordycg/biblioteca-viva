@@ -71,8 +71,8 @@
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
-                  <dt>Bloque</dt>
-                  <dd>{{ reserva.get_bloque_display }}</dd>
+                  <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
+                  <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
                 </div>
               </div>
             </dl>
@@ -127,8 +127,8 @@
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
-                  <dt>Bloque</dt>
-                  <dd>{{ reserva.get_bloque_display }}</dd>
+                  <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
+                  <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
                 </div>
               </div>
             </dl>

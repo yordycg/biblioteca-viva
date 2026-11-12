@@ -92,6 +92,10 @@ class Reserva(models.Model):
         FINALIZADA = "FINALIZADA", "Finalizada"
         CANCELADA = "CANCELADA", "Cancelada"
 
+    class Modalidad(models.TextChoices):
+        BLOQUE = "BLOQUE", "Bloque horario"
+        PRESTAMO = "PRESTAMO", "Préstamo de libro"
+
     BLOQUES = [
         ("10:00-11:00", "10:00–11:00"),
         ("11:00-12:00", "11:00–12:00"),
@@ -105,7 +109,13 @@ class Reserva(models.Model):
         Recurso, on_delete=models.CASCADE, related_name="reservas"
     )
     fecha = models.DateField()
-    bloque = models.CharField(max_length=20, choices=BLOQUES)
+    modalidad = models.CharField(
+        max_length=20,
+        choices=Modalidad.choices,
+        default=Modalidad.BLOQUE,
+    )
+    bloque = models.CharField(max_length=20, choices=BLOQUES, blank=True)
+    fecha_vencimiento = models.DateField(null=True, blank=True)
     estado = models.CharField(
         max_length=20, choices=Estado.choices, default=Estado.RESERVADA
     )
@@ -124,6 +134,11 @@ class Reserva(models.Model):
         ]
 
     def __str__(self):
+        if self.modalidad == self.Modalidad.PRESTAMO:
+            return (
+                f"RSV-{self.pk:04d} · {self.recurso.nombre} · "
+                f"{self.fecha} → {self.fecha_vencimiento}"
+            )
         return f"RSV-{self.pk:04d} · {self.recurso.nombre} · {self.fecha} {self.bloque}"
 
     @property
