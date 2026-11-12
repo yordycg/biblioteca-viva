@@ -3,6 +3,7 @@ Vistas de BibliotecaViva.
 
 Cubre: RF-01, RF-02, RF-03, RF-04, RF-05, RF-07, RF-08.
 """
+import re
 from datetime import date, timedelta
 
 from django.contrib import messages
@@ -388,26 +389,59 @@ def bibliotecario(request):
             messages.error(request, "QR inválido: no existe una reserva con ese código.")
 
     hoy = services.hoy()
-    reservas_dia = list(
+    estado_filtro = request.GET.get("estado", "").strip()
+    bloque_filtro = request.GET.get("bloque", "").strip()
+    texto_filtro = request.GET.get("q", "").strip()
+
+    reservas_todas = list(
         Reserva.objects.filter(
             Q(modalidad=Reserva.Modalidad.BLOQUE, fecha=hoy)
             | Q(
                 modalidad=Reserva.Modalidad.PRESTAMO,
                 fecha__lte=hoy,
-                fecha_vencimiento__gte=hoy,
             )
         )
         .select_related("recurso", "usuario", "qr")
         .order_by("modalidad", "bloque", "recurso__nombre")
     )
+    reservas_filtradas = reservas_todas
+    if estado_filtro:
+        reservas_filtradas = [
+            reserva
+            for reserva in reservas_filtradas
+            if reserva.estado == estado_filtro
+        ]
+    if bloque_filtro:
+        reservas_filtradas = [
+            reserva
+            for reserva in reservas_filtradas
+            if reserva.bloque == bloque_filtro
+        ]
+    if texto_filtro:
+        consulta = texto_filtro.lower()
+        coincidencia_codigo = re.match(r"^rsv-(\d+)$", consulta)
+        numero = int(coincidencia_codigo.group(1)) if coincidencia_codigo else None
+        reservas_filtradas = [
+            reserva
+            for reserva in reservas_filtradas
+            if (
+                consulta in reserva.recurso.nombre.lower()
+                or consulta in reserva.usuario.username.lower()
+                or consulta in (reserva.usuario.get_full_name() or "").lower()
+                or (numero is not None and reserva.pk == numero)
+            )
+        ]
+
     resumen = {
-        "total": len(reservas_dia),
+        "total": len(reservas_todas),
         "reservadas": sum(
-            1 for r in reservas_dia if r.estado == Reserva.Estado.RESERVADA
+            1 for r in reservas_todas if r.estado == Reserva.Estado.RESERVADA
         ),
-        "en_uso": sum(1 for r in reservas_dia if r.estado == Reserva.Estado.EN_USO),
+        "en_uso": sum(
+            1 for r in reservas_todas if r.estado == Reserva.Estado.EN_USO
+        ),
         "finalizadas": sum(
-            1 for r in reservas_dia if r.estado == Reserva.Estado.FINALIZADA
+            1 for r in reservas_todas if r.estado == Reserva.Estado.FINALIZADA
         ),
     }
     resumen["porcentaje"] = (
@@ -420,6 +454,7 @@ def bibliotecario(request):
         .select_related("usuario")
         .order_by("-inicio")[:3]
     )
+    resumen_panel = services.resumen_panel(hoy)
     return render(
         request,
         "reservas/bibliotecario.html",
@@ -429,9 +464,16 @@ def bibliotecario(request):
             "reserva": reserva,
             "codigo": codigo,
             "hoy": hoy,
-            "reservas_dia": reservas_dia,
+            "reservas_dia": reservas_filtradas,
+            "total_filtrado": len(reservas_filtradas),
             "resumen": resumen,
+            "resumen_panel": resumen_panel,
             "sanciones_hoy": sanciones_hoy,
+            "estado_filtro": estado_filtro,
+            "bloque_filtro": bloque_filtro,
+            "texto_filtro": texto_filtro,
+            "estados": Reserva.Estado.choices,
+            "bloques": Reserva.BLOQUES,
             "inventario": services.estado_inventario(hoy),
         },
     )

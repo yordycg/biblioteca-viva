@@ -1,7 +1,6 @@
-%% BibliotecaViva — Secuencia de reserva con QR
+%% BibliotecaViva — Secuencia de reserva por bloque con QR (revisión semana 3)
 %% Fuente de verdad del diagrama. Sintaxis Mermaid (GitHub).
-%% Transcrito el 2026-11-05 desde sem2-t2-diagrama-secuencia.png (entrega de SEM2-T2
-%% de Héctor Oviedo), para que la fuente y la exportación coincidan.
+%% 13 bloques de 09:00 a 22:00; antelación mínima de 15 minutos; horizonte de 7 días.
 
 sequenceDiagram
   actor U as Usuario
@@ -15,38 +14,39 @@ sequenceDiagram
 
   U->>UI: Selecciona recurso, fecha y bloque
   UI->>BE: Solicitar reserva
-  BE->>SR: crearReserva(datos)
-  SR->>SS: verificarSancion(usuarioId)
-  SS-->>SR: Resultado de sanción
-
-  alt Usuario sancionado (RF-07)
-    SR-->>BE: Rechazar reserva
-    BE-->>UI: Error: usuario sancionado
-    UI-->>U: Mostrar mensaje de sanción
-  else Usuario habilitado
-    SR->>RRes: contarReservasActivas(usuarioId, fecha)
-    RRes-->>SR: Cantidad de reservas
-    alt Límite diario alcanzado (RF-06)
-      SR-->>BE: Rechazar reserva
-      BE-->>UI: Error: máximo 2 reservas
-      UI-->>U: Mostrar límite diario
-    else Tiene cupo disponible
-      SR->>RRec: verificarDisponibilidad(recurso, fecha, bloque)
-      RRec-->>SR: Disponibilidad
-      alt Recurso ocupado
-        SR-->>BE: Rechazar reserva
-        BE-->>UI: Error: recurso no disponible
-        UI-->>U: Mostrar recurso ocupado
-      else Recurso disponible
-        SR->>RRes: guardarReserva(datos)
-        RRes-->>SR: Reserva registrada
-        SR->>QR: generarQR(idReserva)
-        QR-->>SR: QR único
-        SR->>RRes: asociarQR(idReserva, QR)
-        RRes-->>SR: Confirmación
-        SR-->>BE: Reserva y QR
-        BE-->>UI: Confirmación de reserva
-        UI-->>U: Mostrar código QR
+  BE->>SR: crearReserva(usuario, recurso, fecha, bloque)
+  SR->>SR: validar ventana (09:00–22:00, 15 min, 7 días)
+  alt Fecha o bloque inválido
+    SR-->>BE: Rechazar
+    BE-->>UI: Error de fecha/bloque
+    UI-->>U: Mostrar error bajo el campo
+  else Ventana válida
+    SR->>SS: verificarSancion(usuario)
+    SS-->>SR: Sanción vigente o habilitado
+    alt Usuario sancionado (RF-07)
+      SR-->>BE: Rechazar
+      BE-->>UI: Error de sanción
+      UI-->>U: Mostrar aviso
+    else Habilitado
+      SR->>RRes: contarReservasActivas(usuario, fecha)
+      alt Límite de 2 por día (RF-06)
+        SR-->>BE: Rechazar
+        BE-->>UI: Error de cupo
+        UI-->>U: Mostrar límite
+      else Cupo disponible
+        SR->>RRec: verificarDisponibilidad(recurso, fecha, bloque)
+        alt Recurso ocupado
+          SR-->>BE: Rechazar
+          BE-->>UI: Error de disponibilidad
+          UI-->>U: Mostrar recurso ocupado
+        else Recurso libre
+          SR->>RRes: guardarReserva
+          SR->>QR: generarQR(idReserva)
+          QR-->>SR: QR único
+          SR-->>BE: Reserva + QR
+          BE-->>UI: Confirmación
+          UI-->>U: Mostrar QR
+        end
       end
     end
   end

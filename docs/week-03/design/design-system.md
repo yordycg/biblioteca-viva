@@ -99,9 +99,9 @@ del login usan `--color-primary` como fondo.
 |---|---|---|
 | Shell | `.shell`, `.topbar`, `.main`, `.footer` | Barra superior fija, contenedor de 1280 px |
 | Logo institucional | `.brand`, `.brand__logo`, `.brand__divider`, `.brand__product` | Logo oficial a 36 px de alto (32 px en móvil) sobre fondo `--color-primary` |
-| Navegación | `.nav`, `.nav__link[aria-current]` | Se filtra por rol en `base.html` |
+| Navegación | `.nav`, `.nav__link[aria-current]` | Se filtra por rol en `base.html`; la barra superior muestra solo el nombre, sin badge de rol |
 | Encabezado de página | `.page-head`, `.eyebrow`, `.page-head__aside` | Incluye el medidor de cupo |
-| Filtros | `.filters`, `.field`, `.control` | Grid 4/3/3/auto en desktop |
+| Filtros | `.filters`, `.filters--libros`, `.filters--panel`, `.field`, `.campo` | Grid de 4–6 columnas según vista; una columna en móvil |
 | Aviso normativo | `.notice`, `.notice--warning`, `.notice--danger` | RF-06, RF-07 |
 | Tarjeta de recurso | `.resource`, `.resource__media`, `.resource__meta`, `.resource__foot` | El «media» es un bloque de color con icono, no una foto |
 | Badge de estado | `.badge--reservada`, `.badge--en-uso`, `.badge--finalizada`, `.badge--sancion`, `.badge--libre`, `.badge--uso`, `.badge--no-disponible` | Color + texto |
@@ -116,6 +116,9 @@ del login usan `--color-primary` como fondo.
 | Ficha de libro | `.detail-card`, `.detail-card__top`, `.chips`, `.chip` | Una sola tarjeta: carátula, datos, sinopsis y condiciones |
 | Panel de préstamo | `.loan-band`, `.loan-band__grid`, `.loan-band__meta` | Fecha, duración y cupo en una fila; se apila en móvil |
 | Línea de tiempo de bloques | `.timeline`, `.timeline__track`, `.timeline__slot` | 13 bloques de color por recurso; scroll horizontal en móvil |
+| Agenda del panel | `.agenda`, `.agenda__time` | Entregas y devoluciones ordenadas por hora/fecha |
+| Ocupación por bloque | `.occupancy`, `.occupancy__row`, `.occupancy__bar` | Barra de ocupación agregada por bloque |
+| Filtros del panel | `.filters--panel` | Estado, bloque y búsqueda de la tabla del día |
 | Checkbox de filtro | `.field--check`, `.check` | “Solo disponibles” alineado con los controles |
 | Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |
@@ -165,3 +168,26 @@ Datos de recursos: deben coincidir con el seed (`Sala 3`: 8 personas, Piso 1;
 | ≥ 1024 px | Contenedor de 1280 px, dos columnas de contenido, panel lateral para el QR y el resumen |
 
 Verificación: capturas a 360×800 y 1280×800 en `docs/week-03/evidence/`.
+
+
+### 3.1 Estados de error de formulario
+
+- El campo inválido se envuelve en `.field--error`; el borde y el label pasan a
+  `--color-danger` y el input recibe `aria-invalid="true"` y `aria-describedby`.
+- El mensaje va en `.field__error`, debajo del control, nunca como aviso global
+  de ancho completo.
+- Los formularios solo validan cuando se envían (`filtrar=1`); cambiar de pestaña
+  o limpiar filtros no muestra errores.
+- Mensajes: “Elige una fecha de retiro.”, “Elige una duración de 3, 7 o 14 días.”,
+  “Elige un bloque horario.”, “Ingresa tu correo institucional.”.
+
+### 3.2 Evolución v1 → v2
+
+- **v1:** Google Stitch (SEM3-T1). El `.zip` está en Drive; no es editable ni se
+  versiona porque depende de Tailwind CDN y fotos remotas.
+- **v2:** implementación real en Django. Las capturas de
+  `docs/week-03/mockups/v2/` son la referencia visual final.
+- Cambios principales de la revisión: login limpio y sin credenciales demo,
+  búsqueda con pestañas, catálogo de libros con carátulas SVG, ficha de una sola
+  card, 13 bloques de 09:00 a 22:00, panel con KPIs/agenda/ocupación y errores
+  por campo.

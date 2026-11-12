@@ -10,6 +10,7 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 - Revisión docente (MVP 1): login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
 - Revisión docente (MVP 2): ventana de reserva (15 minutos de antelación, 7 días de horizonte) y catálogo de libros con carátulas, ficha y préstamo.
 - Revisión docente (MVP 2): catálogo inicial con estado, filtro “Solo disponibles” y horario de 09:00 a 22:00 en bloques de una hora.
+- Panel del bibliotecario v2: KPIs, agenda de entregas/devoluciones, ocupación por bloque, sanciones activas y filtros de la tabla.
 
 ## Stack
 
@@ -106,7 +107,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Reserva | clic en “Reservar bloque” | Detalle y confirmación |
 | QR | `/reserva/<id>/qr/` | QR legible e ID |
 | Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
-| Bibliotecario | `/bibliotecario/` | Código manual, tabla del día, entrega y devolución |
+| Bibliotecario | `/bibliotecario/` | KPIs, agenda, ocupación por bloque, inventario, filtros y validación QR |
 | Admin | `/admin/` | Solo para desarrollo; no es parte del flujo |
 
 ## Revisión por rol
@@ -141,12 +142,13 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 ## Scripts de demo
 
 ```bash
-.venv/bin/python scripts/seed.py
+.venv/bin/python scripts/demo_dashboard.py
 .venv/bin/python scripts/demo_flujo.py
 .venv/bin/python scripts/simular_retraso.py
 .venv/bin/python scripts/medir_rendimiento.py
 ```
 
+- `demo_dashboard.py` carga reservas, préstamos y una sanción ficticia para ver el panel del bibliotecario.
 - `demo_flujo.py` recorre búsqueda → reserva → QR → entrega → devolución.
 - `simular_retraso.py` fuerza una devolución a las 11:01 y muestra la sanción.
 - `medir_rendimiento.py` mide 20 reservas + QR a nivel de servicio (medición inicial de RNF-01).
