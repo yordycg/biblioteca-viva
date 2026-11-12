@@ -1,14 +1,14 @@
 # BibliotecaViva — Sistema de Gestión y Reservas
 
-Aplicación web responsiva para buscar, reservar y validar salas y equipos de la biblioteca del Instituto Profesional Virginio Gómez. Es la Evaluación 3 de Ingeniería de Software.
+Aplicación web responsiva para buscar, reservar y validar salas, equipos y libros de la biblioteca del Instituto Profesional Virginio Gómez. Es la Evaluación 3 de Ingeniería de Software.
 
 ## Estado actual
 
 - Semana 1: ficha, requisitos y plan de calidad.
 - Semana 2: diseño y QA base (mockups, UML, checklist, matriz y 6 casos).
 - Semana 3: MVP Django de F1–F3 con interfaz institucional (port del rediseño SEM3-T1 a CSS propio).
-- Revisión docente: login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
-- Revisión docente (MVP 2): ventana de reserva con bloques futuros, 15 minutos de antelación y 7 días de horizonte.
+- Revisión docente (MVP 1): login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
+- Revisión docente (MVP 2): ventana de reserva (15 minutos de antelación, 7 días de horizonte) y catálogo de libros con carátulas, ficha y préstamo.
 
 ## Stack
 
@@ -24,13 +24,13 @@ Aplicación web responsiva para buscar, reservar y validar salas y equipos de la
 ```text
 config/                 # settings y urls
 reservas/
-  models.py             # Usuario, Recurso, Reserva, QR, Sancion
-  services.py           # RF-06 y RF-07
-  views.py              # login, búsqueda, reserva, QR, bibliotecario
+  models.py             # Usuario, Recurso, Libro, Reserva, QR, Sancion
+  services.py           # búsqueda, reserva, catálogo y reglas RF-06/RF-07
+  views.py              # login, búsqueda, catálogo, reserva, QR, bibliotecario
   forms.py
   urls.py
-  templates/reservas/     # base, login, búsqueda, reserva, QR, mis reservas, panel
-  static/reservas/        # styles.css, app.js
+  templates/reservas/     # base, login, búsqueda, catálogo, ficha, reserva, QR, panel
+  static/reservas/        # styles.css, app.js, covers/ (carátulas SVG locales)
   management/commands/seed.py
 scripts/
   demo_flujo.py
@@ -100,6 +100,8 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 |---|---|---|
 | Login | `/login/` | Formulario, mensajes de error |
 | Búsqueda | `/buscar/` | Filtros, tarjetas, estado vacío |
+| Catálogo | `/libros/` | Carátulas, filtro por título/autor y género |
+| Ficha de libro | `/libros/<id>/` | Datos bibliográficos y bloques libres de hoy |
 | Reserva | clic en “Reservar bloque” | Detalle y confirmación |
 | QR | `/reserva/<id>/qr/` | QR legible e ID |
 | Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
@@ -129,7 +131,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 ## Flujo principal
 
 1. El estudiante inicia sesión.
-2. Busca por tipo, fecha y bloque.
+2. Busca por tipo, fecha y bloque, o explora el catálogo de libros.
 3. Selecciona un recurso disponible y confirma la reserva.
 4. Se muestra el QR con el ID `RSV-NNNN`.
 5. El bibliotecario ingresa el código manualmente y confirma la entrega.

@@ -38,7 +38,16 @@ superior y en la cabecera del login (procedencia, hash y paleta medida en
 - La búsqueda y la reserva rechazan fechas anteriores al día actual, tanto en el formulario como en una confirmación enviada por URL forzada.
 - El panel del bibliotecario muestra el estado del inventario: contadores de recursos disponibles, reservados, en uso y no disponibles, más una tabla por recurso y bloque.
 
-Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas automáticas).
+Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas al cerrar el MVP 1).
+
+## Ajustes posteriores a la revisión docente (MVP 2)
+
+- Catálogo de libros en `/libros/` con carátulas SVG locales, filtro por título/autor y género.
+- Ficha de libro en `/libros/<id>/` con autor, editorial, año, ISBN, páginas, ubicación y sinopsis.
+- Reserva de libros con el mismo flujo de bloques, cupo diario, QR y validación que salas y equipos.
+- El modelo `Libro` hereda de `Recurso`, por lo que las reglas RF-06 y RF-07 no se duplican.
+
+Cubierto por CP-18 y por `python manage.py test` (43 pruebas automáticas).
 
 ## Ventana de reserva (revisión del MVP 2)
 
@@ -47,7 +56,7 @@ Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas automática
 - El horizonte de reserva es de **7 días**; fuera de ese rango la fecha se rechaza.
 - El selector de bloques se actualiza al cambiar la fecha sin recargar la página; sin JavaScript, el servidor aplica la misma regla.
 
-Cubierto por CP-17 y por `python manage.py test` (33 pruebas automáticas).
+Cubierto por CP-17 y por `python manage.py test` (43 pruebas automáticas).
 
 ## Orden de revisión
 

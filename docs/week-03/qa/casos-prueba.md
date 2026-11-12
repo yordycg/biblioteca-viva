@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel) y CP-17 en la revisión del MVP 2 (ventana de reserva). Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel) CP-17 en la revisión del MVP 2 (ventana de reserva) y CP-18 en la revisión del MVP 2 (catálogo de libros). Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/week-03/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: los resultados siguen en Pendiente hasta que QA ejecute cada CP y adjunte su evidencia.
 
@@ -15,6 +15,7 @@ Fuentes usadas: requisitos RF/RNF del equipo, diagrama de casos de uso (CU0–CU
 | Otro solicitante | estudiante2@example.com |
 | Resolutor (bibliotecario) | bibliotecario1@example.com |
 | Recursos semilla | Sala 3 (Piso 1, 8 personas) · Sala 1 (Piso 1, 4 personas) · Proyector Epson (eq-014) · Notebook Dell (eq-002) |
+| Libros semilla | Don Quijote de la Mancha · Martín Fierro · La Araucana · Veinte mil leguas de viaje submarino · La metamorfosis · Frankenstein (carátulas SVG locales) |
 | Bloques | 10:00–11:00 · 11:00–12:00 · 15:00–16:00 |
 | Formato de ID de reserva | RSV-NNNN (ej. RSV-0042) |
 
@@ -210,6 +211,21 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/week-03/evidence/CP-17.png` |
 | Ejecutado por / fecha | Pendiente |
 
+## CP-18 — Catálogo, ficha y reserva de un libro
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. "Don Quijote de la Mancha" sin préstamos activos. Sesión como estudiante1@example.com. |
+| Datos de entrada | Filtro del catálogo: "Cervantes" · Libro: Don Quijote de la Mancha · Fecha de retiro: hoy · Duración: 7 días |
+| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir la pestaña "Libros" de "Buscar".<br>3. Escribir "Cervantes" en el filtro y presionar "Filtrar".<br>4. Verificar que se muestra la tarjeta con carátula, autor y año.<br>5. Abrir la ficha del libro.<br>6. Revisar ISBN, editorial, páginas, ubicación y sinopsis.<br>7. Elegir fecha de retiro y duración de 7 días.<br>8. Confirmar el préstamo y anotar el código RSV-NNNN.<br>9. Volver a la ficha y a "Mis reservas". |
+| Resultado esperado | La pestaña de libros filtra por autor y muestra la carátula local. La ficha presenta los datos bibliográficos y el panel de préstamo. El préstamo genera un QR único, descuenta el cupo de préstamos y aparece en "Mis reservas" con autor y fecha de devolución. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-18.png` |
+| Ejecutado por / fecha | Pendiente |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -257,6 +273,15 @@ Casos agregados en la revisión del MVP 2 (ventana de reserva):
 | Límite | 1 | CP-17 |
 | Total | 1 |  |
 
+Casos agregados en la revisión del MVP 2 (libros):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 1 | CP-18 |
+| Negativo | 0 | — |
+| Límite | 0 | — |
+| Total | 1 |  |
+
 ## (b) Plan de CP-07 a CP-14
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
@@ -278,7 +303,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
 - El plan de 14 casos (6 + 5 + 3) está declarado.
-- Los IDs CP-01…CP-17 coinciden con matriz-trazabilidad.md.
+- Los IDs CP-01…CP-18 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -302,3 +327,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 13 | CP-13 y CP-14 quedan en "Pendiente" hasta ejecutarse con captura real. | No se marca un caso como Aprobado sin evidencia; el MVP ya permite ejecutarlos, pero falta la captura. |
 | 14 | Se agregan CP-15 y CP-16 tras la revisión docente del MVP 1. | Cubren el rechazo de fechas pasadas y la visibilidad del inventario en el panel; responden a observaciones concretas del docente y quedan Pendiente hasta su ejecución con captura. |
 | 15 | Se agrega CP-17 en la revisión del MVP 2. | Valida los tres bordes de la ventana de reserva: bloque iniciado, antelación de 15 minutos y horizonte de 7 días. |
+| 16 | Se agrega CP-18 en la revisión del MVP 2. | Valida el catálogo de libros, la ficha bibliográfica y el préstamo con el mismo flujo de QR; queda Pendiente hasta su captura. |

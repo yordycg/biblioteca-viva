@@ -11,7 +11,8 @@
     - RF-01: Búsqueda de recurso.
     - RF-02: Reserva de recurso.
     - RF-03: Generación de comprobante (QR).
-- **Exclusiones explícitas:** Multas monetarias, catálogo de libros físicos, soporte offline PWA, reportes analíticos para dirección, Redis, liberación por no-show.
+- **Exclusiones explícitas:** Multas monetarias, soporte offline PWA, reportes analíticos para dirección, Redis, liberación por no-show.
+- **Ampliación posterior (revisión docente):** catálogo de libros con carátula, ficha bibliográfica y reserva por bloque, dentro de RF-01 y RF-02.
 - **Equipo:**
     - Vicente Díaz
     - Lucas Jara
