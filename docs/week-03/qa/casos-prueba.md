@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel) CP-17 en la revisión del MVP 2 (ventana de reserva) y CP-18 en la revisión del MVP 2 (catálogo de libros). Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel), CP-17 en la revisión del MVP 2 (ventana de reserva), CP-18 en la revisión del MVP 2 (catálogo de libros) y CP-21 en la revisión del panel del bibliotecario. Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/week-03/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: los resultados siguen en Pendiente hasta que QA ejecute cada CP y adjunte su evidencia.
 
@@ -256,6 +256,21 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/week-03/evidence/CP-20.png` |
 | Ejecutado por / fecha | Pendiente |
 
+## CP-21 — Panel operativo del bibliotecario
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-04, RF-05, RF-08 (CU4 Validar inicio, CU5 Registrar devolución) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Una reserva de bloque pendiente, un préstamo de libro activo y una sanción activa. Sesión como bibliotecario1@example.com. |
+| Datos de entrada | Panel del día · filtros por estado, bloque y búsqueda por código |
+| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel".<br>3. Revisar los KPIs: reservas, pendientes, en uso, préstamos, vencen hoy, vencidos y sanciones.<br>4. Revisar "Próximas entregas", "Devoluciones de libros" y "Sanciones activas".<br>5. Revisar la ocupación de los 13 bloques.<br>6. Filtrar la tabla por estado y por código; limpiar filtros.<br>7. Revisar que la barra superior no muestre el rol. |
+| Resultado esperado | El panel muestra los KPIs y la agenda con datos reales; la ocupación refleja reservas y préstamos; los filtros acotan la tabla; la sanción activa aparece listada; la barra superior muestra solo el nombre, no el rol. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-21.png` |
+| Ejecutado por / fecha | Pendiente |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -321,6 +336,15 @@ Casos agregados en la revisión del MVP 2 (catálogo y horario):
 | Límite | 0 | — |
 | Total | 1 |  |
 
+Casos agregados en la revisión del panel (MVP 2):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 1 | CP-21 |
+| Negativo | 0 | — |
+| Límite | 0 | — |
+| Total | 1 |  |
+
 ## (b) Plan de CP-07 a CP-14
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
@@ -342,7 +366,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
 - El plan de 14 casos (6 + 5 + 3) está declarado.
-- Los IDs CP-01…CP-20 coinciden con matriz-trazabilidad.md.
+- Los IDs CP-01…CP-21 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -369,3 +393,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 16 | Se agrega CP-18 en la revisión del MVP 2. | Valida el catálogo de libros, la ficha bibliográfica y el préstamo con el mismo flujo de QR; queda Pendiente hasta su captura. |
 | 17 | Se agrega CP-19 en la revisión del MVP 2. | Cubre los bordes del préstamo de libros: solapamiento y máximo de 2 préstamos activos. |
 | 18 | Se agrega CP-20 en la revisión del MVP 2. | Cubre el catálogo inicial con estado, “Solo disponibles” y la validación solo al presionar Filtrar. |
+| 19 | Se agrega CP-21 en la revisión del panel. | Cubre los KPIs, la agenda, la ocupación, las sanciones activas, los filtros y la ausencia del rol en la barra. |

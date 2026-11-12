@@ -116,6 +116,9 @@ del login usan `--color-primary` como fondo.
 | Ficha de libro | `.detail-card`, `.detail-card__top`, `.chips`, `.chip` | Una sola tarjeta: carátula, datos, sinopsis y condiciones |
 | Panel de préstamo | `.loan-band`, `.loan-band__grid`, `.loan-band__meta` | Fecha, duración y cupo en una fila; se apila en móvil |
 | Línea de tiempo de bloques | `.timeline`, `.timeline__track`, `.timeline__slot` | 13 bloques de color por recurso; scroll horizontal en móvil |
+| Agenda del panel | `.agenda`, `.agenda__time` | Entregas y devoluciones ordenadas por hora/fecha |
+| Ocupación por bloque | `.occupancy`, `.occupancy__row`, `.occupancy__bar` | Barra de ocupación agregada por bloque |
+| Filtros del panel | `.filters--panel` | Estado, bloque y búsqueda de la tabla del día |
 | Checkbox de filtro | `.field--check`, `.check` | “Solo disponibles” alineado con los controles |
 | Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |

@@ -106,7 +106,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Reserva | clic en “Reservar bloque” | Detalle y confirmación |
 | QR | `/reserva/<id>/qr/` | QR legible e ID |
 | Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
-| Bibliotecario | `/bibliotecario/` | Código manual, tabla del día, entrega y devolución |
+| Bibliotecario | `/bibliotecario/` | KPIs, agenda, ocupación por bloque, inventario, filtros y validación QR |
 | Admin | `/admin/` | Solo para desarrollo; no es parte del flujo |
 
 ## Revisión por rol
