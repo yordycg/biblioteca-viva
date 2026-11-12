@@ -2,7 +2,7 @@
 
 Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas" y CP-15 y CP-16 en la revisión docente del MVP 1, CP-17 en la revisión del MVP 2 (ventana de reserva) y CP-18 en la del MVP 2 (catálogo de libros). Todos los resultados están en Pendiente; ningún requisito está aprobado ni tiene evidencia ejecutada de CP. Las rutas de evidencia de CP son propuestas hasta que QA las genere.
 
-La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (65 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (69 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
 
 ## Matriz principal
 
@@ -11,11 +11,11 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | RF-01 | Búsqueda de recurso | CP-01, CP-11, CP-15, CP-17, CP-18, CP-20 | Pendiente | `docs/week-03/evidence/CP-01.png`, `docs/week-03/evidence/CP-11.png`, `docs/week-03/evidence/CP-15.png`, `docs/week-03/evidence/CP-17.png`, `docs/week-03/evidence/CP-18.png`, `docs/week-03/evidence/CP-20.png` | Implementado (catálogo con estado, filtros y horario 09–22); CP pendiente |
 | RF-02 | Reserva de recurso | CP-02, CP-13, CP-15, CP-17, CP-18, CP-19 | Pendiente | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png`, `docs/week-03/evidence/CP-15.png`, `docs/week-03/evidence/CP-17.png`, `docs/week-03/evidence/CP-18.png`, `docs/week-03/evidence/CP-19.png` | Implementado (incluye ventana y préstamo de libros); CP pendiente |
 | RF-03 | Generación de comprobante (QR) | CP-02, CP-13, CP-14 | Pendiente | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png`, `docs/week-03/evidence/CP-14.png` | Implementado (QR con ID de reserva); CP pendiente |
-| RF-04 | Validación de entrega (check-in) | CP-04, CP-16 | Pendiente | `docs/week-03/evidence/CP-04.png`, `docs/week-03/evidence/CP-16.png` | Implementado (validación manual del código); CP pendiente |
-| RF-05 | Registro de devolución (check-out) | CP-05, CP-16 | Pendiente | `docs/week-03/evidence/CP-05.png`, `docs/week-03/evidence/CP-16.png` | Implementado; CP pendiente |
+| RF-04 | Validación de entrega (check-in) | CP-04, CP-16, CP-21 | Pendiente | `docs/week-03/evidence/CP-04.png`, `docs/week-03/evidence/CP-16.png`, `docs/week-03/evidence/CP-21.png` | Implementado (validación manual del código); CP pendiente |
+| RF-05 | Registro de devolución (check-out) | CP-05, CP-16, CP-21 | Pendiente | `docs/week-03/evidence/CP-05.png`, `docs/week-03/evidence/CP-16.png`, `docs/week-03/evidence/CP-21.png` | Implementado; CP pendiente |
 | RF-06 | Control de tope de reservas | CP-03, CP-19 | Pendiente | `docs/week-03/evidence/CP-03.png` | Implementado; CP pendiente |
 | RF-07 | Gestión de penalizaciones por retraso | CP-06, CP-12 | Pendiente | `docs/week-03/evidence/CP-06.png`, `docs/week-03/evidence/CP-12.png` | Implementado (sanción de 7 días); CP pendiente |
-| RF-08 | Autenticación y roles básicos | CP-07, CP-14 | Pendiente | `docs/week-03/evidence/CP-07.png`, `docs/week-03/evidence/CP-14.png` | Implementado (login y roles); CP pendiente |
+| RF-08 | Autenticación y roles básicos | CP-07, CP-14, CP-21 | Pendiente | `docs/week-03/evidence/CP-07.png`, `docs/week-03/evidence/CP-14.png`, `docs/week-03/evidence/CP-21.png` | Implementado (login y roles); CP pendiente |
 | RNF-01 | Rendimiento en reserva y QR | CP-08 | Pendiente | `docs/week-03/evidence/CP-08.txt` | Implementado; medición HTTP formal pendiente (S4) |
 | RNF-02 | Usabilidad y diseño responsivo | CP-09 | Pendiente | `docs/week-03/evidence/CP-09.png`, `docs/week-03/evidence/rnf-02/` | Implementado (interfaz 360–1280 px); Lighthouse pendiente |
 | RNF-03 | Seguridad de datos | CP-10 | Pendiente | `docs/week-03/evidence/CP-10.md` | Parcial: hash PBKDF2 y `.gitignore` verificados; auditoría formal pendiente |
@@ -38,6 +38,7 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | CP-18 | Positivo | RF-01, RF-02 | CU1 Buscar recurso, CU2 Reservar recurso | El catálogo filtra libros, la ficha muestra carátula y datos bibliográficos, y el préstamo genera su QR y descuenta el cupo. |
 | CP-19 | Límite | RF-02, RF-06 | CU2 Reservar recurso | Un libro no se puede prestar si su rango se solapa con un préstamo activo, y un usuario no puede superar 2 préstamos activos. |
 | CP-20 | Positivo | RF-01 | CU1 Buscar recurso | El catálogo inicial muestra todos los recursos con su estado, no valida hasta presionar Filtrar y “Solo disponibles” oculta los ocupados. |
+| CP-21 | Positivo | RF-04, RF-05, RF-08 | CU4, CU5 | El panel muestra KPIs, agenda, ocupación, sanciones activas y filtros; la barra superior no muestra el rol. |
 
 ## (b) Plan de CP-07 a CP-12
 
@@ -66,7 +67,7 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 - Los 11 requisitos (RF-01 a RF-08, RNF-01 a RNF-03) están presentes, cada uno con al menos un ID de prueba.
 - Todos los resultados de CP están en "Pendiente".
 - El estado de implementación es explícito en las 11 filas.
-- IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-20).
+- IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-21).
 - Ningún requisito figura como aprobado: la implementación se respalda en código y pruebas automáticas, no en CP ejecutados.
 - Las rutas de evidencia usan .png para pantallas y .txt/.md para mediciones y logs (CP-08, CP-10).
 - Los casos de uso citados coinciden con el diagrama (CU0–CU6).
@@ -91,3 +92,4 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | 14 | Se agrega CP-18 en la revisión del MVP 2. | Cubre el catálogo y el préstamo de libros; la funcionalidad se mantiene dentro de RF-01 y RF-02. |
 | 15 | Se agrega CP-19 en la revisión del MVP 2. | Cubre el solapamiento de préstamos y el límite de 2 activos, enlazado a RF-02 y RF-06. |
 | 16 | Se agrega CP-20 y se amplía el horario a 09:00–22:00. | El catálogo inicial, “Solo disponibles” y los 13 bloques responden a la revisión docente; se actualizan RF-01 y la matriz. |
+| 17 | Se agrega CP-21 en la revisión del panel. | Valida los indicadores operativos, filtros y la ausencia del rol en la barra; enlazado a RF-04, RF-05 y RF-08. |
