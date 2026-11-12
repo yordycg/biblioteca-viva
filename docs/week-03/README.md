@@ -40,6 +40,15 @@ superior y en la cabecera del login (procedencia, hash y paleta medida en
 
 Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas automáticas).
 
+## Ventana de reserva (revisión del MVP 2)
+
+- Para hoy solo se ofrecen bloques que comienzan al menos **15 minutos** después de la hora actual.
+- La búsqueda y la confirmación rechazan bloques iniciados o sin antelación, incluso forzando la URL.
+- El horizonte de reserva es de **7 días**; fuera de ese rango la fecha se rechaza.
+- El selector de bloques se actualiza al cambiar la fecha sin recargar la página; sin JavaScript, el servidor aplica la misma regla.
+
+Cubierto por CP-17 y por `python manage.py test` (33 pruebas automáticas).
+
 ## Orden de revisión
 
 1. `design/design-system.md` — tokens, componentes y reglas de contenido.

@@ -8,6 +8,7 @@ Aplicación web responsiva para buscar, reservar y validar salas y equipos de la
 - Semana 2: diseño y QA base (mockups, UML, checklist, matriz y 6 casos).
 - Semana 3: MVP Django de F1–F3 con interfaz institucional (port del rediseño SEM3-T1 a CSS propio).
 - Revisión docente: login sin credenciales de demostración, rechazo de fechas pasadas y estado del inventario en el panel del bibliotecario.
+- Revisión docente (MVP 2): ventana de reserva con bloques futuros, 15 minutos de antelación y 7 días de horizonte.
 
 ## Stack
 
