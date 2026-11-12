@@ -25,11 +25,11 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 config/                 # settings y urls
 reservas/
   models.py             # Usuario, Recurso, Libro, Reserva, QR, Sancion
-  services.py           # búsqueda, reserva, catálogo y reglas RF-06/RF-07
-  views.py              # login, búsqueda, catálogo, reserva, QR, bibliotecario
+  services.py           # búsqueda, reservas, préstamos y reglas RF-06/RF-07
+  views.py              # login, búsqueda unificada, ficha, reserva, préstamo, QR, bibliotecario
   forms.py
   urls.py
-  templates/reservas/     # base, login, búsqueda, catálogo, ficha, reserva, QR, panel
+  templates/reservas/     # base, login, búsqueda, ficha, confirmación, QR, panel
   static/reservas/        # styles.css, app.js, covers/ (carátulas SVG locales)
   management/commands/seed.py
 scripts/
@@ -100,8 +100,8 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 |---|---|---|
 | Login | `/login/` | Formulario, mensajes de error |
 | Búsqueda | `/buscar/` | Filtros, tarjetas, estado vacío |
-| Catálogo | `/libros/` | Carátulas, filtro por título/autor y género |
-| Ficha de libro | `/libros/<id>/` | Datos bibliográficos y bloques libres de hoy |
+| Libros | `/buscar/?vista=libros` | Pestaña de libros: carátulas, filtro por título/autor y género |
+| Ficha de libro | `/libros/<id>/` | Datos bibliográficos y préstamo por 3, 7 o 14 días |
 | Reserva | clic en “Reservar bloque” | Detalle y confirmación |
 | QR | `/reserva/<id>/qr/` | QR legible e ID |
 | Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
@@ -131,7 +131,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 ## Flujo principal
 
 1. El estudiante inicia sesión.
-2. Busca por tipo, fecha y bloque, o explora el catálogo de libros.
+2. Busca por tipo, fecha y bloque, o cambia a la pestaña Libros para un préstamo.
 3. Selecciona un recurso disponible y confirma la reserva.
 4. Se muestra el QR con el ID `RSV-NNNN`.
 5. El bibliotecario ingresa el código manualmente y confirma la entrega.

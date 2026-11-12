@@ -42,12 +42,12 @@ Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas al cerrar e
 
 ## Ajustes posteriores a la revisión docente (MVP 2)
 
-- Catálogo de libros en `/libros/` con carátulas SVG locales, filtro por título/autor y género.
-- Ficha de libro en `/libros/<id>/` con autor, editorial, año, ISBN, páginas, ubicación y sinopsis.
-- Reserva de libros con el mismo flujo de bloques, cupo diario, QR y validación que salas y equipos.
-- El modelo `Libro` hereda de `Recurso`, por lo que las reglas RF-06 y RF-07 no se duplican.
+- Búsqueda unificada con pestañas **Salas y equipos** / **Libros**; el catálogo ya no es una pantalla aparte.
+- Préstamo de libros por **3, 7 o 14 días**, con fecha de devolución, máximo 2 préstamos activos y un ejemplar por título.
+- Ficha de libro en una sola tarjeta con carátula, datos bibliográficos, sinopsis, condiciones y panel de préstamo.
+- `Reserva` distingue `BLOQUE` y `PRESTAMO`; QR, estados y sanción se reutilizan sin duplicar el flujo.
 
-Cubierto por CP-18 y por `python manage.py test` (43 pruebas automáticas).
+Cubierto por CP-18 y por `python manage.py test` (51 pruebas automáticas).
 
 ## Ventana de reserva (revisión del MVP 2)
 
@@ -56,7 +56,7 @@ Cubierto por CP-18 y por `python manage.py test` (43 pruebas automáticas).
 - El horizonte de reserva es de **7 días**; fuera de ese rango la fecha se rechaza.
 - El selector de bloques se actualiza al cambiar la fecha sin recargar la página; sin JavaScript, el servidor aplica la misma regla.
 
-Cubierto por CP-17 y por `python manage.py test` (43 pruebas automáticas).
+Cubierto por CP-17 y por `python manage.py test` (51 pruebas automáticas).
 
 ## Orden de revisión
 

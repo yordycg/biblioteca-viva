@@ -111,9 +111,10 @@ del login usan `--color-primary` como fondo.
 | Panel QR | `.qr-panel` | QR real generado por Django |
 | Tabla del día | `.table-wrap`, `.data` | Tabla en desktop, tarjetas en móvil vía `data-label` |
 | Indicadores de inventario | `.stats`, `.stat`, `.stat__value`, `.stat__label` | Contadores del panel bibliotecario; borde izquierdo según estado |
-| Catálogo de libros | `.catalog`, `.book`, `.book__cover`, `.book__body`, `.book__title` | Grilla de tarjetas horizontales con carátula local |
-| Ficha de libro | `.book-detail`, `.book-detail__cover`, `.book-detail__meta` | Carátula grande y datos bibliográficos |
-| Bloques de disponibilidad | `.blocks`, `.block-slot`, `.block-slot__time` | Estado por bloque con botón de reserva |
+| Pestañas de búsqueda | `.tabs`, `.tabs__link[aria-current]` | Salas/equipos y libros en una sola página |
+| Tarjeta de libro | `.book-grid`, `.book-card`, `.book-card__cover`, `.book-card__title` | Grilla vertical con carátula 3:4 y CTA al pie |
+| Ficha de libro | `.detail-card`, `.detail-card__top`, `.chips`, `.chip` | Una sola tarjeta: carátula, datos, sinopsis y condiciones |
+| Panel de préstamo | `.loan-band`, `.loan-band__grid`, `.loan-band__meta` | Fecha, duración y cupo en una fila; se apila en móvil |
 | Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |
 

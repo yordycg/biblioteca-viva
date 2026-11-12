@@ -226,6 +226,21 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/week-03/evidence/CP-18.png` |
 | Ejecutado por / fecha | Pendiente |
 
+## CP-19 — Préstamos de libros: solapamiento y límite de activos
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-02, RF-06 (CU2 Reservar recurso) |
+| Tipo | Límite |
+| Precondiciones | Seed cargado. "Don Quijote de la Mancha" y "Martín Fierro" sin préstamos. Sesión como estudiante1@example.com. |
+| Datos de entrada | Préstamo 1: Don Quijote, hoy, 7 días · Préstamo 2: Martín Fierro, hoy, 7 días · Préstamo 3: La Araucana, hoy, 7 días · Préstamo solapado: Don Quijote, hoy + 3 días, 7 días |
+| Pasos | 1. Solicitar Don Quijote por 7 días y confirmar.<br>2. Solicitar Martín Fierro por 7 días y confirmar.<br>3. Intentar un tercer préstamo de La Araucana.<br>4. Intentar un préstamo de Don Quijote que comienza antes de su devolución.<br>5. Revisar "Mis reservas" y el cupo de préstamos. |
+| Resultado esperado | El tercer préstamo se rechaza con el mensaje de límite de 2 préstamos activos. El préstamo solapado se rechaza porque el libro sigue prestado; "Mis reservas" conserva solo los dos primeros y el cupo muestra 2 de 2. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-19.png` |
+| Ejecutado por / fecha | Pendiente |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -279,8 +294,8 @@ Casos agregados en la revisión del MVP 2 (libros):
 |---|---|---|
 | Positivo | 1 | CP-18 |
 | Negativo | 0 | — |
-| Límite | 0 | — |
-| Total | 1 |  |
+| Límite | 1 | CP-19 |
+| Total | 2 |  |
 
 ## (b) Plan de CP-07 a CP-14
 
@@ -303,7 +318,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
 - El plan de 14 casos (6 + 5 + 3) está declarado.
-- Los IDs CP-01…CP-18 coinciden con matriz-trazabilidad.md.
+- Los IDs CP-01…CP-19 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -328,3 +343,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 14 | Se agregan CP-15 y CP-16 tras la revisión docente del MVP 1. | Cubren el rechazo de fechas pasadas y la visibilidad del inventario en el panel; responden a observaciones concretas del docente y quedan Pendiente hasta su ejecución con captura. |
 | 15 | Se agrega CP-17 en la revisión del MVP 2. | Valida los tres bordes de la ventana de reserva: bloque iniciado, antelación de 15 minutos y horizonte de 7 días. |
 | 16 | Se agrega CP-18 en la revisión del MVP 2. | Valida el catálogo de libros, la ficha bibliográfica y el préstamo con el mismo flujo de QR; queda Pendiente hasta su captura. |
+| 17 | Se agrega CP-19 en la revisión del MVP 2. | Cubre los bordes del préstamo de libros: solapamiento y máximo de 2 préstamos activos. |
