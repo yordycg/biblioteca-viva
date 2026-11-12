@@ -1291,11 +1291,14 @@ select:focus {
   gap: var(--space-4);
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
+  width: 100%;
+  margin-block: auto;
 }
 
 .login__card {
   width: 100%;
   max-width: 32rem;
+  margin-inline: auto;
 }
 
 .login__brandbar {
