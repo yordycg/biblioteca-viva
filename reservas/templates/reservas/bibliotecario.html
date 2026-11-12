@@ -82,57 +82,46 @@
   </p>
 
   {% if inventario.filas %}
-    <div class="table-wrap">
-      <table class="data">
-        <caption>Disponibilidad por recurso y bloque para el {{ inventario.fecha|date:"d-m-Y" }}.</caption>
-        <thead>
-          <tr>
-            <th scope="col">Recurso</th>
-            <th scope="col">Tipo</th>
-            {% for bloque in inventario.bloques %}
-              <th scope="col">{{ bloque.1 }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for fila in inventario.filas %}
-            <tr>
-              <td data-label="Recurso">
-                {{ fila.recurso.nombre }}
-                {% if fila.recurso.codigo %}<br><span class="hint-inline">{{ fila.recurso.codigo }}</span>{% endif %}
-              </td>
-              <td data-label="Tipo">{{ fila.recurso.get_tipo_display }}</td>
-              {% if fila.recurso.tipo == "LIBRO" %}
-                <td colspan="3" data-label="Préstamo">
-                  {% if fila.prestamo %}
-                    <span class="badge badge--reservada">En préstamo</span>
-                    <span class="hint-inline">hasta {{ fila.prestamo.fecha_vencimiento|date:"d-m-Y" }}</span>
-                  {% else %}
-                    <span class="badge badge--libre">Disponible</span>
-                  {% endif %}
-                </td>
+    <div class="timeline">
+      <div class="timeline__legend" aria-label="Leyenda de estados">
+        <span class="timeline__legend-item timeline__legend-item--disponible">Disponible</span>
+        <span class="timeline__legend-item timeline__legend-item--reservado">Reservado</span>
+        <span class="timeline__legend-item timeline__legend-item--en_uso">En uso</span>
+        <span class="timeline__legend-item timeline__legend-item--no_disponible">No disponible</span>
+      </div>
+
+      {% for fila in inventario.filas %}
+        <div class="timeline__row">
+          <div class="timeline__resource">
+            <strong>{{ fila.recurso.nombre }}</strong>
+            <span class="hint-inline">
+              {{ fila.recurso.get_tipo_display }}{% if fila.recurso.codigo %} · {{ fila.recurso.codigo }}{% endif %}
+            </span>
+          </div>
+
+          {% if fila.recurso.tipo == "LIBRO" %}
+            <div class="timeline__book">
+              {% if fila.prestamo %}
+                <span class="badge badge--reservada">En préstamo</span>
+                <span class="hint-inline">hasta {{ fila.prestamo.fecha_vencimiento|date:"d-m-Y" }}</span>
               {% else %}
-                {% for bloque in fila.bloques %}
-                  <td data-label="{{ bloque.etiqueta }}">
-                    {% if bloque.estado == "DISPONIBLE" %}
-                      <span class="badge badge--libre">Disponible</span>
-                    {% elif bloque.estado == "RESERVADO" %}
-                      <span class="badge badge--reservada">Reservado</span>
-                    {% elif bloque.estado == "EN_USO" %}
-                      <span class="badge badge--uso">En uso</span>
-                    {% else %}
-                      <span class="badge badge--no-disponible">No disponible</span>
-                    {% endif %}
-                    {% if bloque.reserva %}
-                      <br><span class="hint-inline">{{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}</span>
-                    {% endif %}
-                  </td>
-                {% endfor %}
+                <span class="badge badge--libre">Disponible</span>
               {% endif %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+            </div>
+          {% else %}
+            <div class="timeline__track" role="list" aria-label="Bloques de {{ fila.recurso.nombre }}">
+              {% for bloque in fila.bloques %}
+                <span class="timeline__slot timeline__slot--{{ bloque.estado|lower }}"
+                      role="listitem"
+                      title="{{ bloque.etiqueta }} — {{ bloque.estado|lower }}{% if bloque.reserva %} · {{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}{% endif %}"
+                      aria-label="{{ bloque.etiqueta }}: {{ bloque.estado|lower }}{% if bloque.reserva %} · {{ bloque.reserva.usuario.get_full_name|default:bloque.reserva.usuario.email }}{% endif %}">
+                  <span class="timeline__time">{{ bloque.etiqueta|slice:":2" }}</span>
+                </span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
     </div>
   {% else %}
     <div class="empty">

@@ -94,6 +94,53 @@ def recursos_disponibles(tipo, fecha, bloque):
     ).exclude(id__in=ocupados)
 
 
+def estado_recursos(fecha, bloque, tipo=None, solo_disponibles=False):
+    """Recursos con su estado para un bloque, incluidos los ocupados (RF-01)."""
+    recursos = Recurso.objects.exclude(tipo=Recurso.Tipo.LIBRO)
+    if tipo:
+        recursos = recursos.filter(tipo=tipo)
+    activas = Reserva.objects.filter(
+        fecha=fecha,
+        bloque=bloque,
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+    ).select_related("usuario")
+    por_recurso = {reserva.recurso_id: reserva for reserva in activas}
+
+    filas = []
+    for recurso in recursos:
+        reserva = por_recurso.get(recurso.id)
+        estado = _estado_bloque(recurso, reserva)
+        if solo_disponibles and estado != "DISPONIBLE":
+            continue
+        filas.append(
+            {
+                "recurso": recurso,
+                "estado": estado,
+                "etiqueta": {
+                    "DISPONIBLE": "Disponible",
+                    "RESERVADO": "Reservado",
+                    "EN_USO": "En uso",
+                    "NO_DISPONIBLE": "No disponible",
+                }[estado],
+                "disponible": estado == "DISPONIBLE",
+                "reserva": reserva,
+            }
+        )
+    return filas
+
+
+def fecha_y_bloque_por_defecto(momento=None):
+    """Fecha y bloque iniciales; salta al día siguiente si hoy ya no quedan."""
+    momento = momento or ahora()
+    hoy_ = timezone.localtime(momento).date()
+    for offset in range(0, MAX_DIAS_RESERVA + 1):
+        fecha = hoy_ + timedelta(days=offset)
+        bloques = bloques_disponibles(fecha, momento)
+        if bloques:
+            return fecha, bloques[0][0], offset > 0
+    return hoy_, "", False
+
+
 def reservas_activas(usuario, fecha):
     """Cantidad de reservas activas del usuario en la fecha (RF-06)."""
     return Reserva.objects.filter(

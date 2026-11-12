@@ -51,11 +51,12 @@ def home(request):
 
 @login_required
 def buscar(request):
-    """Búsqueda de recursos por bloque o de libros por préstamo (RF-01)."""
+    """Catálogo con filtros; valida solo cuando se envía el formulario (RF-01)."""
     if _es_bibliotecario(request.user):
         return redirect("bibliotecario")
 
     vista = request.GET.get("vista", "recursos")
+    enviado = request.GET.get("filtrar") == "1"
     hoy = services.hoy()
     sancion_hasta = (
         request.user.sancionado_hasta
@@ -66,12 +67,12 @@ def buscar(request):
 
     if vista == "libros":
         form_libros = BusquedaLibrosForm(
-            request.GET or None, initial={"fecha": hoy, "dias": 7}
+            request.GET if enviado else None,
+            initial={"fecha": hoy, "dias": 7},
         )
-        tarjetas = None
         fecha_libros = hoy
         dias = 7
-        if request.GET and form_libros.is_valid():
+        if enviado and form_libros.is_valid():
             fecha_libros = form_libros.cleaned_data["fecha"]
             dias = form_libros.cleaned_data["dias"]
             tarjetas = services.catalogo_libros(
@@ -80,6 +81,12 @@ def buscar(request):
                 form_libros.cleaned_data["genero"],
                 dias,
             )
+            if form_libros.cleaned_data["solo_disponibles"]:
+                tarjetas = [t for t in tarjetas if t["disponible"]]
+        elif enviado:
+            tarjetas = []
+        else:
+            tarjetas = services.catalogo_libros(hoy, "", "", 7)
         return render(
             request,
             "reservas/buscar.html",
@@ -89,6 +96,7 @@ def buscar(request):
                 "tarjetas": tarjetas,
                 "fecha": fecha_libros,
                 "dias": dias,
+                "enviado": enviado,
                 "cupo": cupo,
                 "sancion_hasta": sancion_hasta,
                 "prestamos": services.prestamos_activos(request.user),
@@ -96,37 +104,47 @@ def buscar(request):
             },
         )
 
-    bloques_hoy = services.bloques_disponibles(hoy)
+    fecha_default, bloque_default, cambio_dia = services.fecha_y_bloque_por_defecto()
     inicial = {
-        "tipo": Recurso.Tipo.SALA,
-        "fecha": hoy,
-        "bloque": bloques_hoy[0][0] if bloques_hoy else "",
+        "tipo": "",
+        "fecha": fecha_default,
+        "bloque": bloque_default,
+        "solo_disponibles": False,
     }
-    form = BusquedaForm(request.GET or None, initial=inicial)
-    resultados = None
-    fecha = None
-    bloque = None
-    fecha_consulta = _fecha_legible(request.GET.get("fecha")) or hoy
-    if request.GET and form.is_valid():
-        fecha_consulta = form.cleaned_data["fecha"]
-    sin_bloques = not form["fecha"].errors and not services.bloques_disponibles(
-        fecha_consulta
-    )
-    if request.GET and form.is_valid():
+    form = BusquedaForm(request.GET if enviado else None, initial=inicial)
+    fecha = fecha_default
+    bloque = bloque_default
+    if enviado and form.is_valid():
         fecha = form.cleaned_data["fecha"]
         bloque = form.cleaned_data["bloque"]
-        resultados = services.recursos_disponibles(
-            form.cleaned_data["tipo"], fecha, bloque
+        recursos = services.estado_recursos(
+            fecha,
+            bloque,
+            form.cleaned_data["tipo"],
+            form.cleaned_data["solo_disponibles"],
         )
+    elif enviado:
+        recursos = []
+    else:
+        recursos = services.estado_recursos(fecha_default, bloque_default)
+    sin_bloques = (
+        enviado
+        and not form["fecha"].errors
+        and not services.bloques_disponibles(fecha)
+    )
+    if enviado:
+        cambio_dia = False
     return render(
         request,
         "reservas/buscar.html",
         {
             "vista": "recursos",
             "form": form,
-            "resultados": resultados,
+            "recursos": recursos,
             "fecha": fecha,
             "bloque": bloque,
+            "enviado": enviado,
+            "cambio_dia": cambio_dia,
             "cupo": cupo,
             "sancion_hasta": sancion_hasta,
             "sin_bloques": sin_bloques,

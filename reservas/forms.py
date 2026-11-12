@@ -49,9 +49,11 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
     tipo = forms.ChoiceField(
         label="Tipo de recurso",
         choices=[
+            ("", "Todos"),
             (Recurso.Tipo.SALA, "Sala"),
             (Recurso.Tipo.EQUIPO, "Equipo"),
         ],
+        required=False,
         error_messages={
             "required": "Elige un tipo de recurso.",
             "invalid_choice": "Elige un tipo de recurso válido.",
@@ -77,6 +79,11 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
             "invalid_choice": "Elige un bloque horario válido.",
         },
         widget=forms.Select(attrs={"class": "campo"}),
+    )
+    solo_disponibles = forms.BooleanField(
+        label="Solo disponibles",
+        required=False,
+        widget=forms.CheckboxInput(attrs={"class": "check"}),
     )
 
     def __init__(self, *args, **kwargs):
@@ -208,6 +215,11 @@ class BusquedaLibrosForm(FechaDesdeHoyMixin, DiasPrestamoMixin, forms.Form):
         required=False,
         choices=[("", "Todos los géneros")],
         widget=forms.Select(attrs={"class": "campo"}),
+    )
+    solo_disponibles = forms.BooleanField(
+        label="Solo disponibles",
+        required=False,
+        widget=forms.CheckboxInput(attrs={"class": "check"}),
     )
 
     def __init__(self, *args, **kwargs):

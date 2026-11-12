@@ -73,6 +73,7 @@
 
     <form method="get" action="{% url 'buscar' %}">
       <input type="hidden" name="vista" value="libros">
+      <input type="hidden" name="filtrar" value="1">
       <div class="filters filters--libros">
         <div class="field{% if form_libros.fecha.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form_libros.fecha.id_for_label }}">
@@ -114,6 +115,12 @@
             <p class="field__error"{% if forloop.first %} id="error-genero"{% endif %}>{{ error }}</p>
           {% endfor %}
         </div>
+        <div class="field field--check">
+          {{ form_libros.solo_disponibles }}
+          <label class="field__label" for="{{ form_libros.solo_disponibles.id_for_label }}">
+            Solo disponibles
+          </label>
+        </div>
         <div class="field field--actions">
           <div class="row">
             <button class="btn" type="submit">
@@ -136,8 +143,7 @@
     </form>
   </section>
 
-  {% if tarjetas is not None %}
-    <section class="stack" aria-labelledby="libros-title">
+  <section class="stack" aria-labelledby="libros-title">
       <div class="section-title">
         <h2 id="libros-title">
           {% if tarjetas %}{{ tarjetas|length }} libro{{ tarjetas|length|pluralize:"s" }}
@@ -200,14 +206,6 @@
         </div>
       {% endif %}
     </section>
-  {% else %}
-    <div class="empty">
-      <span class="empty__icon" aria-hidden="true">
-        <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
-      </span>
-      <p>Elige la fecha de retiro y la duración para ver los libros disponibles.</p>
-    </div>
-  {% endif %}
 {% else %}
   <section class="card" aria-labelledby="filtros-title">
     <div class="card__head">
@@ -220,6 +218,7 @@
 
     <form method="get" action="{% url 'buscar' %}">
       <input type="hidden" name="vista" value="recursos">
+      <input type="hidden" name="filtrar" value="1">
       <div class="filters">
         <div class="field{% if form.tipo.errors %} field--error{% endif %}">
           <label class="field__label" for="{{ form.tipo.id_for_label }}">
@@ -250,6 +249,12 @@
           {% for error in form.bloque.errors %}
             <p class="field__error"{% if forloop.first %} id="error-bloque"{% endif %}>{{ error }}</p>
           {% endfor %}
+        </div>
+        <div class="field field--check">
+          {{ form.solo_disponibles }}
+          <label class="field__label" for="{{ form.solo_disponibles.id_for_label }}">
+            Solo disponibles
+          </label>
         </div>
         <div class="field field--actions">
           <div class="row">
@@ -300,90 +305,108 @@
     </div>
   </div>
 
-  {% if resultados is not None %}
-    <section aria-labelledby="resultados-title" class="stack">
-      <div class="section-title">
-        <h2 id="resultados-title">
-          {% if resultados %}
-            {{ resultados|length }} recurso{{ resultados|length|pluralize:"s" }} disponible{{ resultados|length|pluralize:"s" }}
-          {% else %}
-            Sin resultados
-          {% endif %}
-        </h2>
-        <p class="section-title__meta">
-          {{ fecha|date:"d-m-Y" }} · bloque {{ bloque }} · solo recursos libres
-        </p>
-      </div>
+  <section aria-labelledby="resultados-title" class="stack">
+    <div class="section-title">
+      <h2 id="resultados-title">
+        {% if recursos %}{{ recursos|length }} recurso{{ recursos|length|pluralize:"s" }}
+        {% else %}Sin resultados{% endif %}
+      </h2>
+      <p class="section-title__meta">
+        {{ fecha|date:"d-m-Y" }} · bloque {{ bloque }}
+        {% if form.solo_disponibles.value %} · solo disponibles{% endif %}
+      </p>
+    </div>
 
-      {% if resultados %}
-        <div class="results">
-          {% for recurso in resultados %}
-            <article class="resource">
-              <div class="resource__media {% if recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
-                <span class="resource__type">{{ recurso.get_tipo_display }}</span>
-                <span class="resource__status"><span class="badge badge--en-uso">Disponible</span></span>
-                <span class="resource__icon">
-                  {% if recurso.tipo == "EQUIPO" %}
-                    <svg class="icon icon--lg" aria-hidden="true"><use href="#i-panel"></use></svg>
-                  {% else %}
-                    <svg class="icon icon--lg" aria-hidden="true"><use href="#i-building"></use></svg>
-                  {% endif %}
-                </span>
+    {% if cambio_dia %}
+      <div class="notice notice--warning" role="status">
+        <span class="notice__icon" aria-hidden="true">
+          <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+        </span>
+        <div>
+          <p class="notice__title">Mostrando mañana</p>
+          <p class="notice__text">
+            Hoy ya no quedan bloques con la antelación mínima. Te mostramos el
+            primer bloque disponible de mañana.
+          </p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if recursos %}
+      <div class="results">
+        {% for item in recursos %}
+          <article class="resource">
+            <div class="resource__media {% if item.recurso.tipo == 'EQUIPO' %}resource__media--equipo{% endif %}">
+              <span class="resource__type">{{ item.recurso.get_tipo_display }}</span>
+              <span class="resource__status">
+                {% if item.estado == "DISPONIBLE" %}
+                  <span class="badge badge--libre">Disponible</span>
+                {% elif item.estado == "RESERVADO" %}
+                  <span class="badge badge--reservada">Reservado</span>
+                {% elif item.estado == "EN_USO" %}
+                  <span class="badge badge--uso">En uso</span>
+                {% else %}
+                  <span class="badge badge--no-disponible">No disponible</span>
+                {% endif %}
+              </span>
+              <span class="resource__icon">
+                {% if item.recurso.tipo == "EQUIPO" %}
+                  <svg class="icon icon--lg" aria-hidden="true"><use href="#i-panel"></use></svg>
+                {% else %}
+                  <svg class="icon icon--lg" aria-hidden="true"><use href="#i-building"></use></svg>
+                {% endif %}
+              </span>
+            </div>
+            <div class="resource__body">
+              <div class="resource__title">
+                <h3>{{ item.recurso.nombre }}</h3>
+                {% if item.recurso.codigo %}<span class="resource__code">{{ item.recurso.codigo }}</span>{% endif %}
               </div>
-              <div class="resource__body">
-                <div class="resource__title">
-                  <h3>{{ recurso.nombre }}</h3>
-                  {% if recurso.codigo %}<span class="resource__code">{{ recurso.codigo }}</span>{% endif %}
+              <dl class="resource__meta">
+                <div>
+                  <dt>{% if item.recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
+                  <dd>{% if item.recurso.capacidad %}{{ item.recurso.capacidad }} personas{% else %}{{ item.recurso.get_tipo_display }}{% endif %}</dd>
                 </div>
-                <dl class="resource__meta">
-                  <div>
-                    <dt>{% if recurso.capacidad %}Capacidad{% else %}Tipo{% endif %}</dt>
-                    <dd>{% if recurso.capacidad %}{{ recurso.capacidad }} personas{% else %}{{ recurso.get_tipo_display }}{% endif %}</dd>
-                  </div>
-                  <div>
-                    <dt>Ubicación</dt>
-                    <dd>{{ recurso.ubicacion|default:"—" }}</dd>
-                  </div>
-                </dl>
-                <p class="hint-inline row">
-                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
-                  {{ fecha|date:"d-m-Y" }}
-                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
-                  {{ bloque }}
-                </p>
-                <div class="resource__foot">
+                <div>
+                  <dt>Ubicación</dt>
+                  <dd>{{ item.recurso.ubicacion|default:"—" }}</dd>
+                </div>
+              </dl>
+              <p class="hint-inline row">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                {{ fecha|date:"d-m-Y" }}
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"></use></svg>
+                {{ bloque }}
+              </p>
+              <div class="resource__foot">
+                {% if item.disponible %}
                   <a class="btn btn--block"
-                     href="{% url 'confirmar' recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">
+                     href="{% url 'confirmar' item.recurso.id %}?fecha={{ fecha|date:'Y-m-d' }}&amp;bloque={{ bloque }}">
                     <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
                     Reservar bloque {{ bloque }}
                   </a>
-                </div>
+                {% else %}
+                  <p class="hint-inline">
+                    No disponible en este bloque. Prueba con otro horario.
+                  </p>
+                {% endif %}
               </div>
-            </article>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div class="empty">
-          <span class="empty__icon" aria-hidden="true">
-            <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
-          </span>
-          <p><strong>No hay recursos libres para esa combinación.</strong></p>
-          <p class="hint-inline">
-            Todos los recursos del tipo elegido están reservados o en uso para el
-            {{ fecha|date:"d-m-Y" }} en el bloque {{ bloque }}. Prueba con otro bloque
-            u otra fecha.
-          </p>
-          <a class="btn btn--secondary" href="{% url 'buscar' %}?vista=recursos">Volver a los filtros</a>
-        </div>
-      {% endif %}
-    </section>
-  {% else %}
-    <div class="empty">
-      <span class="empty__icon" aria-hidden="true">
-        <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
-      </span>
-      <p>Selecciona tipo de recurso, fecha y bloque para ver la disponibilidad.</p>
-    </div>
-  {% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <span class="empty__icon" aria-hidden="true">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+        </span>
+        <p><strong>No hay recursos con ese filtro.</strong></p>
+        <p class="hint-inline">
+          Prueba con otro tipo, fecha, bloque o desmarca “Solo disponibles”.
+        </p>
+        <a class="btn btn--secondary" href="{% url 'buscar' %}?vista=recursos">Ver todos los recursos</a>
+      </div>
+    {% endif %}
+  </section>
 {% endif %}
 {% endblock %}

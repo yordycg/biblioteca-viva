@@ -97,9 +97,11 @@ class Reserva(models.Model):
         PRESTAMO = "PRESTAMO", "Préstamo de libro"
 
     BLOQUES = [
-        ("10:00-11:00", "10:00–11:00"),
-        ("11:00-12:00", "11:00–12:00"),
-        ("15:00-16:00", "15:00–16:00"),
+        (
+            f"{hora:02d}:00-{hora + 1:02d}:00",
+            f"{hora:02d}:00–{hora + 1:02d}:00",
+        )
+        for hora in range(9, 22)
     ]
 
     usuario = models.ForeignKey(

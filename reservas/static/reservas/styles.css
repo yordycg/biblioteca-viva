@@ -2135,3 +2135,138 @@ select:focus {
     padding-top: 0;
   }
 }
+
+/* Checkbox de filtros */
+.field--check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.field--check .field__label {
+  margin: 0;
+}
+
+.check {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-primary);
+}
+
+@media (min-width: 480px) {
+  .filters--libros .field--check {
+    padding-top: 1.55rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .filters:not(.filters--libros) {
+    grid-template-columns: 4fr 3fr 3fr auto auto;
+  }
+
+  .filters:not(.filters--libros) .field--check {
+    padding-top: 1.55rem;
+  }
+}
+
+
+/* Línea de tiempo del inventario (panel bibliotecario) */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timeline__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.timeline__legend-item::before {
+  content: "";
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 4px;
+  border-radius: 2px;
+}
+
+.timeline__legend-item--disponible::before { background: var(--color-success); }
+.timeline__legend-item--reservado::before { background: var(--color-warning); }
+.timeline__legend-item--en_uso::before { background: var(--color-secondary); }
+.timeline__legend-item--no_disponible::before { background: var(--color-subtle); }
+
+.timeline__row {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.timeline__resource {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.timeline__track {
+  display: grid;
+  grid-template-columns: repeat(13, minmax(2.4rem, 1fr));
+  gap: 3px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+}
+
+.timeline__slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.1rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.timeline__slot--disponible {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.timeline__slot--reservado {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.timeline__slot--en_uso {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.timeline__slot--no_disponible {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.timeline__time {
+  font-size: 0.625rem;
+}
+
+.timeline__book {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 700px) {
+  .timeline__row {
+    grid-template-columns: 1fr;
+  }
+}
