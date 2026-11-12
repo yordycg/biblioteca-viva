@@ -32,6 +32,14 @@ posición. La implementación usa el **logo oficial del instituto** en la barra
 superior y en la cabecera del login (procedencia, hash y paleta medida en
 `design/design-system.md` §2.4 y §3).
 
+## Ajustes posteriores a la revisión docente (MVP 1)
+
+- El login ya no expone credenciales ni roles de demostración: se ingresa con correo institucional y las cuentas ficticias quedan documentadas en el `README.md` y en el manual.
+- La búsqueda y la reserva rechazan fechas anteriores al día actual, tanto en el formulario como en una confirmación enviada por URL forzada.
+- El panel del bibliotecario muestra el estado del inventario: contadores de recursos disponibles, reservados, en uso y no disponibles, más una tabla por recurso y bloque.
+
+Cubierto por CP-15 y CP-16 y por `python manage.py test` (26 pruebas automáticas).
+
 ## Orden de revisión
 
 1. `design/design-system.md` — tokens, componentes y reglas de contenido.

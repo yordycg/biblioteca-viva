@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel). Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/week-03/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: los resultados siguen en Pendiente hasta que QA ejecute cada CP y adjunte su evidencia.
 
@@ -165,6 +165,36 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/week-03/evidence/CP-14.png` |
 | Ejecutado por / fecha | Pendiente |
 
+## CP-15 — Búsqueda y reserva con fecha pasada rechazadas
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
+| Tipo | Negativo |
+| Precondiciones | Seed cargado. Sesión iniciada como estudiante1@example.com. La fecha de hoy es posterior a la fecha usada como dato (por ejemplo, hoy 2026-11-12 y dato 2026-11-09). |
+| Datos de entrada | Tipo: Sala · Fecha: 2026-11-09 (anterior a hoy) · Bloque: 10:00–11:00 · URL forzada de confirmación: `/reservar/<ID-Sala-3>/?fecha=2026-11-09&bloque=10:00-11:00` |
+| Pasos | 1. Abrir "Buscar".<br>2. Elegir Sala, fecha 2026-11-09 y bloque 10:00–11:00; presionar "Filtrar".<br>3. Leer el mensaje y verificar que no hay tarjetas de resultados.<br>4. Abrir la URL forzada de confirmación de Sala 3 con la misma fecha y presionar "Confirmar reserva".<br>5. Revisar "Mis reservas" y el contador de reservas del día. |
+| Resultado esperado | La búsqueda muestra «La fecha no puede ser anterior a hoy. Elige hoy o un día posterior.» y no lista recursos. La confirmación por URL forzada tampoco crea la reserva: no aparece un ID nuevo, no se genera QR y no cambia la disponibilidad. El campo Fecha expone `min` con la fecha actual. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-15.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-16 — Panel del bibliotecario muestra el estado del inventario
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-04, RF-05 (CU4 Validar inicio, CU5 Registrar devolución) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Sala 3 con reserva Reservada hoy 10:00–11:00; Proyector Epson En Uso hoy 11:00–12:00; Notebook Dell marcado No disponible; Sala 1 libre todo el día. Sesión como bibliotecario1@example.com. |
+| Datos de entrada | Fecha del panel: hoy · Recursos: 4 |
+| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel".<br>3. Leer las tarjetas de resumen: Recursos, Disponibles hoy, Reservados, En uso y No disponibles.<br>4. Revisar la tabla "Estado del inventario" por recurso y por bloque.<br>5. Comparar los valores con las reservas registradas y con el estado del catálogo.<br>6. Registrar una devolución y volver al panel. |
+| Resultado esperado | Las tarjetas muestran 4 recursos: 1 disponible, 1 reservado, 1 en uso y 1 no disponible; la ocupación del día es 50%. La tabla muestra un badge por bloque (Disponible, Reservado, En uso, No disponible) y el solicitante de cada reserva. Tras la devolución, el recurso pasa a Disponible y los contadores se actualizan. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-16.png` |
+| Ejecutado por / fecha | Pendiente |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -191,6 +221,15 @@ Casos agregados en semana 3:
 |---|---|---|
 | Positivo | 1 | CP-13 |
 | Negativo | 1 | CP-14 |
+| Límite | 0 | — |
+| Total | 2 |  |
+
+Casos agregados tras la revisión docente (MVP 1):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 1 | CP-16 |
+| Negativo | 1 | CP-15 |
 | Límite | 0 | — |
 | Total | 2 |  |
 
@@ -237,3 +276,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 11 | CP-08 se clasifica como Límite, no como Positivo. | Verifica el comportamiento en el borde del umbral de RNF-01 (≤ 1,5 s); se corrige por `OBS-LOCAL-01` de la revisión interna. |
 | 12 | Se agregan CP-13 y CP-14 en semana 3 al implementar la pantalla "Mis reservas". | La pantalla ya figura en los mockups (pestaña "Mis Reservas") y CP-03 la usa; los casos cubren el listado propio y el aislamiento entre usuarios. |
 | 13 | CP-13 y CP-14 quedan en "Pendiente" hasta ejecutarse con captura real. | No se marca un caso como Aprobado sin evidencia; el MVP ya permite ejecutarlos, pero falta la captura. |
+| 14 | Se agregan CP-15 y CP-16 tras la revisión docente del MVP 1. | Cubren el rechazo de fechas pasadas y la visibilidad del inventario en el panel; responden a observaciones concretas del docente y quedan Pendiente hasta su ejecución con captura. |

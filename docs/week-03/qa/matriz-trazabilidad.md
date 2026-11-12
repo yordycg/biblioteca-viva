@@ -1,18 +1,18 @@
 # Matriz de trazabilidad — BibliotecaViva (diseño SEM2-T5, ejecución semana 3)
 
-Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". Todos los resultados están en Pendiente; ningún requisito está aprobado ni tiene evidencia ejecutada de CP. Las rutas de evidencia de CP son propuestas hasta que QA las genere.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas" y CP-15 y CP-16 en la revisión docente del MVP 1. Todos los resultados están en Pendiente; ningún requisito está aprobado ni tiene evidencia ejecutada de CP. Las rutas de evidencia de CP son propuestas hasta que QA las genere.
 
-La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (13 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (26 pruebas automáticas), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
 
 ## Matriz principal
 
 | ID Req | Funcionalidad | ID Prueba | Resultado | Evidencia | Estado de implementación |
 |---|---|---|---|---|---|
-| RF-01 | Búsqueda de recurso | CP-01, CP-11 | Pendiente | `docs/week-03/evidence/CP-01.png`, `docs/week-03/evidence/CP-11.png` | Implementado (búsqueda y filtros); CP pendiente |
-| RF-02 | Reserva de recurso | CP-02, CP-13 | Pendiente | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png` | Implementado; CP pendiente |
+| RF-01 | Búsqueda de recurso | CP-01, CP-11, CP-15 | Pendiente | `docs/week-03/evidence/CP-01.png`, `docs/week-03/evidence/CP-11.png`, `docs/week-03/evidence/CP-15.png` | Implementado (búsqueda y filtros); CP pendiente |
+| RF-02 | Reserva de recurso | CP-02, CP-13, CP-15 | Pendiente | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png`, `docs/week-03/evidence/CP-15.png` | Implementado; CP pendiente |
 | RF-03 | Generación de comprobante (QR) | CP-02, CP-13, CP-14 | Pendiente | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png`, `docs/week-03/evidence/CP-14.png` | Implementado (QR con ID de reserva); CP pendiente |
-| RF-04 | Validación de entrega (check-in) | CP-04 | Pendiente | `docs/week-03/evidence/CP-04.png` | Implementado (validación manual del código); CP pendiente |
-| RF-05 | Registro de devolución (check-out) | CP-05 | Pendiente | `docs/week-03/evidence/CP-05.png` | Implementado; CP pendiente |
+| RF-04 | Validación de entrega (check-in) | CP-04, CP-16 | Pendiente | `docs/week-03/evidence/CP-04.png`, `docs/week-03/evidence/CP-16.png` | Implementado (validación manual del código); CP pendiente |
+| RF-05 | Registro de devolución (check-out) | CP-05, CP-16 | Pendiente | `docs/week-03/evidence/CP-05.png`, `docs/week-03/evidence/CP-16.png` | Implementado; CP pendiente |
 | RF-06 | Control de tope de reservas | CP-03 | Pendiente | `docs/week-03/evidence/CP-03.png` | Implementado; CP pendiente |
 | RF-07 | Gestión de penalizaciones por retraso | CP-06, CP-12 | Pendiente | `docs/week-03/evidence/CP-06.png`, `docs/week-03/evidence/CP-12.png` | Implementado (sanción de 7 días); CP pendiente |
 | RF-08 | Autenticación y roles básicos | CP-07, CP-14 | Pendiente | `docs/week-03/evidence/CP-07.png`, `docs/week-03/evidence/CP-14.png` | Implementado (login y roles); CP pendiente |
@@ -32,6 +32,8 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | CP-06 | Límite | RF-07 | CU5 Registrar devolución, CU6 Aplicar sanción | La devolución a las 11:01 (bloque hasta 11:00) finaliza la reserva, aplica 7 días de sanción y rechaza una reserva posterior. |
 | CP-13 | Positivo | RF-02, RF-03 | CU2 Reservar recurso, CU3 Visualizar QR | "Mis reservas" muestra las reservas propias separadas en Activas/Historial y reabre el QR de una reserva activa. |
 | CP-14 | Negativo | RF-03, RF-08 | CU3 Visualizar QR, CU0 Iniciar Sesión | Un usuario no ve en su lista ni puede abrir por URL el QR de una reserva ajena. |
+| CP-15 | Negativo | RF-01, RF-02 | CU1 Buscar recurso, CU2 Reservar recurso | La búsqueda y la confirmación por URL forzada rechazan fechas anteriores al día actual sin crear reserva ni QR. |
+| CP-16 | Positivo | RF-04, RF-05 | CU4 Validar inicio, CU5 Registrar devolución | El panel muestra por recurso y bloque cuántos están disponibles, reservados, en uso o no disponibles, y actualiza los contadores tras una devolución. |
 
 ## (b) Plan de CP-07 a CP-12
 
@@ -60,7 +62,7 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 - Los 11 requisitos (RF-01 a RF-08, RNF-01 a RNF-03) están presentes, cada uno con al menos un ID de prueba.
 - Todos los resultados de CP están en "Pendiente".
 - El estado de implementación es explícito en las 11 filas.
-- IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-14).
+- IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-16).
 - Ningún requisito figura como aprobado: la implementación se respalda en código y pruebas automáticas, no en CP ejecutados.
 - Las rutas de evidencia usan .png para pantallas y .txt/.md para mediciones y logs (CP-08, CP-10).
 - Los casos de uso citados coinciden con el diagrama (CU0–CU6).
@@ -80,3 +82,4 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | 9 | CP-13 y CP-14 se agregan en semana 3 (pantalla "Mis reservas"). | La pantalla figura en los mockups y CP-03 la referencia; se enlazan a RF-02/RF-03 y RF-03/RF-08 y siguen en Pendiente hasta su ejecución. |
 | 10 | «Estado de implementación» pasa de «No implementado» a «Implementado» en semana 3. | Lo respalda el código de F1–F3 y 13 pruebas automáticas; ningún CP se marca aprobado hasta su ejecución con evidencia. |
 | 11 | Se agregan capturas de `evidence/rnf-02/` (360 y 1280 px). | Verifican el renderizado real de la interfaz; no reemplazan la ejecución de CP-09 ni la medición Lighthouse. |
+| 12 | Se agregan CP-15 y CP-16 tras la revisión docente del MVP 1. | Responden a las observaciones sobre fechas pasadas y visibilidad del inventario; se enlazan a RF-01/RF-02 y RF-04/RF-05 y siguen Pendiente hasta su ejecución con captura. |
