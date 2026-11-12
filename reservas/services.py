@@ -451,6 +451,86 @@ def generos_libros():
     )
 
 
+def resumen_panel(fecha, momento=None):
+    """Indicadores operativos para el panel del bibliotecario."""
+    momento = momento or ahora()
+    bloques_hoy = Reserva.objects.filter(
+        modalidad=Reserva.Modalidad.BLOQUE, fecha=fecha
+    )
+    prestamos = Reserva.objects.filter(
+        modalidad=Reserva.Modalidad.PRESTAMO,
+        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
+    )
+    activos_hoy = prestamos.filter(
+        fecha__lte=fecha, fecha_vencimiento__gte=fecha
+    )
+    total_recursos = (
+        Recurso.objects.exclude(tipo=Recurso.Tipo.LIBRO)
+        .exclude(estado=Recurso.Estado.NO_DISPONIBLE)
+        .count()
+    )
+
+    por_bloque = []
+    for valor, etiqueta in Reserva.BLOQUES:
+        reservadas = bloques_hoy.filter(
+            bloque=valor, estado=Reserva.Estado.RESERVADA
+        ).count()
+        en_uso = bloques_hoy.filter(
+            bloque=valor, estado=Reserva.Estado.EN_USO
+        ).count()
+        ocupados = reservadas + en_uso
+        por_bloque.append(
+            {
+                "clave": valor,
+                "etiqueta": etiqueta,
+                "reservadas": reservadas,
+                "en_uso": en_uso,
+                "libres": max(0, total_recursos - ocupados),
+                "porcentaje": (
+                    round(ocupados * 100 / total_recursos) if total_recursos else 0
+                ),
+            }
+        )
+
+    return {
+        "reservas_hoy": bloques_hoy.count() + activos_hoy.count(),
+        "pendientes_entrega": (
+            bloques_hoy.filter(estado=Reserva.Estado.RESERVADA).count()
+            + prestamos.filter(
+                estado=Reserva.Estado.RESERVADA, fecha=fecha
+            ).count()
+        ),
+        "en_uso": (
+            bloques_hoy.filter(estado=Reserva.Estado.EN_USO).count()
+            + activos_hoy.filter(estado=Reserva.Estado.EN_USO).count()
+        ),
+        "prestamos_activos": activos_hoy.count(),
+        "vencen_hoy": activos_hoy.filter(
+            estado=Reserva.Estado.EN_USO, fecha_vencimiento=fecha
+        ).count(),
+        "vencidos": prestamos.filter(
+            estado=Reserva.Estado.EN_USO, fecha_vencimiento__lt=fecha
+        ).count(),
+        "sanciones_activas": Sancion.objects.filter(fin__gt=momento).count(),
+        "proximas_entregas": list(
+            bloques_hoy.filter(estado=Reserva.Estado.RESERVADA)
+            .select_related("recurso", "usuario")
+            .order_by("bloque", "recurso__nombre")[:5]
+        ),
+        "devoluciones": list(
+            activos_hoy.filter(estado=Reserva.Estado.EN_USO)
+            .select_related("recurso", "usuario")
+            .order_by("fecha_vencimiento", "recurso__nombre")[:5]
+        ),
+        "por_bloque": por_bloque,
+        "sanciones": list(
+            Sancion.objects.filter(fin__gt=momento)
+            .select_related("usuario")
+            .order_by("fin")[:5]
+        ),
+    }
+
+
 def obtener_por_codigo(codigo):
     """Busca una reserva por el código del QR."""
     codigo = (codigo or "").strip().upper()

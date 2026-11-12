@@ -42,6 +42,141 @@
   </div>
 {% endif %}
 
+<section class="stats" aria-label="Resumen operativo de hoy">
+  <div class="stat">
+    <span class="stat__value">{{ resumen_panel.reservas_hoy }}</span>
+    <span class="stat__label">Reservas hoy</span>
+  </div>
+  <div class="stat stat--warn">
+    <span class="stat__value">{{ resumen_panel.pendientes_entrega }}</span>
+    <span class="stat__label">Pendientes de entrega</span>
+  </div>
+  <div class="stat stat--busy">
+    <span class="stat__value">{{ resumen_panel.en_uso }}</span>
+    <span class="stat__label">En uso</span>
+  </div>
+  <div class="stat">
+    <span class="stat__value">{{ resumen_panel.prestamos_activos }}</span>
+    <span class="stat__label">Préstamos de libros</span>
+  </div>
+  <div class="stat stat--warn">
+    <span class="stat__value">{{ resumen_panel.vencen_hoy }}</span>
+    <span class="stat__label">Vencen hoy</span>
+  </div>
+  <div class="stat stat--off">
+    <span class="stat__value">{{ resumen_panel.vencidos }}</span>
+    <span class="stat__label">Préstamos vencidos</span>
+  </div>
+  <div class="stat stat--off">
+    <span class="stat__value">{{ resumen_panel.sanciones_activas }}</span>
+    <span class="stat__label">Sanciones activas</span>
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="entregas-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
+        <h2 id="entregas-title" style="font-size: 1.125rem;">Próximas entregas</h2>
+      </div>
+      <span class="req">RF-04</span>
+    </div>
+    {% if resumen_panel.proximas_entregas %}
+      <ul class="agenda">
+        {% for item in resumen_panel.proximas_entregas %}
+          <li>
+            <span class="agenda__time">{{ item.get_bloque_display }}</span>
+            <div>
+              <strong>{{ item.recurso.nombre }}</strong>
+              <span class="hint-inline">{{ item.codigo }} · {{ item.usuario.get_full_name|default:item.usuario.email }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="hint-inline">No hay entregas pendientes para hoy.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="devoluciones-title">
+    <div class="card__head">
+      <div class="card__head-icon">
+        <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
+        <h2 id="devoluciones-title" style="font-size: 1.125rem;">Devoluciones de libros</h2>
+      </div>
+      <span class="req">RF-05</span>
+    </div>
+    {% if resumen_panel.devoluciones %}
+      <ul class="agenda">
+        {% for item in resumen_panel.devoluciones %}
+          <li>
+            <span class="agenda__time">{{ item.fecha_vencimiento|date:"d-m" }}</span>
+            <div>
+              <strong>{{ item.recurso.nombre }}</strong>
+              <span class="hint-inline">{{ item.codigo }} · {{ item.usuario.get_full_name|default:item.usuario.email }}</span>
+            </div>
+            {% if item.fecha_vencimiento < hoy %}
+              <span class="badge badge--sancion">Vencido</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="hint-inline">No hay devoluciones de libros pendientes.</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card" aria-labelledby="ocupacion-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+      <h2 id="ocupacion-title" style="font-size: 1.125rem;">Ocupación por bloque</h2>
+    </div>
+    <span class="req">RF-01</span>
+  </div>
+  <div class="occupancy">
+    {% for bloque in resumen_panel.por_bloque %}
+      <div class="occupancy__row">
+        <span class="occupancy__time">{{ bloque.etiqueta }}</span>
+        <div class="occupancy__bar" role="img"
+             aria-label="{{ bloque.etiqueta }}: {{ bloque.reservadas }} reservados, {{ bloque.en_uso }} en uso, {{ bloque.libres }} libres">
+          <span class="occupancy__fill" style="width: {{ bloque.porcentaje }}%;"></span>
+        </div>
+        <span class="hint-inline">
+          {{ bloque.reservadas }} reservados · {{ bloque.en_uso }} en uso · {{ bloque.libres }} libres
+        </span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="card" aria-labelledby="sanciones-activas-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+      <h2 id="sanciones-activas-title" style="font-size: 1.125rem;">Sanciones activas</h2>
+    </div>
+    <span class="req">RF-07</span>
+  </div>
+  {% if resumen_panel.sanciones %}
+    <ul class="agenda">
+      {% for sancion in resumen_panel.sanciones %}
+        <li>
+          <span class="agenda__time">Hasta {{ sancion.fin|date:"d-m" }}</span>
+          <div>
+            <strong>{{ sancion.usuario.get_full_name|default:sancion.usuario.email }}</strong>
+            <span class="hint-inline">{{ sancion.motivo }} · vence {{ sancion.fin|date:"d-m-Y H:i" }}</span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="hint-inline">No hay sanciones activas.</p>
+  {% endif %}
+</section>
+
 <section class="card" aria-labelledby="inventario-title">
   <div class="card__head">
     <div class="card__head-icon">
@@ -244,11 +379,55 @@
   {% endif %}
 </section>
 
+<section class="card" aria-labelledby="filtros-panel-title">
+  <div class="card__head">
+    <div class="card__head-icon">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+      <h2 id="filtros-panel-title" style="font-size: 1.125rem;">Filtrar reservas del día</h2>
+    </div>
+    <span class="req">RF-04</span>
+  </div>
+  <form method="get" action="{% url 'bibliotecario' %}" class="filters filters--panel">
+    <div class="field">
+      <label class="field__label" for="id_estado_filtro">Estado</label>
+      <select id="id_estado_filtro" name="estado" class="campo">
+        <option value="">Todos</option>
+        {% for valor, etiqueta in estados %}
+          <option value="{{ valor }}"{% if valor == estado_filtro %} selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="id_bloque_filtro">Bloque</label>
+      <select id="id_bloque_filtro" name="bloque" class="campo">
+        <option value="">Todos</option>
+        {% for valor, etiqueta in bloques %}
+          <option value="{{ valor }}"{% if valor == bloque_filtro %} selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="id_texto_filtro">Buscar</label>
+      <input id="id_texto_filtro" class="campo" type="search" name="q"
+             value="{{ texto_filtro }}" placeholder="Código, recurso o usuario">
+    </div>
+    <div class="field field--actions">
+      <div class="row">
+        <button class="btn" type="submit">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+          Filtrar
+        </button>
+        <a class="btn btn--ghost" href="{% url 'bibliotecario' %}">Limpiar</a>
+      </div>
+    </div>
+  </form>
+</section>
+
 <section class="stack" aria-labelledby="dia-title">
   <div class="section-title">
     <h2 id="dia-title">Reservas del día</h2>
     <p class="section-title__meta">
-      {{ hoy|date:"d-m-Y" }} · {{ resumen.total }} registro{{ resumen.total|pluralize:"s" }}
+      {{ hoy|date:"d-m-Y" }} · {{ total_filtrado }} de {{ resumen.total }} registro{{ resumen.total|pluralize:"s" }}
     </p>
   </div>
 
@@ -322,8 +501,9 @@
       <span class="empty__icon" aria-hidden="true">
         <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
       </span>
-      <p>No hay reservas registradas para hoy.</p>
-      <p class="hint-inline">Cuando un solicitante reserve, la reserva aparecerá en esta tabla.</p>
+      <p>No hay reservas que coincidan con el filtro.</p>
+      <p class="hint-inline">Prueba con otro estado, bloque o término de búsqueda.</p>
+      <a class="btn btn--secondary" href="{% url 'bibliotecario' %}">Limpiar filtros</a>
     </div>
   {% endif %}
 </section>
