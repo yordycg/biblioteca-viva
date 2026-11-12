@@ -236,11 +236,18 @@
 
           {% if fila.recurso.tipo == "LIBRO" %}
             <div class="timeline__book">
-              {% if fila.prestamo %}
-                <span class="badge badge--reservada">En préstamo</span>
-                <span class="hint-inline">hasta {{ fila.prestamo.fecha_vencimiento|date:"d-m-Y" }}</span>
+              {% if fila.estado == "EN_USO" %}
+                <span class="badge badge--uso">En uso</span>
+              {% elif fila.estado == "RESERVADO" %}
+                <span class="badge badge--reservada">Reservado</span>
               {% else %}
                 <span class="badge badge--libre">Disponible</span>
+              {% endif %}
+              {% if fila.prestamo %}
+                <span class="hint-inline">hasta {{ fila.prestamo.fecha_vencimiento|date:"d-m-Y" }}</span>
+                {% if fila.prestamo.fecha_vencimiento < inventario.fecha %}
+                  <span class="badge badge--sancion">Vencido</span>
+                {% endif %}
               {% endif %}
             </div>
           {% else %}

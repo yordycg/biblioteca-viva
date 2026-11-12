@@ -304,6 +304,12 @@ def estado_inventario(fecha):
         Q(modalidad=Reserva.Modalidad.BLOQUE, fecha=fecha)
         | Q(
             modalidad=Reserva.Modalidad.PRESTAMO,
+            estado=Reserva.Estado.EN_USO,
+            fecha__lte=fecha,
+        )
+        | Q(
+            modalidad=Reserva.Modalidad.PRESTAMO,
+            estado=Reserva.Estado.RESERVADA,
             fecha__lte=fecha,
             fecha_vencimiento__gte=fecha,
         )
@@ -461,9 +467,7 @@ def resumen_panel(fecha, momento=None):
         modalidad=Reserva.Modalidad.PRESTAMO,
         estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO],
     )
-    activos_hoy = prestamos.filter(
-        fecha__lte=fecha, fecha_vencimiento__gte=fecha
-    )
+    activos_hoy = prestamos.filter(fecha__lte=fecha)
     total_recursos = (
         Recurso.objects.exclude(tipo=Recurso.Tipo.LIBRO)
         .exclude(estado=Recurso.Estado.NO_DISPONIBLE)
@@ -518,7 +522,10 @@ def resumen_panel(fecha, momento=None):
             .order_by("bloque", "recurso__nombre")[:5]
         ),
         "devoluciones": list(
-            activos_hoy.filter(estado=Reserva.Estado.EN_USO)
+            prestamos.filter(
+                estado=Reserva.Estado.EN_USO,
+                fecha_vencimiento__lte=fecha,
+            )
             .select_related("recurso", "usuario")
             .order_by("fecha_vencimiento", "recurso__nombre")[:5]
         ),

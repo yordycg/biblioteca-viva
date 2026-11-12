@@ -141,12 +141,13 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 ## Scripts de demo
 
 ```bash
-.venv/bin/python scripts/seed.py
+.venv/bin/python scripts/demo_dashboard.py
 .venv/bin/python scripts/demo_flujo.py
 .venv/bin/python scripts/simular_retraso.py
 .venv/bin/python scripts/medir_rendimiento.py
 ```
 
+- `demo_dashboard.py` carga reservas, préstamos y una sanción ficticia para ver el panel del bibliotecario.
 - `demo_flujo.py` recorre búsqueda → reserva → QR → entrega → devolución.
 - `simular_retraso.py` fuerza una devolución a las 11:01 y muestra la sanción.
 - `medir_rendimiento.py` mide 20 reservas + QR a nivel de servicio (medición inicial de RNF-01).
