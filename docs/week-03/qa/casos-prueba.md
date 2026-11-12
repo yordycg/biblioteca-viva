@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel). Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
+Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel) y CP-17 en la revisión del MVP 2 (ventana de reserva). Todos los resultados, estados y fechas de ejecución siguen en Pendiente: no hay ejecuciones, capturas ni métricas registradas.
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/week-03/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: los resultados siguen en Pendiente hasta que QA ejecute cada CP y adjunte su evidencia.
 
@@ -195,6 +195,21 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/week-03/evidence/CP-16.png` |
 | Ejecutado por / fecha | Pendiente |
 
+## CP-17 — Ventana de reserva: bloques futuros, antelación y horizonte
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
+| Tipo | Límite |
+| Precondiciones | Hora de la aplicación fijada en 2026-11-12 10:50. Sala 3 libre. Sesión como estudiante1@example.com. |
+| Datos de entrada | Fecha hoy · Bloques 10:00–11:00 (ya iniciado), 11:00–12:00 (10 min de antelación) y 15:00–16:00 (más de 15 min) · Fecha hoy + 7 días · Fecha hoy + 8 días |
+| Pasos | 1. Abrir "Buscar" con la fecha de hoy.<br>2. Revisar el selector de bloque: no debe ofrecer 10:00–11:00 ni 11:00–12:00; sí 15:00–16:00.<br>3. Forzar la URL de confirmación con 10:00–11:00 y verificar que no se crea la reserva.<br>4. Confirmar una reserva para hoy 15:00–16:00.<br>5. Repetir la búsqueda con hoy + 7 días y con hoy + 8 días. |
+| Resultado esperado | Hoy solo se ofrecen bloques que comienzan al menos 15 minutos después de la hora actual; un bloque ya iniciado o con menos antelación se rechaza también en el servidor. La reserva de 15:00–16:00 se crea con su QR. La fecha hoy + 7 se acepta y hoy + 8 se rechaza con mensaje de horizonte. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-17.png` |
+| Ejecutado por / fecha | Pendiente |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -233,6 +248,15 @@ Casos agregados tras la revisión docente (MVP 1):
 | Límite | 0 | — |
 | Total | 2 |  |
 
+Casos agregados en la revisión del MVP 2 (ventana de reserva):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 0 | — |
+| Negativo | 0 | — |
+| Límite | 1 | CP-17 |
+| Total | 1 |  |
+
 ## (b) Plan de CP-07 a CP-14
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
@@ -254,7 +278,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
 - El plan de 14 casos (6 + 5 + 3) está declarado.
-- Los IDs CP-01…CP-14 coinciden con matriz-trazabilidad.md.
+- Los IDs CP-01…CP-17 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -277,3 +301,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 12 | Se agregan CP-13 y CP-14 en semana 3 al implementar la pantalla "Mis reservas". | La pantalla ya figura en los mockups (pestaña "Mis Reservas") y CP-03 la usa; los casos cubren el listado propio y el aislamiento entre usuarios. |
 | 13 | CP-13 y CP-14 quedan en "Pendiente" hasta ejecutarse con captura real. | No se marca un caso como Aprobado sin evidencia; el MVP ya permite ejecutarlos, pero falta la captura. |
 | 14 | Se agregan CP-15 y CP-16 tras la revisión docente del MVP 1. | Cubren el rechazo de fechas pasadas y la visibilidad del inventario en el panel; responden a observaciones concretas del docente y quedan Pendiente hasta su ejecución con captura. |
+| 15 | Se agrega CP-17 en la revisión del MVP 2. | Valida los tres bordes de la ventana de reserva: bloque iniciado, antelación de 15 minutos y horizonte de 7 días. |

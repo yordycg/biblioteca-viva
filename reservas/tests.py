@@ -6,10 +6,11 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from . import services
-from .forms import BusquedaForm
+from .forms import BusquedaForm, ReservaForm
 from .models import QR, Recurso, Reserva, Sancion, Usuario
 
 
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
 class ReglasDeNegocioTests(TestCase):
     def setUp(self):
         self.usuario = Usuario.objects.create_user(
@@ -30,7 +31,7 @@ class ReglasDeNegocioTests(TestCase):
         self.sala2 = Recurso.objects.create(
             nombre="Sala 1", tipo=Recurso.Tipo.SALA, capacidad=4
         )
-        self.fecha = date(2026, 11, 10)
+        self.fecha = date(2026, 11, 12)
 
     def test_crear_reserva_genera_qr(self):
         reserva = services.crear_reserva(
@@ -92,11 +93,12 @@ class ReglasDeNegocioTests(TestCase):
         self.assertEqual(cupo["porcentaje"], 50)
 
 
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
 class FechaMinimaTests(TestCase):
     """La búsqueda y la reserva no aceptan fechas pasadas (RF-01, RF-02)."""
 
     def setUp(self):
-        self.ayer = timezone.localdate() - timedelta(days=1)
+        self.ayer = services.hoy() - timedelta(days=1)
 
     def test_busqueda_rechaza_fecha_pasada(self):
         form = BusquedaForm(
@@ -113,7 +115,7 @@ class FechaMinimaTests(TestCase):
         form = BusquedaForm(
             {
                 "tipo": Recurso.Tipo.SALA,
-                "fecha": timezone.localdate(),
+                "fecha": services.hoy(),
                 "bloque": "10:00-11:00",
             }
         )
@@ -123,15 +125,81 @@ class FechaMinimaTests(TestCase):
         form = BusquedaForm()
         self.assertEqual(
             form.fields["fecha"].widget.attrs["min"],
-            timezone.localdate().isoformat(),
+            services.hoy().isoformat(),
         )
 
 
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T10:50:00")
+class VentanaReservaTests(TestCase):
+    """Ventana de reserva: bloques futuros, antelación y horizonte."""
+
+    def setUp(self):
+        self.usuario = Usuario.objects.create_user(
+            username="ventana@example.com",
+            email="ventana@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.sala = Recurso.objects.create(
+            nombre="Sala 9", tipo=Recurso.Tipo.SALA
+        )
+        self.fecha = services.hoy()
+
+    def test_bloques_disponibles_filtra_iniciados_y_sin_antelacion(self):
+        valores = [valor for valor, _ in services.bloques_disponibles(self.fecha)]
+        self.assertEqual(valores, ["15:00-16:00"])
+
+    def test_crear_reserva_rechaza_bloque_sin_antelacion(self):
+        with self.assertRaises(ValidationError):
+            services.crear_reserva(
+                self.usuario, self.sala, self.fecha, "10:00-11:00"
+            )
+
+    def test_crear_reserva_acepta_bloque_futuro(self):
+        reserva = services.crear_reserva(
+            self.usuario, self.sala, self.fecha, "15:00-16:00"
+        )
+        self.assertEqual(reserva.estado, Reserva.Estado.RESERVADA)
+
+    def test_crear_reserva_rechaza_fuera_de_horizonte(self):
+        with self.assertRaises(ValidationError):
+            services.crear_reserva(
+                self.usuario,
+                self.sala,
+                self.fecha + timedelta(days=services.MAX_DIAS_RESERVA + 1),
+                "10:00-11:00",
+            )
+
+    def test_busqueda_form_rechaza_bloque_no_disponible(self):
+        form = BusquedaForm(
+            {
+                "tipo": Recurso.Tipo.SALA,
+                "fecha": self.fecha,
+                "bloque": "10:00-11:00",
+            }
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_reserva_form_rechaza_bloque_no_disponible(self):
+        form = ReservaForm({"fecha": self.fecha, "bloque": "10:00-11:00"})
+        self.assertFalse(form.is_valid())
+
+    def test_endpoint_bloques_devuelve_solo_disponibles(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/bloques/", {"fecha": self.fecha.isoformat()}
+        )
+        self.assertEqual(respuesta.status_code, 200)
+        valores = [b["valor"] for b in respuesta.json()["bloques"]]
+        self.assertEqual(valores, ["15:00-16:00"])
+
+
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
 class InventarioTests(TestCase):
     """Estado agregado del inventario para el panel del bibliotecario."""
 
     def setUp(self):
-        self.hoy = timezone.localdate()
+        self.hoy = services.hoy()
         self.usuario = Usuario.objects.create_user(
             username="inv@example.com",
             email="inv@example.com",
@@ -189,11 +257,12 @@ class InventarioTests(TestCase):
         self.assertEqual(tipos[Recurso.Tipo.EQUIPO]["no_disponibles"], 1)
 
 
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
 class InterfazTests(TestCase):
     """Comprobaciones de las vistas que sostienen la interfaz (RNF-02)."""
 
     def setUp(self):
-        self.hoy = timezone.localdate()
+        self.hoy = services.hoy()
         self.estudiante = Usuario.objects.create_user(
             username="e@example.com",
             email="e@example.com",
@@ -224,7 +293,7 @@ class InterfazTests(TestCase):
 
     def test_busqueda_muestra_error_para_fecha_pasada(self):
         self.client.force_login(self.estudiante)
-        ayer = timezone.localdate() - timedelta(days=1)
+        ayer = services.hoy() - timedelta(days=1)
         respuesta = self.client.get(
             "/buscar/",
             {
@@ -238,7 +307,7 @@ class InterfazTests(TestCase):
 
     def test_confirmar_rechaza_fecha_pasada(self):
         self.client.force_login(self.estudiante)
-        ayer = timezone.localdate() - timedelta(days=1)
+        ayer = services.hoy() - timedelta(days=1)
         antes = Reserva.objects.count()
         respuesta = self.client.post(
             f"/reservar/{self.sala.pk}/",
@@ -252,7 +321,7 @@ class InterfazTests(TestCase):
         self.client.force_login(self.estudiante)
         respuesta = self.client.get("/buscar/")
         self.assertContains(
-            respuesta, f'min="{timezone.localdate().isoformat()}"'
+            respuesta, f'min="{services.hoy().isoformat()}"'
         )
 
     def test_panel_bibliotecario_lista_reservas_del_dia(self):

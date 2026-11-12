@@ -17,6 +17,8 @@ from django.utils.dateparse import parse_datetime
 from .models import QR, Reserva, Recurso, Sancion
 
 MAX_RESERVAS_DIA = 2
+MIN_ANTELACION_MIN = 15
+MAX_DIAS_RESERVA = 7
 
 
 def ahora():
@@ -39,6 +41,42 @@ def bloque_horas(bloque):
     """Devuelve (hora_inicio, hora_fin) de un bloque 'HH:MM-HH:MM'."""
     inicio, fin = bloque.split("-")
     return time(int(inicio[:2]), int(inicio[3:])), time(int(fin[:2]), int(fin[3:]))
+
+
+def _inicio_bloque(bloque, fecha):
+    """Momento exacto en que comienza un bloque."""
+    inicio, _ = bloque_horas(bloque)
+    return timezone.make_aware(datetime.combine(fecha, inicio))
+
+
+def bloque_vigente(bloque, fecha, momento=None):
+    """Indica si un bloque respeta la antelación mínima (RF-01, RF-02)."""
+    momento = momento or ahora()
+    return _inicio_bloque(bloque, fecha) >= momento + timedelta(
+        minutes=MIN_ANTELACION_MIN
+    )
+
+
+def fecha_reservable(fecha, momento=None):
+    """La fecha debe estar entre hoy y el horizonte permitido (RF-01, RF-02)."""
+    momento = momento or ahora()
+    hoy_ = timezone.localtime(momento).date()
+    return hoy_ <= fecha <= hoy_ + timedelta(days=MAX_DIAS_RESERVA)
+
+
+def bloques_disponibles(fecha, momento=None):
+    """Bloques que aún se pueden reservar para la fecha indicada (RF-01)."""
+    momento = momento or ahora()
+    hoy_ = timezone.localtime(momento).date()
+    if fecha < hoy_ or fecha > hoy_ + timedelta(days=MAX_DIAS_RESERVA):
+        return []
+    if fecha == hoy_:
+        return [
+            (valor, etiqueta)
+            for valor, etiqueta in Reserva.BLOQUES
+            if bloque_vigente(valor, fecha, momento)
+        ]
+    return list(Reserva.BLOQUES)
 
 
 def recursos_disponibles(tipo, fecha, bloque):
@@ -75,9 +113,21 @@ def cupo_diario(usuario, fecha=None):
     }
 
 
-def crear_reserva(usuario, recurso, fecha, bloque):
-    """Crea una reserva y su QR, validando sanción, tope y disponibilidad."""
-    momento = ahora()
+def crear_reserva(usuario, recurso, fecha, bloque, momento=None):
+    """Crea una reserva y su QR, validando sanción, ventana, tope y disponibilidad."""
+    momento = momento or ahora()
+    if not fecha_reservable(fecha, momento):
+        raise ValidationError(
+            "La fecha debe estar entre hoy y los próximos "
+            f"{MAX_DIAS_RESERVA} días."
+        )
+    if bloque not in dict(Reserva.BLOQUES):
+        raise ValidationError("El bloque horario seleccionado no es válido.")
+    if not bloque_vigente(bloque, fecha, momento):
+        raise ValidationError(
+            "El bloque ya comenzó o no cumple la antelación mínima de "
+            f"{MIN_ANTELACION_MIN} minutos."
+        )
     if usuario.esta_sancionado(momento):
         raise ValidationError(
             "No puedes reservar: tienes una sanción vigente hasta "
