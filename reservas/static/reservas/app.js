@@ -6,21 +6,6 @@
 (function () {
   "use strict";
 
-  var toastTimer = null;
-
-  function showToast(message) {
-    var toast = document.getElementById("toast");
-    if (!toast) {
-      return;
-    }
-    toast.textContent = message;
-    toast.classList.add("is-visible");
-    window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(function () {
-      toast.classList.remove("is-visible");
-    }, 2600);
-  }
-
   /* Mostrar u ocultar la contraseña */
   document.querySelectorAll("[data-toggle-password]").forEach(function (button) {
     button.addEventListener("click", function () {
@@ -41,21 +26,6 @@
       if (use) {
         use.setAttribute("href", visible ? "#i-lock" : "#i-eye");
       }
-    });
-  });
-
-  /* Cargar credenciales ficticias de demostración */
-  document.querySelectorAll("[data-demo-user]").forEach(function (button) {
-    button.addEventListener("click", function () {
-      var username = document.getElementById("id_username");
-      var password = document.getElementById("id_password");
-      if (!username || !password) {
-        return;
-      }
-      username.value = button.getAttribute("data-demo-user");
-      password.value = button.getAttribute("data-demo-pass");
-      showToast("Credencial de demostración cargada");
-      password.focus();
     });
   });
 

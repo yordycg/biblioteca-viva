@@ -147,6 +147,12 @@ class InterfazTests(TestCase):
         respuesta = self.client.get("/login/")
         self.assertContains(respuesta, "reservas/img/ipvg-logo.png")
 
+    def test_login_no_expone_credenciales_de_demo(self):
+        respuesta = self.client.get("/login/")
+        self.assertNotContains(respuesta, "Credenciales de prueba")
+        self.assertNotContains(respuesta, "estudiante1@example.com")
+        self.assertNotContains(respuesta, "demo1234")
+
     def test_barra_superior_muestra_logo_institucional(self):
         self.client.force_login(self.estudiante)
         respuesta = self.client.get("/buscar/")

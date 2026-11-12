@@ -1225,10 +1225,12 @@ select:focus {
 .login {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
 }
 
 .login__card {
+  width: 100%;
   max-width: 32rem;
 }
 
@@ -1240,113 +1242,6 @@ select:focus {
   padding: var(--space-4);
   background: var(--color-primary);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.login__alt {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.demo-creds {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.demo-creds__item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  width: 100%;
-  text-align: left;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-tint);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font: inherit;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.demo-creds__item:hover {
-  border-color: var(--color-secondary);
-  background: #eef4fb;
-}
-
-.demo-creds__avatar {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  background: var(--color-warning);
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 0.8125rem;
-}
-
-.demo-creds__avatar--staff {
-  background: var(--color-primary);
-  color: #fff;
-}
-
-.demo-creds__body {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.3;
-  min-width: 0;
-}
-
-.demo-creds__name {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.demo-creds__mail {
-  font-size: 0.75rem;
-  color: var(--color-muted);
-  overflow-wrap: anywhere;
-}
-
-.demo-creds__hint {
-  margin-left: auto;
-  font-size: 0.75rem;
-  color: var(--color-secondary);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.meta-grid {
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: 1fr 1fr;
-  margin: 0;
-}
-
-.meta-grid div {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-2);
-}
-
-.meta-grid dt {
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-muted);
-  font-weight: 700;
-}
-
-.meta-grid dd {
-  margin: 0;
-  font-weight: 700;
-  color: var(--color-primary);
-  font-size: 0.875rem;
 }
 
 /* ── Diálogo de confirmación ────────────────────────────────────────────── */
@@ -1466,14 +1361,6 @@ select:focus {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .login {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
-  }
-
-  .login__card {
-    max-width: none;
-  }
 }
 
 @media (max-width: 767px) {
