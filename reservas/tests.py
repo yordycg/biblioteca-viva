@@ -733,6 +733,40 @@ class InterfazTests(TestCase):
         self.assertContains(respuesta, "Ocupación del día")
         self.assertContains(respuesta, "Sala 3")
 
+    def test_panel_muestra_resumen_operativo(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/bibliotecario/")
+        self.assertContains(respuesta, "Reservas hoy")
+        self.assertContains(respuesta, "Pendientes de entrega")
+        self.assertContains(respuesta, "Próximas entregas")
+        self.assertContains(respuesta, "Devoluciones de libros")
+        self.assertContains(respuesta, "Ocupación por bloque")
+        self.assertContains(respuesta, "Sanciones activas")
+
+    def test_panel_filtra_tabla_por_estado(self):
+        self.client.force_login(self.bibliotecario)
+        visible = self.client.get(
+            "/bibliotecario/", {"estado": "RESERVADA"}
+        )
+        self.assertContains(visible, "1 de 1")
+        oculto = self.client.get(
+            "/bibliotecario/", {"estado": "FINALIZADA"}
+        )
+        self.assertContains(oculto, "0 de 1")
+        self.assertContains(oculto, "No hay reservas que coincidan")
+
+    def test_panel_busca_por_codigo(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get(
+            "/bibliotecario/", {"q": self.reserva.codigo}
+        )
+        self.assertContains(respuesta, "1 de 1")
+
+    def test_barra_superior_no_muestra_rol(self):
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/buscar/")
+        self.assertNotContains(respuesta, "Solicitante")
+
     def test_estudiante_no_accede_al_panel(self):
         self.client.force_login(self.estudiante)
         respuesta = self.client.get("/bibliotecario/")
