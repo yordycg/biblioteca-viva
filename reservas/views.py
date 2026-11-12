@@ -399,7 +399,6 @@ def bibliotecario(request):
             | Q(
                 modalidad=Reserva.Modalidad.PRESTAMO,
                 fecha__lte=hoy,
-                fecha_vencimiento__gte=hoy,
             )
         )
         .select_related("recurso", "usuario", "qr")
