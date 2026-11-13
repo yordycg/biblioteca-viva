@@ -5,14 +5,15 @@ Uso:
     python manage.py seed
     python manage.py seed --reset
 """
-from datetime import date
+from datetime import date, datetime, time, timedelta
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
+from reservas import services
 from reservas.models import Libro, QR, Recurso, Reserva, Sancion, Usuario
 
 PASSWORD = "demo1234"
-FECHA_DEMO = date(2026, 11, 10)
 
 
 class Command(BaseCommand):
@@ -24,6 +25,35 @@ class Command(BaseCommand):
             action="store_true",
             help="Borra reservas, QR, sanciones y recursos antes de cargar.",
         )
+        parser.add_argument(
+            "--fecha",
+            type=date.fromisoformat,
+            help=(
+                "Fecha de las reservas de ejemplo (AAAA-MM-DD). "
+                "Por defecto, el primer bloque reservable de hoy."
+            ),
+        )
+
+    def _programar_demo(self, fecha_pedida=None):
+        """Fecha y bloques de ejemplo, siempre en el futuro cercano.
+
+        Sin `--fecha` toma el primer bloque reservable de hoy o, si ya no
+        quedan, el primero de mañana. Así el seed sigue siendo visible cuando
+        el servidor corre con el reloj real.
+        """
+        fecha = fecha_pedida or services.hoy()
+        disponibles = [
+            bloque for bloque, _ in services.bloques_disponibles(fecha)
+        ]
+        if not disponibles and fecha_pedida is None:
+            fecha = fecha + timedelta(days=1)
+            disponibles = [
+                bloque for bloque, _ in services.bloques_disponibles(fecha)
+            ]
+        if not disponibles:
+            disponibles = [bloque for bloque, _ in Reserva.BLOQUES]
+        segundo = disponibles[1] if len(disponibles) > 1 else disponibles[0]
+        return fecha, disponibles[0], segundo
 
     def handle(self, *args, **options):
         if options["reset"]:
@@ -177,10 +207,17 @@ class Command(BaseCommand):
 
         estudiante2 = Usuario.objects.get(username="estudiante2@example.com")
         sala1 = Recurso.objects.get(nombre="Sala 1")
+        fecha_demo, bloque_demo, bloque_cancelado = self._programar_demo(
+            options.get("fecha")
+        )
+        self.stdout.write(
+            f"Reservas de ejemplo: {fecha_demo} · {bloque_demo} y "
+            f"{bloque_cancelado}."
+        )
         reserva, created = Reserva.objects.get_or_create(
             recurso=sala1,
-            fecha=FECHA_DEMO,
-            bloque="10:00-11:00",
+            fecha=fecha_demo,
+            bloque=bloque_demo,
             defaults={"usuario": estudiante2},
         )
         if created:
@@ -188,6 +225,26 @@ class Command(BaseCommand):
             self.stdout.write(f"Reserva de ejemplo: {reserva.codigo} (Sala 1)")
         else:
             self.stdout.write(f"Reserva de ejemplo ya existente: {reserva.codigo}")
+
+        sala3 = Recurso.objects.get(nombre="Sala 3")
+        cancelada, creada = Reserva.objects.get_or_create(
+            recurso=sala3,
+            fecha=fecha_demo,
+            bloque=bloque_cancelado,
+            defaults={
+                "usuario": estudiante2,
+                "estado": Reserva.Estado.CANCELADA,
+                "motivo_cancelacion": Reserva.MotivoCancelacion.SOLICITUD,
+                "cancelada_en": timezone.make_aware(
+                    datetime.combine(fecha_demo, time(8, 0))
+                ),
+            },
+        )
+        if creada:
+            QR.objects.create(reserva=cancelada, codigo=cancelada.codigo)
+            self.stdout.write(
+                f"Reserva cancelada de ejemplo: {cancelada.codigo} (Sala 3)"
+            )
 
         self.stdout.write(self.style.SUCCESS("Seed listo."))
         self.stdout.write(f"Contraseña de todos los usuarios: {PASSWORD}")
