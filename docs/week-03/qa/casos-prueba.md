@@ -241,16 +241,16 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/week-03/evidence/CP-19.png` |
 | Ejecutado por / fecha | Pendiente |
 
-## CP-20 — Catálogo inicial con estado y “Solo disponibles”
+## CP-20 — Catálogo por bloque y “Solo disponibles”
 
 | Campo | Detalle |
 |---|---|
 | Requisito asociado | RF-01 (CU1 Buscar recurso) |
 | Tipo | Positivo |
 | Precondiciones | Seed cargado. Sala 3 reservada en el bloque por defecto; Proyector Epson libre. Sesión como estudiante1@example.com. |
-| Datos de entrada | Sin filtros enviados · Luego “Solo disponibles” activado |
-| Pasos | 1. Abrir "Buscar" y la pestaña "Salas y equipos".<br>2. Verificar que se listan sala y equipos con su estado, sin mensajes de error.<br>3. Confirmar que Sala 3 aparece como "Reservado" y sin botón de reserva.<br>4. Activar "Solo disponibles" y presionar "Filtrar".<br>5. Verificar que Sala 3 desaparece y Proyector Epson se mantiene. |
-| Resultado esperado | Al entrar se muestran todos los recursos del día con su estado; no aparecen errores hasta presionar "Filtrar". Con “Solo disponibles” activo se ocultan los ocupados. |
+| Datos de entrada | Fecha y bloque del día · Luego “Solo disponibles” activado |
+| Pasos | 1. Abrir "Buscar" y la pestaña "Salas y equipos".<br>2. Verificar que no hay resultados ni mensajes de error y que la vista pide elegir fecha y bloque.<br>3. Elegir la fecha y el bloque donde Sala 3 está reservada.<br>4. Confirmar que Sala 3 aparece como "Reservado" y sin botón de reserva.<br>5. Activar "Solo disponibles".<br>6. Verificar que Sala 3 desaparece y Proyector Epson se mantiene. |
+| Resultado esperado | Al entrar no se muestran resultados ni errores: la vista pide elegir fecha y bloque. Con ambos elegidos se listan todos los recursos con su estado y “Solo disponibles” oculta los ocupados. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
 | Evidencia | `docs/week-03/evidence/CP-20.png` |
@@ -263,12 +263,87 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Requisito asociado | RF-04, RF-05, RF-08 (CU4 Validar inicio, CU5 Registrar devolución) |
 | Tipo | Positivo |
 | Precondiciones | Seed cargado. Una reserva de bloque pendiente, un préstamo de libro activo y una sanción activa. Sesión como bibliotecario1@example.com. |
-| Datos de entrada | Panel del día · filtros por estado, bloque y búsqueda por código |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel".<br>3. Revisar los KPIs: reservas, pendientes, en uso, préstamos, vencen hoy, vencidos y sanciones.<br>4. Revisar "Próximas entregas", "Devoluciones de libros" y "Sanciones activas".<br>5. Revisar la ocupación de los 13 bloques.<br>6. Filtrar la tabla por estado y por código; limpiar filtros.<br>7. Revisar que la barra superior no muestre el rol. |
-| Resultado esperado | El panel muestra los KPIs y la agenda con datos reales; la ocupación refleja reservas y préstamos; los filtros acotan la tabla; la sanción activa aparece listada; la barra superior muestra solo el nombre, no el rol. |
+| Datos de entrada | Panel del día · pestañas · filtros por estado, bloque y búsqueda por código |
+| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel" y verificar las cuatro pestañas: Operación, Inventario, Reservas del día y Validación.<br>3. En "Operación", revisar los KPIs: reservas, pendientes, en uso, préstamos, vencen hoy, vencidos, sanciones y canceladas.<br>4. Revisar "Próximas entregas", "Devoluciones de libros", "Sanciones activas" y la ocupación de los 13 bloques.<br>5. En "Reservas del día", filtrar por estado y por código; verificar que la pestaña se mantiene al filtrar.<br>6. En "Validación", buscar un código y verificar que la pestaña activa es la de validación.<br>7. Revisar que la barra superior no muestre el rol. |
+| Resultado esperado | El panel agrupa sus secciones en cuatro pestañas y muestra solo la activa; los KPIs y la agenda usan datos reales; la ocupación refleja reservas y préstamos; los filtros acotan la tabla sin perder la pestaña; un código lleva a Validación; la barra superior muestra solo el nombre. |
 | Resultado obtenido | Pendiente |
 | Estado | Pendiente |
 | Evidencia | `docs/week-03/evidence/CP-21.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-22 — Cancelación de una reserva por el solicitante
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-02 (CU2 Reservar recurso) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Estudiante2 tiene una reserva pendiente en un bloque futuro. Sesión como estudiante2@example.com. |
+| Datos de entrada | Reserva propia, bloque futuro, cupo diario con 1 de 2 usadas |
+| Pasos | 1. Abrir "Mis reservas".<br>2. Verificar que la reserva activa muestra el botón "Cancelar reserva".<br>3. Presionar "Cancelar reserva" y confirmar en el diálogo.<br>4. Verificar que la reserva pasa al historial como "Cancelada" con su motivo.<br>5. Verificar que el cupo diario vuelve a 0 de 2.<br>6. Reservar de nuevo el mismo bloque para confirmar que quedó libre.<br>7. Abrir por URL el QR de la reserva cancelada. |
+| Resultado esperado | La reserva queda Cancelada con quién, cuándo y motivo "Solicitud del usuario"; el bloque y el cupo se liberan; el QR anterior se rechaza con el mensaje de reserva cancelada. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-22.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-23 — Límites de la cancelación
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-02 (CU2 Reservar recurso) |
+| Tipo | Negativo |
+| Precondiciones | Una reserva de estudiante2, una reserva En Uso, una Finalizada y sesión de bibliotecario1. |
+| Datos de entrada | Intentos de cancelación fuera de regla |
+| Pasos | 1. Como estudiante1, abrir por URL `/mis-reservas/<id>/cancelar/` de una reserva de estudiante2.<br>2. Como bibliotecario, cancelar una reserva En Uso.<br>3. Cancelar una reserva Finalizada.<br>4. Cancelar desde la tabla sin elegir motivo.<br>5. Como solicitante, cancelar un bloque cuya hora ya comenzó. |
+| Resultado esperado | El primer intento responde 404; los demás muestran un mensaje claro y ninguna reserva cambia de estado. Una reserva En Uso se resuelve con devolución, no con cancelación. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-23.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-24 — Filtros vacíos y validación solo al enviar
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01 (CU1 Buscar recurso) |
+| Tipo | Límite |
+| Precondiciones | Seed cargado. Sesión como estudiante1@example.com. |
+| Datos de entrada | Formulario sin filtros · Envío incompleto · URL con fecha y bloque |
+| Pasos | 1. Abrir "Buscar" sin filtros.<br>2. Verificar que los campos de fecha y bloque están vacíos, que no hay errores y que la vista pide elegir.<br>3. Abrir el selector de bloque y verificar que solo ofrece "Elige un bloque".<br>4. Presionar "Filtrar" sin elegir nada.<br>5. Elegir una fecha y verificar que el bloque no queda autoseleccionado.<br>6. Abrir una URL con fecha y bloque ya definidos. |
+| Resultado esperado | Entrar no dispara errores; los mensajes aparecen solo al enviar; el bloque nunca se autoselecciona; un enlace con fecha y bloque sigue mostrando resultados. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-24.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-25 — Filtro del estado del inventario
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01, RF-04 (CU1 Buscar recurso, CU4 Validar inicio) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Sesión como bibliotecario1@example.com. |
+| Datos de entrada | `inv_q=Sala` · `inv_tipo=EQUIPO` · `inv_estado=RESERVADO` · combinación sin resultados |
+| Pasos | 1. Abrir el panel y la pestaña "Inventario".<br>2. Filtrar por nombre "Sala" y verificar el contador "Mostrando 2 de 10".<br>3. Filtrar por tipo "Equipo".<br>4. Filtrar por estado "Reservado".<br>5. Combinar filtros sin coincidencias y usar "Limpiar filtros".<br>6. Verificar que los contadores de arriba no cambian al filtrar. |
+| Resultado esperado | La tabla se acota al filtro y el contador refleja cuántos de cuántos se ven; los totales del resumen siguen siendo globales; "Limpiar" vuelve a la pestaña Inventario sin filtros. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-25.png` |
+| Ejecutado por / fecha | Pendiente |
+
+## CP-26 — Filtros reactivos
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01 (CU1 Buscar recurso) |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Sesiones de estudiante1 y bibliotecario1. Navegador con y sin JavaScript. |
+| Datos de entrada | Cambios en selectores y casillas de filtro |
+| Pasos | 1. En "Buscar", elegir fecha y luego bloque: los resultados aparecen sin presionar "Filtrar".<br>2. Cambiar "Tipo de recurso" con fecha y bloque ya elegidos.<br>3. En el panel, cambiar el estado del filtro de reservas y el estado del inventario.<br>4. Escribir en "Título o autor" y verificar que no se envía sola.<br>5. Desactivar JavaScript y repetir un filtro con el botón "Filtrar". |
+| Resultado esperado | Los selectores y casillas envían el formulario al cambiar; la búsqueda de texto no se autoenvía; con JavaScript desactivado el botón "Filtrar" sigue funcionando. |
+| Resultado obtenido | Pendiente |
+| Estado | Pendiente |
+| Evidencia | `docs/week-03/evidence/CP-26.png` |
 | Ejecutado por / fecha | Pendiente |
 
 ## (a) Distribución por tipo
@@ -345,6 +420,15 @@ Casos agregados en la revisión del panel (MVP 2):
 | Límite | 0 | — |
 | Total | 1 |  |
 
+Casos agregados en la corrección S3 (cancelación, filtros y pestañas):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 3 | CP-22, CP-25, CP-26 |
+| Negativo | 1 | CP-23 |
+| Límite | 1 | CP-24 |
+| Total | 5 | |
+
 ## (b) Plan de CP-07 a CP-14
 
 | ID | Caso (propuesto) | Tipo | Requisito | Semana | Evidencia propuesta |
@@ -366,7 +450,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
 - Todos los resultados y estados en "Pendiente".
 - El plan de 14 casos (6 + 5 + 3) está declarado.
-- Los IDs CP-01…CP-21 coinciden con matriz-trazabilidad.md.
+- Los IDs CP-01…CP-26 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
 - Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
 - Textos de botones y mensajes coinciden con los mockups [SEM2-T1]; lo no definido está marcado [COMPLETAR]/[VERIFICAR].
@@ -394,3 +478,8 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 17 | Se agrega CP-19 en la revisión del MVP 2. | Cubre los bordes del préstamo de libros: solapamiento y máximo de 2 préstamos activos. |
 | 18 | Se agrega CP-20 en la revisión del MVP 2. | Cubre el catálogo inicial con estado, “Solo disponibles” y la validación solo al presionar Filtrar. |
 | 19 | Se agrega CP-21 en la revisión del panel. | Cubre los KPIs, la agenda, la ocupación, las sanciones activas, los filtros y la ausencia del rol en la barra. |
+| 20 | Se reescribe CP-20 en la corrección S3. | Los filtros inician vacíos, así que el catálogo ya no se muestra al entrar: primero se elige fecha y bloque. |
+| 21 | Se agregan CP-22 y CP-23 para la cancelación. | Cubren la anulación por el solicitante y sus límites (reserva ajena, En Uso, Finalizada, sin motivo y bloque iniciado), dentro de RF-02. |
+| 22 | Se agrega CP-24 para el estado inicial de los filtros. | Valida que no haya errores al entrar, que el bloque no se autoseleccione y que la validación ocurra solo al enviar. |
+| 23 | Se agrega CP-25 para el filtro del inventario. | La tabla del inventario puede acotarse por nombre, tipo y estado sin alterar los contadores globales. |
+| 24 | Se agrega CP-26 para los filtros reactivos. | Es manual: el proyecto no tiene runner de JavaScript, así que se verifica con el navegador con y sin JS. |
