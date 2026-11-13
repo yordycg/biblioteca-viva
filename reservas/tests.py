@@ -272,6 +272,45 @@ class InventarioTests(TestCase):
         self.assertEqual(tipos[Recurso.Tipo.SALA]["total"], 2)
         self.assertEqual(tipos[Recurso.Tipo.EQUIPO]["no_disponibles"], 1)
 
+    def test_sin_filtros_devuelve_todas_las_filas(self):
+        inventario = services.estado_inventario(self.hoy)
+        self.assertEqual(inventario["filtradas"], 4)
+        self.assertEqual(inventario["total_filas"], 4)
+        self.assertFalse(inventario["filtrado"])
+
+    def test_filtro_por_texto_acota_las_filas(self):
+        inventario = services.estado_inventario(self.hoy, "proyector")
+        self.assertEqual(inventario["filtradas"], 1)
+        self.assertEqual(
+            inventario["filas"][0]["recurso"], self.equipo_en_uso
+        )
+        # Los contadores siguen siendo globales
+        self.assertEqual(inventario["resumen"]["total"], 4)
+        self.assertTrue(inventario["filtrado"])
+
+    def test_filtro_por_tipo_y_estado(self):
+        por_tipo = services.estado_inventario(
+            self.hoy, "", Recurso.Tipo.SALA, ""
+        )
+        self.assertEqual(por_tipo["filtradas"], 2)
+        por_estado = services.estado_inventario(self.hoy, "", "", "RESERVADO")
+        self.assertEqual(por_estado["filtradas"], 1)
+        self.assertEqual(
+            por_estado["filas"][0]["recurso"], self.sala_reservada
+        )
+
+    def test_panel_filtra_el_inventario_sin_alterar_los_contadores(self):
+        bibliotecario = Usuario.objects.create_user(
+            username="inv-panel@example.com",
+            email="inv-panel@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.BIBLIOTECARIO,
+        )
+        self.client.force_login(bibliotecario)
+        respuesta = self.client.get("/bibliotecario/", {"inv_q": "Proyector"})
+        self.assertContains(respuesta, "Mostrando <strong>1</strong> de")
+        self.assertContains(respuesta, "Recursos")
+
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
 class LibroTests(TestCase):
@@ -518,9 +557,9 @@ class LibroTests(TestCase):
     def test_panel_muestra_prestamo_de_libro(self):
         services.crear_reserva(self.usuario, self.libro, self.hoy, dias=7)
         self.client.force_login(self.bibliotecario)
-        respuesta = self.client.get("/bibliotecario/")
+        respuesta = self.client.get("/bibliotecario/", {"tab": "reservas"})
         self.assertContains(respuesta, "Préstamo hasta")
-        self.assertContains(respuesta, "Reservado")
+        self.assertContains(respuesta, "Reservada")
 
     def test_bibliotecario_no_ve_el_catalogo(self):
         self.client.force_login(self.bibliotecario)
@@ -565,20 +604,26 @@ class CatalogoInicialTests(TestCase):
         self.assertEqual(Reserva.BLOQUES[0][0], "09:00-10:00")
         self.assertEqual(Reserva.BLOQUES[-1][0], "21:00-22:00")
 
-    def test_libros_inicial_muestra_todo_sin_errores(self):
+    def test_libros_inicial_pide_elegir_filtros(self):
         self.client.force_login(self.usuario)
         respuesta = self.client.get("/buscar/", {"vista": "libros"})
-        self.assertContains(respuesta, "Libro Catálogo")
+        self.assertNotContains(respuesta, "Libro Catálogo")
+        self.assertContains(respuesta, "Elige una fecha de retiro y una duración.")
         self.assertNotContains(respuesta, "field--error")
-        self.assertNotContains(respuesta, "Elige una fecha de retiro.")
 
-    def test_recursos_inicial_muestra_todos_sin_errores(self):
+    def test_recursos_inicial_pide_elegir_filtros(self):
         self.client.force_login(self.usuario)
         respuesta = self.client.get("/buscar/", {"vista": "recursos"})
-        self.assertContains(respuesta, "Sala Catálogo")
-        self.assertContains(respuesta, "Proyector Catálogo")
+        self.assertNotContains(respuesta, "Sala Catálogo")
+        self.assertContains(respuesta, "Elige una fecha y un bloque horario.")
         self.assertNotContains(respuesta, "field--error")
-        self.assertNotContains(respuesta, "Elige una fecha.")
+
+    def test_bloque_no_se_autoselecciona_sin_fecha(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get("/buscar/", {"vista": "recursos"})
+        html = respuesta.content.decode()
+        self.assertIn("Elige un bloque", html)
+        self.assertNotIn('<option value="10:00-11:00"', html)
 
     def test_filtros_solo_validan_con_filtrar(self):
         self.client.force_login(self.usuario)
@@ -600,7 +645,15 @@ class CatalogoInicialTests(TestCase):
             bloque="10:00-11:00",
         )
         self.client.force_login(self.usuario)
-        respuesta = self.client.get("/buscar/", {"vista": "recursos"})
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "vista": "recursos",
+                "filtrar": "1",
+                "fecha": self.hoy.isoformat(),
+                "bloque": "10:00-11:00",
+            },
+        )
         self.assertContains(respuesta, "Sala Catálogo")
         self.assertContains(respuesta, "Reservado")
 
@@ -628,25 +681,53 @@ class CatalogoInicialTests(TestCase):
 
     def test_panel_muestra_timeline_de_bloques(self):
         self.client.force_login(self.bibliotecario)
-        respuesta = self.client.get("/bibliotecario/")
+        respuesta = self.client.get("/bibliotecario/", {"tab": "inventario"})
         html = respuesta.content.decode()
         self.assertContains(respuesta, "timeline__track")
         self.assertEqual(html.count('class="timeline__slot'), 26)
 
-    def test_default_salta_a_manana_sin_bloques(self):
-        fecha, bloque, cambio = services.fecha_y_bloque_por_defecto()
-        self.assertEqual(fecha, self.hoy)
-        self.assertEqual(bloque, "10:00-11:00")
-        self.assertFalse(cambio)
-
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T21:50:00")
 class SinBloquesHoyTests(TestCase):
-    def test_default_usa_manana(self):
-        fecha, bloque, cambio = services.fecha_y_bloque_por_defecto()
-        self.assertEqual(fecha, date(2026, 11, 13))
-        self.assertEqual(bloque, "09:00-10:00")
-        self.assertTrue(cambio)
+    def setUp(self):
+        self.usuario = Usuario.objects.create_user(
+            username="sinbloques@example.com",
+            email="sinbloques@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+
+    def test_avisa_cuando_la_fecha_no_tiene_bloques(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "vista": "recursos",
+                "filtrar": "1",
+                "fecha": services.hoy().isoformat(),
+                "bloque": "21:00-22:00",
+            },
+        )
+        self.assertRegex(
+            respuesta.content.decode(),
+            r'id="aviso-sin-bloques"\s+role="alert">',
+        )
+
+    def test_no_avisa_cuando_hay_bloques(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(
+            "/buscar/",
+            {
+                "vista": "recursos",
+                "filtrar": "1",
+                "fecha": (services.hoy() + timedelta(days=1)).isoformat(),
+                "bloque": "10:00-11:00",
+            },
+        )
+        self.assertRegex(
+            respuesta.content.decode(),
+            r'id="aviso-sin-bloques"\s+role="alert"\s+style="display: none;"',
+        )
 
 
 @override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
@@ -720,18 +801,55 @@ class InterfazTests(TestCase):
 
     def test_panel_bibliotecario_lista_reservas_del_dia(self):
         self.client.force_login(self.bibliotecario)
-        respuesta = self.client.get("/bibliotecario/")
+        respuesta = self.client.get("/bibliotecario/", {"tab": "reservas"})
         self.assertContains(respuesta, self.reserva.codigo)
         self.assertContains(respuesta, "Reservas del día")
         self.assertContains(respuesta, "Sala 3")
 
     def test_panel_muestra_estado_del_inventario(self):
         self.client.force_login(self.bibliotecario)
-        respuesta = self.client.get("/bibliotecario/")
+        respuesta = self.client.get("/bibliotecario/", {"tab": "inventario"})
         self.assertContains(respuesta, "Estado del inventario")
         self.assertContains(respuesta, "Disponibles hoy")
         self.assertContains(respuesta, "Ocupación del día")
         self.assertContains(respuesta, "Sala 3")
+
+    def test_panel_muestra_las_cuatro_pestanas(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get("/bibliotecario/")
+        for clave in ("operacion", "inventario", "reservas", "validacion"):
+            self.assertContains(respuesta, f"tab={clave}")
+        self.assertContains(respuesta, 'aria-current="page">Operación')
+
+    def test_cada_pestana_renderiza_su_seccion(self):
+        self.client.force_login(self.bibliotecario)
+        operacion = self.client.get("/bibliotecario/").content.decode()
+        self.assertIn('id="entregas-title"', operacion)
+        self.assertNotIn('id="inventario"', operacion)
+        inventario = self.client.get(
+            "/bibliotecario/", {"tab": "inventario"}
+        ).content.decode()
+        self.assertIn('id="inventario"', inventario)
+        self.assertNotIn('id="dia-title"', inventario)
+        reservas = self.client.get(
+            "/bibliotecario/", {"tab": "reservas"}
+        ).content.decode()
+        self.assertIn('id="dia-title"', reservas)
+        self.assertNotIn('id="inventario"', reservas)
+        validacion = self.client.get(
+            "/bibliotecario/", {"tab": "validacion"}
+        ).content.decode()
+        self.assertIn('id="validacion-title"', validacion)
+        self.assertNotIn('id="dia-title"', validacion)
+
+    def test_un_codigo_abre_la_pestana_de_validacion(self):
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.get(
+            "/bibliotecario/", {"codigo": self.reserva.codigo}
+        )
+        self.assertIn(
+            'id="validacion-title"', respuesta.content.decode()
+        )
 
     def test_panel_muestra_resumen_operativo(self):
         self.client.force_login(self.bibliotecario)
@@ -822,3 +940,172 @@ class InterfazTests(TestCase):
         self.client.force_login(self.estudiante)
         respuesta = self.client.get("/buscar/")
         self.assertContains(respuesta, "Sanción vigente")
+
+
+@override_settings(DEMO_MODE=True, DEMO_NOW="2026-11-12T09:00:00")
+class CancelacionTests(TestCase):
+    """Cancelación de reservas por el solicitante y el bibliotecario (RF-02)."""
+
+    def setUp(self):
+        self.hoy = services.hoy()
+        self.estudiante = Usuario.objects.create_user(
+            username="cancela@example.com",
+            email="cancela@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.otro = Usuario.objects.create_user(
+            username="otro@example.com",
+            email="otro@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.SOLICITANTE,
+        )
+        self.bibliotecario = Usuario.objects.create_user(
+            username="bib@example.com",
+            email="bib@example.com",
+            password="demo1234",
+            rol=Usuario.Rol.BIBLIOTECARIO,
+        )
+        self.sala = Recurso.objects.create(
+            nombre="Sala Cancelable", tipo=Recurso.Tipo.SALA
+        )
+
+    def _reserva(self, usuario=None, bloque="10:00-11:00"):
+        return services.crear_reserva(
+            usuario or self.estudiante, self.sala, self.hoy, bloque
+        )
+
+    def test_estudiante_cancela_y_libera_cupo(self):
+        reserva = self._reserva()
+        self.assertEqual(services.cupo_diario(self.estudiante, self.hoy)["usadas"], 1)
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.post(f"/mis-reservas/{reserva.pk}/cancelar/")
+        self.assertRedirects(respuesta, "/mis-reservas/")
+        reserva.refresh_from_db()
+        self.assertEqual(reserva.estado, Reserva.Estado.CANCELADA)
+        self.assertEqual(reserva.cancelada_por, self.estudiante)
+        self.assertEqual(
+            reserva.motivo_cancelacion, Reserva.MotivoCancelacion.SOLICITUD
+        )
+        self.assertIsNotNone(reserva.cancelada_en)
+        self.assertEqual(services.cupo_diario(self.estudiante, self.hoy)["usadas"], 0)
+
+    def test_bloque_cancelado_queda_disponible(self):
+        reserva = self._reserva()
+        self.client.force_login(self.estudiante)
+        self.client.post(f"/mis-reservas/{reserva.pk}/cancelar/")
+        fila = next(
+            f
+            for f in services.estado_recursos(self.hoy, "10:00-11:00")
+            if f["recurso"] == self.sala
+        )
+        self.assertTrue(fila["disponible"])
+
+    def test_qr_de_reserva_cancelada_se_rechaza(self):
+        reserva = self._reserva()
+        codigo = reserva.qr.codigo
+        self.client.force_login(self.estudiante)
+        self.client.post(f"/mis-reservas/{reserva.pk}/cancelar/")
+        with self.assertRaises(ValidationError) as error:
+            services.validar_inicio(codigo)
+        self.assertIn("cancelada", error.exception.messages[0].lower())
+
+    def test_no_puede_cancelar_una_reserva_ajena(self):
+        reserva = self._reserva(usuario=self.otro)
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.post(f"/mis-reservas/{reserva.pk}/cancelar/")
+        self.assertEqual(respuesta.status_code, 404)
+        reserva.refresh_from_db()
+        self.assertEqual(reserva.estado, Reserva.Estado.RESERVADA)
+
+    def test_no_puede_cancelar_despues_de_empezar_el_bloque(self):
+        reserva = self._reserva()
+        despues = timezone.make_aware(datetime.combine(self.hoy, time(10, 30)))
+        with self.assertRaises(ValidationError):
+            services.cancelar_reserva(reserva, self.estudiante, momento=despues)
+        reserva.refresh_from_db()
+        self.assertEqual(reserva.estado, Reserva.Estado.RESERVADA)
+
+    def test_bibliotecario_cancela_no_show_con_motivo(self):
+        reserva = self._reserva()
+        despues = timezone.make_aware(datetime.combine(self.hoy, time(10, 30)))
+        cancelada = services.cancelar_reserva(
+            reserva,
+            self.bibliotecario,
+            Reserva.MotivoCancelacion.NO_SHOW,
+            momento=despues,
+        )
+        self.assertEqual(cancelada.estado, Reserva.Estado.CANCELADA)
+        self.assertEqual(cancelada.cancelada_por, self.bibliotecario)
+        self.assertEqual(
+            cancelada.motivo_cancelacion, Reserva.MotivoCancelacion.NO_SHOW
+        )
+
+    def test_bibliotecario_necesita_motivo(self):
+        reserva = self._reserva()
+        with self.assertRaises(ValidationError):
+            services.cancelar_reserva(reserva, self.bibliotecario, "")
+        reserva.refresh_from_db()
+        self.assertEqual(reserva.estado, Reserva.Estado.RESERVADA)
+
+    def test_no_se_cancela_una_reserva_en_uso(self):
+        reserva = self._reserva()
+        reserva.estado = Reserva.Estado.EN_USO
+        reserva.save(update_fields=["estado"])
+        with self.assertRaises(ValidationError):
+            services.cancelar_reserva(
+                reserva, self.bibliotecario, Reserva.MotivoCancelacion.SOLICITUD
+            )
+
+    def test_estudiante_no_cancela_una_finalizada(self):
+        reserva = self._reserva()
+        reserva.estado = Reserva.Estado.FINALIZADA
+        reserva.save(update_fields=["estado"])
+        with self.assertRaises(ValidationError):
+            services.cancelar_reserva(reserva, self.estudiante)
+
+    def test_vista_del_panel_cancela_con_motivo(self):
+        reserva = self._reserva()
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.post(
+            "/bibliotecario/cancelar/",
+            {
+                "reserva_id": reserva.pk,
+                "motivo": Reserva.MotivoCancelacion.SOLICITUD,
+            },
+        )
+        self.assertRedirects(respuesta, "/bibliotecario/")
+        reserva.refresh_from_db()
+        self.assertEqual(reserva.estado, Reserva.Estado.CANCELADA)
+
+    def test_panel_rechaza_cancelacion_sin_motivo(self):
+        reserva = self._reserva()
+        self.client.force_login(self.bibliotecario)
+        self.client.post("/bibliotecario/cancelar/", {"reserva_id": reserva.pk})
+        reserva.refresh_from_db()
+        self.assertEqual(reserva.estado, Reserva.Estado.RESERVADA)
+
+    def test_la_cancelacion_del_panel_conserva_la_pestana(self):
+        reserva = self._reserva()
+        self.client.force_login(self.bibliotecario)
+        respuesta = self.client.post(
+            "/bibliotecario/cancelar/",
+            {
+                "reserva_id": reserva.pk,
+                "motivo": Reserva.MotivoCancelacion.SOLICITUD,
+                "tab": "reservas",
+            },
+        )
+        self.assertRedirects(respuesta, "/bibliotecario/?tab=reservas")
+
+    def test_estudiante_no_accede_al_panel(self):
+        reserva = self._reserva()
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.post(
+            "/bibliotecario/cancelar/",
+            {
+                "reserva_id": reserva.pk,
+                "motivo": Reserva.MotivoCancelacion.SOLICITUD,
+            },
+        )
+        self.assertEqual(respuesta.status_code, 403)

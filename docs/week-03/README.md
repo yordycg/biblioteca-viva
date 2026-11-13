@@ -60,10 +60,10 @@ Cubierto por CP-17 y por `python manage.py test` (69 pruebas automáticas).
 
 ## Catálogo inicial y horario 09:00–22:00
 
-- Al entrar se muestran todos los recursos con su estado; el check **Solo disponibles** permite ocultar los ocupados.
-- Los formularios solo validan al presionar **Filtrar**; los errores aparecen bajo el campo, con borde rojo.
+- Con fecha y bloque elegidos, la vista lista los recursos con su estado; el check **Solo disponibles** permite ocultar los ocupados.
+- Los formularios validan al enviarse —con **Filtrar** o al cambiar un filtro ya completo—; los errores aparecen bajo el campo, con borde rojo.
 - Los bloques pasan de 3 a **13 bloques de una hora**, de 09:00 a 22:00.
-- Si hoy ya no quedan bloques, la vista abre con el primer bloque de mañana.
+- Si la fecha elegida no tiene bloques disponibles, un aviso pide elegir otra fecha.
 - El panel del bibliotecario muestra una **línea de tiempo** por recurso en lugar de una tabla de 13 columnas.
 
 Cubierto por CP-17 y CP-20, con `python manage.py test` (69 pruebas automáticas).
@@ -78,6 +78,19 @@ Cubierto por CP-17 y CP-20, con `python manage.py test` (69 pruebas automáticas
 - El rol del usuario ya no se muestra en la barra superior.
 
 Cubierto por CP-21, con `python manage.py test` (69 pruebas automáticas).
+
+## Corrección S3 (cancelación, pestañas y filtros)
+
+- **Cancelación de reservas**: el solicitante anula su reserva pendiente desde "Mis reservas" y el bibliotecario desde el panel. Solo aplica a reservas pendientes de entrega —una reserva En Uso se devuelve— y el panel exige un motivo.
+- Se registra **quién, cuándo y por qué** (`cancelada_en`, `cancelada_por`, `motivo_cancelacion`); el solicitante solo puede cancelar antes de que empiece su bloque o su fecha de retiro, el bibliotecario puede hacerlo en cualquier momento para cubrir el no-show.
+- Cancelar **libera el bloque y el cupo diario**, y el QR anterior se rechaza con un mensaje propio.
+- **Pestañas en el panel**: Operación, Inventario, Reservas del día y Validación. La pestaña activa se conserva al validar, devolver, cancelar o filtrar, y buscar un código abre Validación.
+- **Filtro del estado del inventario** por nombre, tipo y estado, con contador "Mostrando X de Y" y contadores globales intactos.
+- **Filtros vacíos al entrar** y validación solo al enviar; el selector de bloque nunca se autoselecciona y un enlace con fecha y bloque sigue funcionando.
+- **Filtros reactivos**: los selectores y casillas envían el formulario al cambiar; el botón "Filtrar" se mantiene para navegadores sin JavaScript y la búsqueda de texto no se autoenvía.
+- **Seed con fecha relativa**: las reservas de ejemplo se programan en el primer bloque reservable de hoy (o de mañana) y `seed --fecha AAAA-MM-DD` permite fijarlas.
+
+Cubierto por CP-20, CP-21 y CP-22 a CP-26, con `python manage.py test` (90 pruebas automáticas).
 
 ## Orden de revisión
 

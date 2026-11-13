@@ -96,6 +96,14 @@ class Reserva(models.Model):
         BLOQUE = "BLOQUE", "Bloque horario"
         PRESTAMO = "PRESTAMO", "Préstamo de libro"
 
+    class MotivoCancelacion(models.TextChoices):
+        """Motivos de anulación administrativa o del solicitante (RF-02)."""
+
+        SOLICITUD = "SOLICITUD", "Solicitud del usuario"
+        NO_SHOW = "NO_SHOW", "No se presentó"
+        ERROR = "ERROR", "Error de reserva"
+        FUERA_SERVICIO = "FUERA_SERVICIO", "Recurso fuera de servicio"
+
     BLOQUES = [
         (
             f"{hora:02d}:00-{hora + 1:02d}:00",
@@ -120,6 +128,18 @@ class Reserva(models.Model):
     fecha_vencimiento = models.DateField(null=True, blank=True)
     estado = models.CharField(
         max_length=20, choices=Estado.choices, default=Estado.RESERVADA
+    )
+    motivo_cancelacion = models.CharField(
+        max_length=20, choices=MotivoCancelacion.choices, blank=True
+    )
+    cancelada_en = models.DateTimeField(null=True, blank=True)
+    cancelada_por = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservas_canceladas",
+        help_text="Vacío cuando el solicitante cancela su propia reserva.",
     )
     creada_en = models.DateTimeField(auto_now_add=True)
     iniciada_en = models.DateTimeField(null=True, blank=True)

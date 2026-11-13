@@ -5,6 +5,7 @@ Cubre: RF-01, RF-02, RF-03, RF-04, RF-05, RF-07, RF-08.
 """
 import re
 from datetime import date, timedelta
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -30,6 +31,43 @@ def _es_bibliotecario(usuario):
     return usuario.rol == Usuario.Rol.BIBLIOTECARIO
 
 
+TABS_PANEL = [
+    ("operacion", "Operación"),
+    ("inventario", "Inventario"),
+    ("reservas", "Reservas del día"),
+    ("validacion", "Validación"),
+]
+
+
+def _tab_panel(request):
+    """Pestaña activa del panel; también se deduce de los filtros recibidos."""
+    tab = request.GET.get("tab", "").strip()
+    if tab in dict(TABS_PANEL):
+        return tab
+    if any(
+        request.GET.get(clave) for clave in ("inv_q", "inv_tipo", "inv_estado")
+    ):
+        return "inventario"
+    if any(request.GET.get(clave) for clave in ("estado", "bloque", "q")):
+        return "reservas"
+    if request.GET.get("codigo"):
+        return "validacion"
+    return "operacion"
+
+
+def _volver_al_panel(tab="", codigo=""):
+    """Vuelve al panel conservando la pestaña activa y el código consultado."""
+    parametros = {
+        clave: valor
+        for clave, valor in (("tab", tab), ("codigo", codigo))
+        if valor
+    }
+    destino = reverse("bibliotecario")
+    if parametros:
+        destino = f"{destino}?{urlencode(parametros)}"
+    return redirect(destino)
+
+
 def _fecha_legible(valor):
     """Normaliza una fecha ISO recibida por URL para mostrarla formateada."""
     if isinstance(valor, date):
@@ -40,6 +78,17 @@ def _fecha_legible(valor):
         return date.fromisoformat(str(valor))
     except ValueError:
         return None
+
+
+def _filtros_enviados(request, obligatorios):
+    """El formulario valida al enviarlo o cuando la URL trae lo necesario.
+
+    Así un enlace compartido con fecha y bloque sigue funcionando, pero entrar
+    sin filtros no dispara errores de validación.
+    """
+    if request.GET.get("filtrar") == "1":
+        return True
+    return all(request.GET.get(campo) for campo in obligatorios)
 
 
 @login_required
@@ -57,7 +106,8 @@ def buscar(request):
         return redirect("bibliotecario")
 
     vista = request.GET.get("vista", "recursos")
-    enviado = request.GET.get("filtrar") == "1"
+    obligatorios = ("fecha", "dias") if vista == "libros" else ("fecha", "bloque")
+    enviado = _filtros_enviados(request, obligatorios)
     hoy = services.hoy()
     sancion_hasta = (
         request.user.sancionado_hasta
@@ -67,12 +117,10 @@ def buscar(request):
     cupo = services.cupo_diario(request.user, hoy)
 
     if vista == "libros":
-        form_libros = BusquedaLibrosForm(
-            request.GET if enviado else None,
-            initial={"fecha": hoy, "dias": 7},
-        )
-        fecha_libros = hoy
-        dias = 7
+        form_libros = BusquedaLibrosForm(request.GET if enviado else None)
+        fecha_libros = None
+        dias = None
+        tarjetas = []
         if enviado and form_libros.is_valid():
             fecha_libros = form_libros.cleaned_data["fecha"]
             dias = form_libros.cleaned_data["dias"]
@@ -84,10 +132,6 @@ def buscar(request):
             )
             if form_libros.cleaned_data["solo_disponibles"]:
                 tarjetas = [t for t in tarjetas if t["disponible"]]
-        elif enviado:
-            tarjetas = []
-        else:
-            tarjetas = services.catalogo_libros(hoy, "", "", 7)
         return render(
             request,
             "reservas/buscar.html",
@@ -98,6 +142,7 @@ def buscar(request):
                 "fecha": fecha_libros,
                 "dias": dias,
                 "enviado": enviado,
+                "elegir": not enviado,
                 "cupo": cupo,
                 "sancion_hasta": sancion_hasta,
                 "prestamos": services.prestamos_activos(request.user),
@@ -105,16 +150,10 @@ def buscar(request):
             },
         )
 
-    fecha_default, bloque_default, cambio_dia = services.fecha_y_bloque_por_defecto()
-    inicial = {
-        "tipo": "",
-        "fecha": fecha_default,
-        "bloque": bloque_default,
-        "solo_disponibles": False,
-    }
-    form = BusquedaForm(request.GET if enviado else None, initial=inicial)
-    fecha = fecha_default
-    bloque = bloque_default
+    form = BusquedaForm(request.GET if enviado else None)
+    fecha = None
+    bloque = None
+    recursos = []
     if enviado and form.is_valid():
         fecha = form.cleaned_data["fecha"]
         bloque = form.cleaned_data["bloque"]
@@ -124,17 +163,11 @@ def buscar(request):
             form.cleaned_data["tipo"],
             form.cleaned_data["solo_disponibles"],
         )
-    elif enviado:
-        recursos = []
-    else:
-        recursos = services.estado_recursos(fecha_default, bloque_default)
-    sin_bloques = (
+    sin_bloques = bool(
         enviado
-        and not form["fecha"].errors
-        and not services.bloques_disponibles(fecha)
+        and form.cleaned_data.get("fecha")
+        and not services.bloques_disponibles(form.cleaned_data["fecha"])
     )
-    if enviado:
-        cambio_dia = False
     return render(
         request,
         "reservas/buscar.html",
@@ -145,7 +178,7 @@ def buscar(request):
             "fecha": fecha,
             "bloque": bloque,
             "enviado": enviado,
-            "cambio_dia": cambio_dia,
+            "elegir": not enviado,
             "cupo": cupo,
             "sancion_hasta": sancion_hasta,
             "sin_bloques": sin_bloques,
@@ -247,6 +280,26 @@ def mis_reservas(request):
         "reservas/mis_reservas.html",
         {"activas": activas, "historial": historial},
     )
+
+
+@login_required
+@require_POST
+def cancelar_mi_reserva(request, reserva_id):
+    """El solicitante anula su propia reserva pendiente (RF-02)."""
+    if _es_bibliotecario(request.user):
+        return redirect("bibliotecario")
+
+    reserva = get_object_or_404(Reserva, pk=reserva_id, usuario=request.user)
+    try:
+        services.cancelar_reserva(reserva, request.user)
+    except ValidationError as error:
+        messages.error(request, error.messages[0])
+    else:
+        messages.success(
+            request,
+            f"Reserva {reserva.codigo} cancelada. El cupo del día quedó libre.",
+        )
+    return redirect("mis_reservas")
 
 
 @login_required
@@ -355,6 +408,9 @@ def confirmar(request, recurso_id):
 def qr_view(request, reserva_id):
     """Muestra el QR de una reserva confirmada (RF-03)."""
     reserva = get_object_or_404(Reserva, pk=reserva_id, usuario=request.user)
+    if reserva.estado == Reserva.Estado.CANCELADA:
+        messages.error(request, "La reserva fue cancelada: el código ya no es válido.")
+        return redirect("mis_reservas")
     qr = getattr(reserva, "qr", None)
     if not qr:
         messages.error(request, "La reserva no tiene un QR asociado.")
@@ -443,10 +499,14 @@ def bibliotecario(request):
         "finalizadas": sum(
             1 for r in reservas_todas if r.estado == Reserva.Estado.FINALIZADA
         ),
+        "canceladas": sum(
+            1 for r in reservas_todas if r.estado == Reserva.Estado.CANCELADA
+        ),
     }
+    resumen["procesables"] = resumen["total"] - resumen["canceladas"]
     resumen["porcentaje"] = (
-        round(resumen["finalizadas"] * 100 / resumen["total"])
-        if resumen["total"]
+        round(resumen["finalizadas"] * 100 / resumen["procesables"])
+        if resumen["procesables"]
         else 0
     )
     sanciones_hoy = (
@@ -455,6 +515,9 @@ def bibliotecario(request):
         .order_by("-inicio")[:3]
     )
     resumen_panel = services.resumen_panel(hoy)
+    inv_texto = request.GET.get("inv_q", "").strip()
+    inv_tipo = request.GET.get("inv_tipo", "").strip()
+    inv_estado = request.GET.get("inv_estado", "").strip()
     return render(
         request,
         "reservas/bibliotecario.html",
@@ -474,7 +537,17 @@ def bibliotecario(request):
             "texto_filtro": texto_filtro,
             "estados": Reserva.Estado.choices,
             "bloques": Reserva.BLOQUES,
-            "inventario": services.estado_inventario(hoy),
+            "motivos": Reserva.MotivoCancelacion.choices,
+            "tab": _tab_panel(request),
+            "tabs": TABS_PANEL,
+            "inventario": services.estado_inventario(
+                hoy, inv_texto, inv_tipo, inv_estado
+            ),
+            "tipos_inventario": Recurso.Tipo.choices,
+            "estados_inventario": services.ESTADOS_INVENTARIO,
+            "inv_texto": inv_texto,
+            "inv_tipo": inv_tipo,
+            "inv_estado": inv_estado,
         },
     )
 
@@ -494,7 +567,7 @@ def validar(request):
         )
     except ValidationError as error:
         messages.error(request, error.messages[0])
-    return redirect(f"{reverse('bibliotecario')}?codigo={codigo}")
+    return _volver_al_panel(request.POST.get("tab", ""), codigo)
 
 
 @login_required
@@ -519,4 +592,34 @@ def devolver(request):
             )
     except ValidationError as error:
         messages.error(request, error.messages[0])
-    return redirect(f"{reverse('bibliotecario')}?codigo={codigo}")
+    return _volver_al_panel(request.POST.get("tab", ""), codigo)
+
+
+@login_required
+@require_POST
+def cancelar_reserva_panel(request):
+    """El bibliotecario anula una reserva pendiente (RF-02, RF-04)."""
+    if not _es_bibliotecario(request.user):
+        return HttpResponseForbidden("Esta acción es solo para bibliotecarios.")
+
+    codigo = request.POST.get("codigo", "").strip()
+    try:
+        reserva_id = int(request.POST.get("reserva_id", ""))
+    except (TypeError, ValueError):
+        messages.error(request, "La reserva indicada no es válida.")
+        return redirect("bibliotecario")
+
+    reserva = get_object_or_404(Reserva, pk=reserva_id)
+    try:
+        services.cancelar_reserva(
+            reserva, request.user, request.POST.get("motivo", "")
+        )
+    except ValidationError as error:
+        messages.error(request, error.messages[0])
+    else:
+        messages.success(
+            request,
+            f"Reserva {reserva.codigo} cancelada: el bloque quedó libre.",
+        )
+
+    return _volver_al_panel(request.POST.get("tab", ""), codigo)

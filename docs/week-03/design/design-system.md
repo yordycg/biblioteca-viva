@@ -101,7 +101,7 @@ del login usan `--color-primary` como fondo.
 | Logo institucional | `.brand`, `.brand__logo`, `.brand__divider`, `.brand__product` | Logo oficial a 36 px de alto (32 px en móvil) sobre fondo `--color-primary` |
 | Navegación | `.nav`, `.nav__link[aria-current]` | Se filtra por rol en `base.html`; la barra superior muestra solo el nombre, sin badge de rol |
 | Encabezado de página | `.page-head`, `.eyebrow`, `.page-head__aside` | Incluye el medidor de cupo |
-| Filtros | `.filters`, `.filters--libros`, `.filters--panel`, `.field`, `.campo` | Grid de 4–6 columnas según vista; una columna en móvil |
+| Filtros | `.filters`, `.filters--libros`, `.filters--panel`, `.field`, `.campo` | Grid de 4–6 columnas según vista; una columna en móvil. Los obligatorios inician vacíos y los opcionales en “Todos”. |
 | Aviso normativo | `.notice`, `.notice--warning`, `.notice--danger` | RF-06, RF-07 |
 | Tarjeta de recurso | `.resource`, `.resource__media`, `.resource__meta`, `.resource__foot` | El «media» es un bloque de color con icono, no una foto |
 | Badge de estado | `.badge--reservada`, `.badge--en-uso`, `.badge--finalizada`, `.badge--sancion`, `.badge--libre`, `.badge--uso`, `.badge--no-disponible` | Color + texto |
@@ -111,16 +111,16 @@ del login usan `--color-primary` como fondo.
 | Panel QR | `.qr-panel` | QR real generado por Django |
 | Tabla del día | `.table-wrap`, `.data` | Tabla en desktop, tarjetas en móvil vía `data-label` |
 | Indicadores de inventario | `.stats`, `.stat`, `.stat__value`, `.stat__label` | Contadores del panel bibliotecario; borde izquierdo según estado |
-| Pestañas de búsqueda | `.tabs`, `.tabs__link[aria-current]` | Salas/equipos y libros en una sola página |
+| Pestañas | `.tabs`, `.tabs__link[aria-current]` | Búsqueda (salas/equipos y libros) y panel (Operación, Inventario, Reservas del día y Validación) |
 | Tarjeta de libro | `.book-grid`, `.book-card`, `.book-card__cover`, `.book-card__title` | Grilla vertical con carátula 3:4 y CTA al pie |
 | Ficha de libro | `.detail-card`, `.detail-card__top`, `.chips`, `.chip` | Una sola tarjeta: carátula, datos, sinopsis y condiciones |
 | Panel de préstamo | `.loan-band`, `.loan-band__grid`, `.loan-band__meta` | Fecha, duración y cupo en una fila; se apila en móvil |
 | Línea de tiempo de bloques | `.timeline`, `.timeline__track`, `.timeline__slot` | 13 bloques de color por recurso; scroll horizontal en móvil |
 | Agenda del panel | `.agenda`, `.agenda__time` | Entregas y devoluciones ordenadas por hora/fecha |
 | Ocupación por bloque | `.occupancy`, `.occupancy__row`, `.occupancy__bar` | Barra de ocupación agregada por bloque |
-| Filtros del panel | `.filters--panel` | Estado, bloque y búsqueda de la tabla del día |
+| Filtros del panel | `.filters--panel` | Estado, bloque y búsqueda de la tabla del día; inventario por nombre, tipo y estado |
 | Checkbox de filtro | `.field--check`, `.check` | “Solo disponibles” alineado con los controles |
-| Diálogo | `dialog.modal` | Confirmación de devolución; `<form>` funciona sin JS |
+| Diálogo | `dialog.modal` | Confirmación de devolución y de cancelación; el `<form>` funciona sin JS |
 | Alertas | `.alert--success`, `.alert--warning`, `.alert--error` | Reemplazan los mensajes de Django |
 
 Iconografía: sprite SVG inline en `reservas/templates/reservas/_icons.html`
@@ -176,10 +176,34 @@ Verificación: capturas a 360×800 y 1280×800 en `docs/week-03/evidence/`.
   `--color-danger` y el input recibe `aria-invalid="true"` y `aria-describedby`.
 - El mensaje va en `.field__error`, debajo del control, nunca como aviso global
   de ancho completo.
-- Los formularios solo validan cuando se envían (`filtrar=1`); cambiar de pestaña
-  o limpiar filtros no muestra errores.
+- Los formularios solo validan cuando se envían: con el botón, con un enlace
+  completo o cuando cambia un filtro ya completo (ver 3.4). Cambiar de pestaña o
+  limpiar filtros no muestra errores.
 - Mensajes: “Elige una fecha de retiro.”, “Elige una duración de 3, 7 o 14 días.”,
   “Elige un bloque horario.”, “Ingresa tu correo institucional.”.
+
+### 3.3 Valores por defecto de los filtros
+
+- **Obligatorios** (fecha, bloque, duración) inician vacíos y sin selección
+  implícita: el selector de bloque muestra solo “Elige un bloque” y nunca
+  autoselecciona el primero.
+- **Opcionales** (tipo de recurso, género) conservan “Todos” y “Todos los
+  géneros”: vacío ahí significa “todos”, no “falta elegir”.
+- **Texto libre** inicia vacío con un placeholder descriptivo.
+- Un `input[type="date"]` no admite texto de placeholder; la indicación va en la
+  etiqueta o en `.field__help`.
+- Un enlace con `fecha` y `bloque` (o `fecha` y `dias`) se considera enviado, de
+  modo que las URLs compartidas siguen mostrando resultados.
+
+### 3.4 Filtros reactivos
+
+- Los `select` y las casillas de los formularios con `data-auto-submit` envían el
+  formulario al cambiar, solo si cumple `checkValidity()`: si falta un obligatorio
+  no se envía y no aparecen errores a medio llenar.
+- La búsqueda de texto **no** se autoenvía; requiere el botón, para no recargar
+  mientras se escribe.
+- El botón “Filtrar” se mantiene siempre: sin JavaScript todo funciona igual.
+- Cada cambio es una recarga completa, así que deja una entrada en el historial.
 
 ### 3.2 Evolución v1 → v2
 

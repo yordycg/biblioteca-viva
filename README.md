@@ -82,6 +82,13 @@ python manage.py seed
 
 Para reiniciar los datos: `python manage.py seed --reset`.
 
+El seed programa sus reservas de ejemplo en el primer bloque reservable de hoy
+o, si ya no quedan, en el primero de mañana. Para fijar la fecha:
+
+```bash
+python manage.py seed --reset --fecha 2026-11-12
+```
+
 Para acceder desde un teléfono en la misma red:
 
 ```bash
@@ -106,8 +113,8 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Ficha de libro | `/libros/<id>/` | Datos bibliográficos y préstamo por 3, 7 o 14 días |
 | Reserva | clic en “Reservar bloque” | Detalle y confirmación |
 | QR | `/reserva/<id>/qr/` | QR legible e ID |
-| Mis reservas | `/mis-reservas/` | Reservas activas, historial y reapertura del QR |
-| Bibliotecario | `/bibliotecario/` | KPIs, agenda, ocupación por bloque, inventario, filtros y validación QR |
+| Mis reservas | `/mis-reservas/` | Reservas activas, historial, reapertura del QR y cancelación de una reserva pendiente |
+| Bibliotecario | `/bibliotecario/` | Cuatro pestañas: Operación (KPIs, agenda, ocupación), Inventario con filtros, Reservas del día y Validación QR |
 | Admin | `/admin/` | Solo para desarrollo; no es parte del flujo |
 
 ## Revisión por rol
@@ -167,8 +174,9 @@ DEMO_MODE=1 DEMO_NOW=2026-11-12T11:01:00 python manage.py runserver 0.0.0.0:8000
 
 `DEMO_MODE` desactiva la validación estricta de fecha/hora y `DEMO_NOW` fija la hora de la aplicación. No usar en producción.
 
-Con `DEMO_MODE=1`, la búsqueda y el panel del bibliotecario abren en la fecha de
-`DEMO_NOW`, de modo que la reserva de ejemplo del seed queda a la vista.
+Con `DEMO_MODE=1`, la aplicación usa la fecha y hora de `DEMO_NOW`. Si las
+reservas del seed no coinciden con esa fecha, vuelve a sembrar con
+`python manage.py seed --reset --fecha AAAA-MM-DD`.
 
 ## Interfaz
 

@@ -15,13 +15,20 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
-from .models import Libro, QR, Reserva, Recurso, Sancion
+from .models import Libro, QR, Reserva, Recurso, Sancion, Usuario
 
 MAX_RESERVAS_DIA = 2
 MIN_ANTELACION_MIN = 15
 MAX_DIAS_RESERVA = 7
 DIAS_PRESTAMO = (3, 7, 14)
 MAX_PRESTAMOS_ACTIVOS = 2
+
+ESTADOS_INVENTARIO = [
+    ("DISPONIBLE", "Disponible"),
+    ("RESERVADO", "Reservado"),
+    ("EN_USO", "En uso"),
+    ("NO_DISPONIBLE", "No disponible"),
+]
 
 
 def ahora():
@@ -127,18 +134,6 @@ def estado_recursos(fecha, bloque, tipo=None, solo_disponibles=False):
             }
         )
     return filas
-
-
-def fecha_y_bloque_por_defecto(momento=None):
-    """Fecha y bloque iniciales; salta al día siguiente si hoy ya no quedan."""
-    momento = momento or ahora()
-    hoy_ = timezone.localtime(momento).date()
-    for offset in range(0, MAX_DIAS_RESERVA + 1):
-        fecha = hoy_ + timedelta(days=offset)
-        bloques = bloques_disponibles(fecha, momento)
-        if bloques:
-            return fecha, bloques[0][0], offset > 0
-    return hoy_, "", False
 
 
 def reservas_activas(usuario, fecha):
@@ -280,6 +275,53 @@ def crear_reserva(usuario, recurso, fecha, bloque=None, dias=None, momento=None)
     return reserva
 
 
+def cancelar_reserva(reserva, actor, motivo="", momento=None):
+    """Anula una reserva pendiente de entrega (RF-02).
+
+    El solicitante solo cancela antes de que empiece su bloque o su fecha de
+    retiro. El bibliotecario puede hacerlo en cualquier momento, porque el caso
+    habitual es el usuario que no se presentó. En ambos casos la reserva deja
+    de ocupar el bloque y de consumir el cupo diario del solicitante.
+    """
+    momento = momento or ahora()
+    if reserva.estado != Reserva.Estado.RESERVADA:
+        raise ValidationError(
+            "Solo se cancelan reservas pendientes de entrega. "
+            "Una reserva En Uso se registra como devolución."
+        )
+
+    if actor.rol == Usuario.Rol.BIBLIOTECARIO:
+        if motivo not in dict(Reserva.MotivoCancelacion.choices):
+            raise ValidationError("Elige un motivo de cancelación.")
+    else:
+        if reserva.usuario_id != actor.pk:
+            raise ValidationError("No puedes cancelar una reserva ajena.")
+        if reserva.modalidad == Reserva.Modalidad.PRESTAMO:
+            if reserva.fecha < timezone.localtime(momento).date():
+                raise ValidationError(
+                    "El plazo de retiro ya pasó; no puedes cancelar el préstamo."
+                )
+        elif not bloque_vigente(reserva.bloque, reserva.fecha, momento):
+            raise ValidationError(
+                "Tu bloque ya comenzó; ya no puedes cancelar la reserva."
+            )
+        motivo = Reserva.MotivoCancelacion.SOLICITUD
+
+    actualizadas = Reserva.objects.filter(
+        pk=reserva.pk, estado=Reserva.Estado.RESERVADA
+    ).update(
+        estado=Reserva.Estado.CANCELADA,
+        cancelada_en=momento,
+        cancelada_por=actor,
+        motivo_cancelacion=motivo,
+    )
+    if not actualizadas:
+        raise ValidationError("La reserva ya no está pendiente de entrega.")
+
+    reserva.refresh_from_db()
+    return reserva
+
+
 def _estado_recurso(recurso, reservas):
     """Estado agregado de un recurso para la fecha consultada."""
     if recurso.estado != Recurso.Estado.DISPONIBLE:
@@ -291,11 +333,13 @@ def _estado_recurso(recurso, reservas):
     return "DISPONIBLE", "Disponible"
 
 
-def estado_inventario(fecha):
+def estado_inventario(fecha, filtro_texto="", filtro_tipo="", filtro_estado=""):
     """Estado del inventario para el panel del bibliotecario (RF-04, RF-05).
 
     Agrupa por recurso el estado del día y por bloque; los totales permiten
     saber cuántos recursos están libres, reservados, en uso o fuera de servicio.
+    Los filtros acotan solo las filas: el resumen y los totales por tipo siguen
+    siendo globales para que los indicadores no cambien al filtrar.
     """
     recursos = list(Recurso.objects.all())
     activas = Reserva.objects.filter(
@@ -371,13 +415,35 @@ def estado_inventario(fecha):
     resumen["porcentaje"] = (
         round(resumen["ocupados"] * 100 / resumen["total"]) if resumen["total"] else 0
     )
+    filas_totales = len(filas)
+    filas = _filtrar_inventario(filas, filtro_texto, filtro_tipo, filtro_estado)
     return {
         "fecha": fecha,
         "bloques": Reserva.BLOQUES,
         "filas": filas,
+        "filtradas": len(filas),
+        "total_filas": filas_totales,
+        "filtrado": bool(filtro_texto or filtro_tipo or filtro_estado),
         "resumen": resumen,
         "por_tipo": list(por_tipo.values()),
     }
+
+
+def _filtrar_inventario(filas, filtro_texto, filtro_tipo, filtro_estado):
+    """Acota las filas del inventario por nombre, código, tipo y estado."""
+    if filtro_texto:
+        consulta = filtro_texto.lower()
+        filas = [
+            fila
+            for fila in filas
+            if consulta in fila["recurso"].nombre.lower()
+            or consulta in (fila["recurso"].codigo or "").lower()
+        ]
+    if filtro_tipo:
+        filas = [fila for fila in filas if fila["recurso"].tipo == filtro_tipo]
+    if filtro_estado:
+        filas = [fila for fila in filas if fila["estado"] == filtro_estado]
+    return filas
 
 
 def _estado_bloque(recurso, reserva):
@@ -555,6 +621,10 @@ def validar_inicio(codigo, momento=None):
     if not qr:
         raise ValidationError("QR inválido: no existe una reserva con ese código.")
     if qr.utilizado or qr.reserva.estado != Reserva.Estado.RESERVADA:
+        if qr.reserva.estado == Reserva.Estado.CANCELADA:
+            raise ValidationError(
+                "La reserva fue cancelada: el código ya no sirve para entregar."
+            )
         raise ValidationError("QR ya utilizado o la reserva no está vigente.")
 
     if not settings.DEMO_MODE:
