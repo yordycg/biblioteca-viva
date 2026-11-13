@@ -36,7 +36,26 @@ del día adaptándose según el sistema de diseño.
 Lighthouse: la accesibilidad (contraste, foco, navegación por teclado) se audita
 en la semana 4 y se registra en su propio archivo.
 
-## CP-01 a CP-14
+## Casos ejecutados (2026-11-13)
 
-Todavía no hay capturas. Cada caso se registra en `../qa/casos-prueba.md` con su
-estado real; los archivos de esta carpeta se agregan al ejecutarlos.
+Once casos ejecutados sobre el flujo real y aprobados. Cada uno se registra en
+`../qa/casos-prueba.md` con su resultado y la ruta de su evidencia.
+
+| Caso | Evidencia | Qué muestra |
+|---|---|---|
+| CP-01 | `CP-01.png` | Recursos libres del bloque con su estado |
+| CP-02 | `CP-02.png` | Reserva creada y su QR |
+| CP-03 | `CP-03.png` | Tercera reserva del día rechazada |
+| CP-04 | `CP-04.png` | QR inexistente y segundo uso rechazados |
+| CP-05 | `CP-05.png` | Devolución dentro del bloque, sin sanción |
+| CP-06 | `CP-06.png` | Devolución tardía con sanción de 7 días |
+| CP-07 | `CP-07.png` | Credenciales inválidas rechazadas |
+| CP-11 | `CP-11.png` | Búsqueda sin resultados |
+| CP-12 | `CP-12.png` | Devolución en la hora límite, sin sanción |
+| CP-13 | `CP-13.png` | “Mis reservas” con el QR reabrible |
+| CP-14 | `CP-14.png` | QR de una reserva ajena rechazado |
+
+**Cómo se generaron.** Con `local/tools/ejecutar_cp.py`, que reinicia el seed,
+recorre el flujo con el cliente de Django y captura la pantalla resultante con
+Chromium a 1280×900. La hora se fija con `DEMO_MODE`/`DEMO_NOW` para los casos de
+devolución. La ejecución no encontró defectos.
