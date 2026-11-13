@@ -85,7 +85,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Precondiciones | Seed cargado. estudiante1@example.com tiene 2 reservas activas el 2026-11-10: Sala 3 10:00–11:00 (ID-A) y Sala 3 11:00–12:00 (ID-B). Sala 3 libre en 15:00–16:00. |
 | Datos de entrada | Usuario: estudiante1@example.com · Recurso: Sala 3 · Fecha: 2026-11-10 · Bloque: 15:00–16:00 (3ª reserva) |
 | Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir "Mis Reservas" y confirmar las 2 reservas activas (ID-A, ID-B).<br>3. En "Buscar", elegir Sala, 2026-11-10, 15:00–16:00 y presionar "Buscar".<br>4. Presionar "Seleccionar" en Sala 3 y luego "Confirmar reserva".<br>5. Leer el mensaje mostrado.<br>6. Presionar "Volver al inicio", abrir "Mis Reservas" y revisar las reservas.<br>7. Repetir la búsqueda del paso 3. |
-| Resultado esperado | La 3ª reserva se rechaza con el mensaje "Límite alcanzado: Ya tienes 2 reservas activas para hoy." [VERIFICAR texto: el mockup dice "hoy"; la fecha de prueba es 2026-11-10]. "Mis Reservas" muestra solo ID-A e ID-B, con los mismos datos y estado Reservada. Sala 3 sigue disponible en 15:00–16:00. |
+| Resultado esperado | La 3ª reserva se rechaza con el mensaje "Límite alcanzado: Ya tienes 2 reservas activas para hoy.". "Mis Reservas" muestra solo ID-A e ID-B, con los mismos datos y estado Reservada. Sala 3 sigue disponible en 15:00–16:00. |
 | Resultado obtenido | Tercera reserva rechazada; quedan 2 activas. |
 | Estado | Aprobado |
 | Evidencia | `docs/week-03/evidence/CP-03.png` |
@@ -97,10 +97,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-04 (CU4 Validar inicio) |
 | Tipo | Negativo |
-| Precondiciones | Seed cargado. Reserva Reservada de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, con ID anotado como ID-RESERVA. Hora actual dentro del bloque (ej. 10:05) [VERIFICAR mecanismo para fijar la hora]. Sesión como bibliotecario1@example.com en la vista Resolutor. |
+| Precondiciones | Seed cargado. Reserva Reservada de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, con ID anotado como ID-RESERVA. Hora actual dentro del bloque (ej. 10:05) Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@example.com en la vista Resolutor. |
 | Datos de entrada | Escenario A (inválido): código NO-EXISTE. Escenario B (duplicado): código de ID-RESERVA ya iniciada. |
-| Pasos | Escenario A — QR inválido<br>1. Abrir el visor de validación de la vista Resolutor.<br>2. Ingresar el código NO-EXISTE [VERIFICAR: ingreso manual, el mockup solo muestra cámara].<br>3. Leer el mensaje y verificar que ID-RESERVA sigue en estado Reservada.<br>Escenario B — QR duplicado<br>4. Ingresar el código de ID-RESERVA; en la tarjeta (ID, recurso, correo, Estado "Reservada") presionar "Confirmar entrega". La reserva pasa a En Uso; anotar la hora de inicio.<br>5. Ingresar nuevamente el mismo código de ID-RESERVA.<br>6. Leer el mensaje y verificar que la reserva sigue En Uso con la misma hora de inicio. |
-| Resultado esperado | A: se rechaza NO-EXISTE con mensaje de QR inválido [COMPLETAR texto]; no se muestra tarjeta de reserva y ninguna reserva cambia de estado. B: el primer ingreso deja la reserva En Uso; el segundo se rechaza con mensaje de QR ya utilizado [COMPLETAR texto] y la reserva permanece En Uso, sin cambios en su hora de inicio. |
+| Pasos | Escenario A — QR inválido<br>1. Abrir el visor de validación de la vista Resolutor.<br>2. Ingresar el código NO-EXISTE El panel admite el ingreso manual del código.<br>3. Leer el mensaje y verificar que ID-RESERVA sigue en estado Reservada.<br>Escenario B — QR duplicado<br>4. Ingresar el código de ID-RESERVA; en la tarjeta (ID, recurso, correo, Estado "Reservada") presionar "Confirmar entrega". La reserva pasa a En Uso; anotar la hora de inicio.<br>5. Ingresar nuevamente el mismo código de ID-RESERVA.<br>6. Leer el mensaje y verificar que la reserva sigue En Uso con la misma hora de inicio. |
+| Resultado esperado | A: se rechaza NO-EXISTE con mensaje "No existe una reserva con el código NO-EXISTE."; no se muestra tarjeta de reserva y ninguna reserva cambia de estado. B: el primer ingreso deja la reserva En Uso; el segundo se rechaza con mensaje "QR ya utilizado o la reserva no está vigente." y la reserva permanece En Uso, sin cambios en su hora de inicio. |
 | Resultado obtenido | QR inexistente y segundo uso del mismo QR rechazados. |
 | Estado | Aprobado |
 | Evidencia | `docs/week-03/evidence/CP-04.png` (captura de ambos mensajes; si hace falta, dos capturas con sufijo -A y -B) |
@@ -112,7 +112,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-05 (CU5 Registrar devolución) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso (inicio validado como en CP-04). Hora de devolución: 10:45 [VERIFICAR mecanismo para fijar la hora]. Sesión como bibliotecario1@example.com. |
+| Precondiciones | Seed cargado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso (inicio validado como en CP-04). Hora de devolución: 10:45 Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@example.com. |
 | Datos de entrada | Código de la reserva En Uso (RSV-NNNN) · Hora de devolución: 10:45 |
 | Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. En el visor, ingresar o escanear el QR de la reserva En Uso.<br>3. Verificar en la tarjeta: ID, Sala 3, correo y Estado "En Uso".<br>4. Presionar "Registrar devolución" (hora 10:45).<br>5. Verificar el estado de la reserva.<br>6. Buscar como estudiante1@example.com: Sala, 2026-11-10, 10:00–11:00.<br>7. Intentar una reserva nueva de Sala 1, 15:00–16:00. |
 | Resultado esperado | La reserva pasa a Finalizada. Sala 3 vuelve a aparecer disponible en la búsqueda. No aparece el banner de sanción. estudiante1@example.com puede reservar normalmente (paso 7), sin sanción. |
@@ -127,10 +127,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-07 (CU5 Registrar devolución, CU6 Aplicar sanción) |
 | Tipo | Límite |
-| Precondiciones | Seed reiniciado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso. Hora de devolución: 11:01 [VERIFICAR mecanismo para fijar la hora]. Sesión como bibliotecario1@example.com. Sala 1 libre en 15:00–16:00. |
+| Precondiciones | Seed reiniciado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso. Hora de devolución: 11:01 Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@example.com. Sala 1 libre en 15:00–16:00. |
 | Datos de entrada | Código de la reserva En Uso · Hora de devolución: 11:01 (el bloque termina a las 11:00) · Reserva posterior: Sala 1, 2026-11-10, 15:00–16:00 |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Ingresar o escanear el QR de la reserva En Uso y verificar la tarjeta.<br>3. Presionar "Registrar devolución" (hora 11:01).<br>4. Verificar que aparece el banner "Devolución tardía: Sanción de 7 días" y que la reserva queda Finalizada.<br>5. Verificar el registro de sanción de estudiante1@example.com (estado "Sancionado", fecha de término) [VERIFICAR dónde se ve].<br>6. Cerrar sesión e iniciar como estudiante1@example.com.<br>7. Buscar Sala 1, 2026-11-10, 15:00–16:00 e intentar reservar ("Seleccionar" → "Confirmar reserva").<br>8. Leer el mensaje mostrado. |
-| Resultado esperado | La reserva pasa a Finalizada. Se muestra "Devolución tardía: Sanción de 7 días" y estudiante1@example.com queda "Sancionado" por 7 días (hasta 2026-11-17 [VERIFICAR regla de cómputo]). El intento de reserva del paso 7 se rechaza con mensaje que indica la sanción vigente [COMPLETAR texto]. |
+| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Ingresar o escanear el QR de la reserva En Uso y verificar la tarjeta.<br>3. Presionar "Registrar devolución" (hora 11:01).<br>4. Verificar que aparece el banner "Devolución tardía: Sanción de 7 días" y que la reserva queda Finalizada.<br>5. Verificar el registro de sanción de estudiante1@example.com (estado "Sancionado", fecha de término) el panel lo muestra en el aviso "Sanción aplicada hoy" y en "Sanciones activas".<br>6. Cerrar sesión e iniciar como estudiante1@example.com.<br>7. Buscar Sala 1, 2026-11-10, 15:00–16:00 e intentar reservar ("Seleccionar" → "Confirmar reserva").<br>8. Leer el mensaje mostrado. |
+| Resultado esperado | La reserva pasa a Finalizada. Se muestra "Devolución tardía: Sanción de 7 días" y estudiante1@example.com queda "Sancionado" por 7 días (7 días desde la devolución). El intento de reserva del paso 7 se rechaza con mensaje "No puedes reservar: tienes una sanción vigente hasta DD-MM-YYYY HH:MM.". |
 | Resultado obtenido | Devolución a las 11:01: Finalizada y sanción de 7 días. |
 | Estado | Aprobado |
 | Evidencia | `docs/week-03/evidence/CP-06.png` |
@@ -532,7 +532,7 @@ Casos agregados en la corrección S3 (cancelación, filtros y pestañas):
 | CP-13 | "Mis reservas" lista las reservas propias con su estado y reabre el QR | Positivo | RF-02, RF-03 | 3 | `docs/week-03/evidence/CP-13.png` |
 | CP-14 | Un usuario no ve ni abre el QR de una reserva ajena | Negativo | RF-03, RF-08 | 3 | `docs/week-03/evidence/CP-14.png` |
 | CP-08 | Reserva + QR en ≤ 1,5 s: promedio de 20 peticiones concurrentes con script/curl | Límite | RNF-01 | 4 | `docs/week-03/evidence/CP-08.txt` |
-| CP-09 | Layout sin scroll horizontal ni textos cortados en 3 resoluciones (360 px, 1280 px y una intermedia [COMPLETAR]) y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | 4 | `docs/week-03/evidence/CP-09.png` |
+| CP-09 | Layout sin scroll horizontal ni textos cortados en 3 resoluciones (360, 768 y 1280 px) y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | 4 | `docs/week-03/evidence/CP-09.png` |
 | CP-10 | Contraseñas con hash; datos ficticios; credenciales excluidas por .gitignore | Positivo | RNF-03 | 4 | `docs/week-03/evidence/CP-10.md` |
 
 Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) · Semana 4: CP-08, CP-09, CP-10 (3).
