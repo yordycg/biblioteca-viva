@@ -14,7 +14,7 @@
   <div class="page-head__aside">
     <div class="quota">
       <div class="quota__ring" style="--pct: {{ resumen.porcentaje }}%;">
-        <span>{{ resumen.finalizadas }}/{{ resumen.total }}</span>
+        <span>{{ resumen.finalizadas }}/{{ resumen.procesables }}</span>
       </div>
       <div>
         <span class="quota__label">Procesadas hoy</span>
@@ -42,6 +42,15 @@
   </div>
 {% endif %}
 
+<nav class="tabs" aria-label="Secciones del panel">
+  {% for clave, etiqueta in tabs %}
+    <a class="tabs__link"
+       href="{% url 'bibliotecario' %}?tab={{ clave }}"
+       {% if tab == clave %}aria-current="page"{% endif %}>{{ etiqueta }}</a>
+  {% endfor %}
+</nav>
+
+{% if tab == "operacion" %}
 <section class="stats" aria-label="Resumen operativo de hoy">
   <div class="stat">
     <span class="stat__value">{{ resumen_panel.reservas_hoy }}</span>
@@ -70,6 +79,10 @@
   <div class="stat stat--off">
     <span class="stat__value">{{ resumen_panel.sanciones_activas }}</span>
     <span class="stat__label">Sanciones activas</span>
+  </div>
+  <div class="stat stat--off">
+    <span class="stat__value">{{ resumen.canceladas }}</span>
+    <span class="stat__label">Canceladas</span>
   </div>
 </section>
 
@@ -176,8 +189,10 @@
     <p class="hint-inline">No hay sanciones activas.</p>
   {% endif %}
 </section>
+{% endif %}
 
-<section class="card" aria-labelledby="inventario-title">
+{% if tab == "inventario" %}
+<section class="card" id="inventario" aria-labelledby="inventario-title">
   <div class="card__head">
     <div class="card__head-icon">
       <svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg>
@@ -214,6 +229,52 @@
     <strong>{{ inventario.resumen.porcentaje }}%</strong>
     ({{ inventario.resumen.ocupados }} de {{ inventario.resumen.total }} recursos con
     reserva activa).
+  </p>
+
+  <form method="get" action="{% url 'bibliotecario' %}#inventario"
+        class="filters filters--panel" data-auto-submit>
+    <input type="hidden" name="tab" value="inventario">
+    <input type="hidden" name="estado" value="{{ estado_filtro }}">
+    <input type="hidden" name="bloque" value="{{ bloque_filtro }}">
+    <input type="hidden" name="q" value="{{ texto_filtro }}">
+    {% if codigo %}<input type="hidden" name="codigo" value="{{ codigo }}">{% endif %}
+    <div class="field">
+      <label class="field__label" for="id_inv_q">Recurso</label>
+      <input id="id_inv_q" class="campo" type="search" name="inv_q"
+             value="{{ inv_texto }}" placeholder="Nombre o código">
+    </div>
+    <div class="field">
+      <label class="field__label" for="id_inv_tipo">Tipo</label>
+      <select id="id_inv_tipo" name="inv_tipo" class="campo">
+        <option value="">Todos los tipos</option>
+        {% for valor, etiqueta in tipos_inventario %}
+          <option value="{{ valor }}"{% if valor == inv_tipo %} selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label class="field__label" for="id_inv_estado">Estado</label>
+      <select id="id_inv_estado" name="inv_estado" class="campo">
+        <option value="">Todos los estados</option>
+        {% for valor, etiqueta in estados_inventario %}
+          <option value="{{ valor }}"{% if valor == inv_estado %} selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field field--actions">
+      <div class="row">
+        <button class="btn" type="submit">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+          Filtrar
+        </button>
+        <a class="btn btn--ghost"
+           href="{% url 'bibliotecario' %}?tab=inventario#inventario">Limpiar</a>
+      </div>
+    </div>
+  </form>
+  <p class="hint-inline">
+    Mostrando <strong>{{ inventario.filtradas }}</strong> de
+    {{ inventario.total_filas }} recursos.
   </p>
 
   {% if inventario.filas %}
@@ -267,7 +328,14 @@
     </div>
   {% else %}
     <div class="empty">
-      <p>No hay recursos registrados en el inventario.</p>
+      {% if inventario.filtrado %}
+        <p>Ningún recurso coincide con ese filtro.</p>
+        <p class="hint-inline">Prueba con otro nombre, tipo o estado.</p>
+        <a class="btn btn--secondary"
+           href="{% url 'bibliotecario' %}?tab=inventario#inventario">Limpiar filtros</a>
+      {% else %}
+        <p>No hay recursos registrados en el inventario.</p>
+      {% endif %}
     </div>
   {% endif %}
 
@@ -279,7 +347,9 @@
     </p>
   {% endif %}
 </section>
+{% endif %}
 
+{% if tab == "validacion" %}
 <section class="card" aria-labelledby="validacion-title">
   <div class="card__head">
     <div class="card__head-icon">
@@ -290,6 +360,7 @@
   </div>
 
   <form method="get" action="{% url 'bibliotecario' %}">
+    <input type="hidden" name="tab" value="validacion">
     <div class="filters" style="grid-template-columns: 1fr;">
       <div class="field">
         <label class="field__label" for="{{ form.codigo.id_for_label }}">
@@ -356,15 +427,38 @@
         {% if reserva.estado == "RESERVADA" %}
           <form method="post" action="{% url 'validar' %}">
             {% csrf_token %}
+            <input type="hidden" name="tab" value="validacion">
             <input type="hidden" name="codigo" value="{{ qr.codigo }}">
             <button class="btn" type="submit">
               <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
               Confirmar entrega
             </button>
           </form>
+          <form id="form-cancelar-ticket" method="post"
+                action="{% url 'cancelar_reserva_panel' %}">
+            {% csrf_token %}
+            <input type="hidden" name="tab" value="validacion">
+            <input type="hidden" name="reserva_id" value="{{ reserva.id }}">
+            <input type="hidden" name="codigo" value="{{ qr.codigo }}">
+            <label class="sr-only" for="id_motivo_ticket">Motivo de la cancelación</label>
+            <select id="id_motivo_ticket" name="motivo" class="campo campo--flex" required>
+              <option value="">Elige un motivo</option>
+              {% for valor, etiqueta in motivos %}
+                <option value="{{ valor }}">{{ etiqueta }}</option>
+              {% endfor %}
+            </select>
+            <button class="btn btn--danger" type="submit"
+                    data-modal-form="form-cancelar-ticket"
+                    data-modal-target="modal-cancelar"
+                    data-modal-detail="{{ reserva.codigo }} · {{ reserva.recurso.nombre }}">
+              <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+              Cancelar reserva
+            </button>
+          </form>
         {% elif reserva.estado == "EN_USO" %}
           <form id="form-devolver-ticket" method="post" action="{% url 'devolver' %}">
             {% csrf_token %}
+            <input type="hidden" name="tab" value="validacion">
             <input type="hidden" name="codigo" value="{{ qr.codigo }}">
             <button class="btn btn--danger" type="submit"
                     data-modal-form="form-devolver-ticket"
@@ -385,7 +479,9 @@
     </p>
   {% endif %}
 </section>
+{% endif %}
 
+{% if tab == "reservas" %}
 <section class="card" aria-labelledby="filtros-panel-title">
   <div class="card__head">
     <div class="card__head-icon">
@@ -394,7 +490,8 @@
     </div>
     <span class="req">RF-04</span>
   </div>
-  <form method="get" action="{% url 'bibliotecario' %}" class="filters filters--panel">
+  <form method="get" action="{% url 'bibliotecario' %}" class="filters filters--panel" data-auto-submit>
+    <input type="hidden" name="tab" value="reservas">
     <div class="field">
       <label class="field__label" for="id_estado_filtro">Estado</label>
       <select id="id_estado_filtro" name="estado" class="campo">
@@ -424,7 +521,7 @@
           <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
           Filtrar
         </button>
-        <a class="btn btn--ghost" href="{% url 'bibliotecario' %}">Limpiar</a>
+        <a class="btn btn--ghost" href="{% url 'bibliotecario' %}?tab=reservas">Limpiar</a>
       </div>
     </div>
   </form>
@@ -480,12 +577,35 @@
                   {% if item.estado == "RESERVADA" and item.qr %}
                     <form method="post" action="{% url 'validar' %}">
                       {% csrf_token %}
+                      <input type="hidden" name="tab" value="reservas">
                       <input type="hidden" name="codigo" value="{{ item.qr.codigo }}">
                       <button class="btn btn--sm" type="submit">Entregar</button>
+                    </form>
+                    <form id="form-cancelar-{{ item.id }}" method="post"
+                          action="{% url 'cancelar_reserva_panel' %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="tab" value="reservas">
+                      <input type="hidden" name="reserva_id" value="{{ item.id }}">
+                      {% if codigo %}<input type="hidden" name="codigo" value="{{ codigo }}">{% endif %}
+                      <label class="sr-only" for="id_motivo_{{ item.id }}">Motivo de la cancelación</label>
+                      <select id="id_motivo_{{ item.id }}" name="motivo"
+                              class="campo campo--sm" required>
+                        <option value="">Motivo…</option>
+                        {% for valor, etiqueta in motivos %}
+                          <option value="{{ valor }}">{{ etiqueta }}</option>
+                        {% endfor %}
+                      </select>
+                      <button class="btn btn--sm btn--ghost" type="submit"
+                              data-modal-form="form-cancelar-{{ item.id }}"
+                              data-modal-target="modal-cancelar"
+                              data-modal-detail="{{ item.codigo }} · {{ item.recurso.nombre }}">
+                        Cancelar
+                      </button>
                     </form>
                   {% elif item.estado == "EN_USO" and item.qr %}
                     <form id="form-devolver-{{ item.id }}" method="post" action="{% url 'devolver' %}">
                       {% csrf_token %}
+                      <input type="hidden" name="tab" value="reservas">
                       <input type="hidden" name="codigo" value="{{ item.qr.codigo }}">
                       <button class="btn btn--sm btn--danger" type="submit"
                               data-modal-form="form-devolver-{{ item.id }}"
@@ -510,10 +630,11 @@
       </span>
       <p>No hay reservas que coincidan con el filtro.</p>
       <p class="hint-inline">Prueba con otro estado, bloque o término de búsqueda.</p>
-      <a class="btn btn--secondary" href="{% url 'bibliotecario' %}">Limpiar filtros</a>
+      <a class="btn btn--secondary" href="{% url 'bibliotecario' %}?tab=reservas">Limpiar filtros</a>
     </div>
   {% endif %}
 </section>
+{% endif %}
 
 <dialog class="modal" id="modal-devolucion" aria-labelledby="modal-title">
   <div class="modal__head">
@@ -539,4 +660,6 @@
     </button>
   </div>
 </dialog>
+
+{% include "reservas/_modal_cancelar.html" %}
 {% endblock %}

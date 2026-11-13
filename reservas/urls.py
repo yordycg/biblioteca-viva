@@ -22,9 +22,19 @@ urlpatterns = [
     path("libros/", views.catalogo, name="catalogo"),
     path("libros/<int:libro_id>/", views.libro_detalle, name="libro"),
     path("mis-reservas/", views.mis_reservas, name="mis_reservas"),
+    path(
+        "mis-reservas/<int:reserva_id>/cancelar/",
+        views.cancelar_mi_reserva,
+        name="cancelar_mi_reserva",
+    ),
     path("reservar/<int:recurso_id>/", views.confirmar, name="confirmar"),
     path("reserva/<int:reserva_id>/qr/", views.qr_view, name="qr"),
     path("bibliotecario/", views.bibliotecario, name="bibliotecario"),
     path("bibliotecario/validar/", views.validar, name="validar"),
     path("bibliotecario/devolver/", views.devolver, name="devolver"),
+    path(
+        "bibliotecario/cancelar/",
+        views.cancelar_reserva_panel,
+        name="cancelar_reserva_panel",
+    ),
 ]

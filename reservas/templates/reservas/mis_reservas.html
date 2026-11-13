@@ -82,6 +82,19 @@
                 <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
                 Ver QR
               </a>
+              {% if reserva.estado == "RESERVADA" %}
+                <form id="form-cancelar-{{ reserva.id }}" method="post"
+                      action="{% url 'cancelar_mi_reserva' reserva.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn--ghost" type="submit"
+                          data-modal-form="form-cancelar-{{ reserva.id }}"
+                          data-modal-target="modal-cancelar"
+                          data-modal-detail="{{ reserva.codigo }} · {{ reserva.recurso.nombre }}">
+                    <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+                    Cancelar reserva
+                  </button>
+                </form>
+              {% endif %}
               <span class="hint-inline">{{ reserva.recurso.ubicacion|default:"" }}</span>
             </div>
           </article>
@@ -136,7 +149,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="hint-inline">Todavía no tienes reservas finalizadas.</p>
+      <p class="hint-inline">Todavía no tienes reservas finalizadas ni canceladas.</p>
     {% endif %}
   </section>
 
@@ -147,4 +160,6 @@
     </a>
   </div>
 {% endif %}
+
+{% include "reservas/_modal_cancelar.html" %}
 {% endblock %}

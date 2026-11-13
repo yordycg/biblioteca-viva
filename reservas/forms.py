@@ -91,8 +91,7 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
         fecha = None
         if self.is_bound:
             fecha = self.data.get(self.add_prefix("fecha"))
-        if not fecha:
-            fecha = self.initial.get("fecha")
+        disponibles = []
         if fecha:
             if isinstance(fecha, str):
                 try:
@@ -101,9 +100,7 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
                     fecha = None
             if fecha:
                 disponibles = services.bloques_disponibles(fecha)
-                self.fields["bloque"].choices = [
-                    ("", "Elige un bloque")
-                ] + disponibles
+        self.fields["bloque"].choices = [("", "Elige un bloque")] + disponibles
 
     def clean(self):
         data = super().clean()

@@ -1,0 +1,23 @@
+<dialog class="modal" id="modal-cancelar" aria-labelledby="modal-cancelar-title">
+  <div class="modal__head">
+    <h2 id="modal-cancelar-title" style="font-size: 1.125rem;">Confirmar cancelación</h2>
+    <button class="input-group__action" type="button" data-modal-close aria-label="Cerrar">
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+    </button>
+  </div>
+  <div class="modal__body">
+    <p><strong data-modal-detail></strong></p>
+    <p class="hint-inline">
+      La reserva quedará <strong>Cancelada</strong> y el bloque volverá a estar
+      disponible. El cupo diario del solicitante se libera.
+    </p>
+    <span class="req">RF-02</span>
+  </div>
+  <div class="modal__foot">
+    <button class="btn btn--secondary" type="button" data-modal-close>Volver</button>
+    <button class="btn btn--danger" type="button" data-modal-confirm>
+      <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+      Cancelar reserva
+    </button>
+  </div>
+</dialog>
