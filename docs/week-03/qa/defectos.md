@@ -28,4 +28,4 @@
 
 | Fecha | Casos ejecutados | Aprobados | Fallidos | Bloqueados | Ejecutado por |
 |---|---|---|---|---|---|
-| Pendiente | 0 | 0 | 0 | 0 | Pendiente |
+| 2026-11-13 | 11 | 11 | 0 | 0 | Script local · Yordy Carmona |
