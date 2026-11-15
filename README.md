@@ -12,6 +12,8 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 - Revisión docente (MVP 2): catálogo inicial con estado, filtro “Solo disponibles” y horario de 09:00 a 22:00 en bloques de una hora.
 - Panel del bibliotecario v2: KPIs, agenda de entregas/devoluciones, ocupación por bloque, sanciones activas y filtros de la tabla.
 
+> Manual de ejecución completo, con capturas y flujo paso a paso: [`docs/manual-ejecucion.md`](docs/manual-ejecucion.md).
+
 ## Stack
 
 - Python 3.12 + Django 5.2 LTS + SQLite.
@@ -210,6 +212,7 @@ con `docs/week-03/evidence/rnf-02/`.
 - [`docs/week-01/03-plan-calidad.md`](docs/week-01/03-plan-calidad.md)
 - [`docs/week-02/README.md`](docs/week-02/README.md)
 - [`docs/week-03/README.md`](docs/week-03/README.md)
+- [`docs/manual-ejecucion.md`](docs/manual-ejecucion.md)
 - [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md)
 - [`docs/week-03/qa/casos-prueba.md`](docs/week-03/qa/casos-prueba.md)
 - [`docs/week-03/qa/matriz-trazabilidad.md`](docs/week-03/qa/matriz-trazabilidad.md)
