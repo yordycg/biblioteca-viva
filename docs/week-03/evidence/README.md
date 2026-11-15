@@ -36,14 +36,16 @@ del día adaptándose según el sistema de diseño.
 Lighthouse: la accesibilidad (contraste, foco, navegación por teclado) se audita
 en la semana 4 y se registra en su propio archivo.
 
-## Casos ejecutados (2026-11-13)
+## Casos ejecutados (2026-11-13 y 2026-11-14)
 
 Once casos ejecutados sobre el flujo real y aprobados. Cada uno se registra en
-`../qa/casos-prueba.md` con su resultado y la ruta de su evidencia.
+`../qa/casos-prueba.md` con su resultado y la ruta de su evidencia. CP-01 a CP-06
+se re-ejecutaron el 2026-11-14 en el navegador; CP-07 y CP-11 a CP-14 se
+ejecutaron el 2026-11-13 con el script local.
 
 | Caso | Evidencia | Qué muestra |
 |---|---|---|
-| CP-01 | `CP-01.png` | Recursos libres del bloque con su estado |
+| CP-01 | `CP-01.png` | Recursos del bloque con su estado; «Solo disponibles» oculta los ocupados |
 | CP-02 | `CP-02.png` | Reserva creada y su QR |
 | CP-03 | `CP-03.png` | Tercera reserva del día rechazada |
 | CP-04 | `CP-04.png` | QR inexistente y segundo uso rechazados |
@@ -55,7 +57,11 @@ Once casos ejecutados sobre el flujo real y aprobados. Cada uno se registra en
 | CP-13 | `CP-13.png` | “Mis reservas” con el QR reabrible |
 | CP-14 | `CP-14.png` | QR de una reserva ajena rechazado |
 
-**Cómo se generaron.** Con `local/tools/ejecutar_cp.py`, que reinicia el seed,
-recorre el flujo con el cliente de Django y captura la pantalla resultante con
-Chromium a 1280×900. La hora se fija con `DEMO_MODE`/`DEMO_NOW` para los casos de
-devolución. La ejecución no encontró defectos.
+**Cómo se generaron.** CP-07 y CP-11 a CP-14 con `local/tools/ejecutar_cp.py`,
+que reinicia el seed, recorre el flujo con el cliente de Django y captura la
+pantalla resultante con Chromium a 1280×900. CP-01 a CP-06 se re-ejecutaron el
+2026-11-14 en el navegador (Chromium) sobre la aplicación; la hora se fijó con
+`DEMO_MODE`/`DEMO_NOW` para los casos de devolución. Las capturas de CP-01 a CP-06
+se recortaron y rotularon por escenario (A/B); los rótulos son anotaciones y no
+forman parte de la interfaz. La ejecución no encontró defectos de producto:
+DEF-01 es una corrección del caso CP-01, registrada en `../qa/defectos.md`.
