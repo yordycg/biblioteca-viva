@@ -60,12 +60,15 @@ No se modificó código en esta revisión y no se reportaron defectos de código
 
 | Regla | Verificación | Evidencia |
 |---|---|---|
-| RF-06 — máximo 2 reservas activas por día | La tercera reserva del día se rechaza con mensaje y las dos anteriores se mantienen. | `docs/week-03/qa/casos-prueba.md` CP-03 y CP-19; suite de 90 pruebas |
-| RF-07 — devolución tardía | La devolución a las 11:01 deja la reserva Finalizada y aplica una sanción de 7 días; la reserva posterior se rechaza. | `scripts/simular_retraso.py`; CP-06 y CP-12 |
-| RF-03 — QR único | Cada reserva genera un QR con su ID; el QR inválido y el duplicado se rechazan. | `scripts/demo_flujo.py`; CP-02 y CP-04 |
-| RF-02 — préstamos de libros | Un libro no se presta si su rango se solapa con un préstamo activo; el usuario no supera 2 préstamos activos. | CP-18 y CP-19; suite de 90 pruebas |
-| RF-01 — catálogo con estado | La vista muestra todos los recursos con su estado y permite «Solo disponibles»; el seed carga salas, equipos y libros. | CP-01, CP-11 y CP-20 |
+| RF-06 — máximo 2 reservas activas por día | La tercera reserva del día se rechaza con mensaje y las dos anteriores se mantienen. | CP-03 aprobado; CP-19 pendiente; suite de 90 pruebas |
+| RF-07 — devolución tardía | La devolución a las 11:01 deja la reserva Finalizada y aplica una sanción de 7 días; la reserva posterior se rechaza. | `scripts/simular_retraso.py`; CP-06 y CP-12 aprobados |
+| RF-03 — QR único | Cada reserva genera un QR con su ID; el QR inválido y el duplicado se rechazan. | `scripts/demo_flujo.py`; CP-02 y CP-04 aprobados |
+| RF-02 — préstamos de libros | Un libro no se presta si su rango se solapa con un préstamo activo; el usuario no supera 2 préstamos activos. | Suite de 90 pruebas; CP-18 y CP-19 pendientes de ejecución formal |
+| RF-01 — catálogo con estado | La vista muestra todos los recursos con su estado y permite «Solo disponibles»; el seed carga salas, equipos y libros. | CP-01 y CP-11 aprobados; CP-20 pendiente |
 | RNF-01 — rendimiento | Medición local del servicio + QR: 20 peticiones, promedio 19,9 ms y máximo 74,7 ms. Es una medición preliminar; la medición HTTP formal queda para S4. | `scripts/medir_rendimiento.py`; CP-08 sigue Pendiente |
+
+Las reglas quedan cubiertas por la suite automatizada; los casos que aún no se
+ejecutaron permanecen **Pendiente** en la matriz de trazabilidad.
 
 ## 6. Conclusión
 
