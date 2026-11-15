@@ -138,8 +138,6 @@ La aplicación registra la reserva, bloquea el recurso para ese bloque y muestra
 comprobante con un código QR y el ID `RSV-NNNN`. El QR se puede descargar o
 volver a abrir desde **Mis reservas**.
 
-![Confirmación de reserva](docs/week-03/evidence/rnf-02/rnf-02-confirmar-1280.png)
-
 ![Comprobante con QR](docs/week-03/evidence/rnf-02/rnf-02-qr-1280.png)
 
 ### 5.4 Validar la entrega
@@ -212,11 +210,8 @@ La barra superior muestra el nombre del usuario, no el rol.
 ### 5.10 Interfaz responsiva
 
 La interfaz está pensada para móvil y escritorio. Las capturas de referencia
-están a 360×900 y 1280×900 en `docs/week-03/evidence/rnf-02/`.
-
-![Login en móvil](docs/week-03/evidence/rnf-02/rnf-02-login-360.png)
-
-![Búsqueda en móvil](docs/week-03/evidence/rnf-02/rnf-02-buscar-360.png)
+están a 360×900 y 1280×900 en `docs/week-03/evidence/rnf-02/`; la interfaz no
+presenta desplazamiento horizontal en esas resoluciones.
 
 ## 6. Errores y límites
 
@@ -233,11 +228,7 @@ están a 360×900 y 1280×900 en `docs/week-03/evidence/rnf-02/`.
 | Cancelación sin motivo | Se rechaza y la reserva no cambia de estado. | RF-02 |
 | Libro con préstamo activo solapado | Se rechaza el nuevo préstamo. | RF-02, RF-06 |
 
-![Tercera reserva rechazada](docs/week-03/evidence/CP-03.png)
 
-![QR inválido y duplicado](docs/week-03/evidence/CP-04.png)
-
-![Devolución tardía con sanción](docs/week-03/evidence/CP-06.png)
 
 ## 7. Scripts de verificación
 
