@@ -109,7 +109,7 @@ solicitante llega a la vista de búsqueda; el bibliotecario llega al panel de
 gestión. Si las credenciales son incorrectas, se muestra «Correo o contraseña
 incorrectos».
 
-![Pantalla de login](docs/week-03/evidence/rnf-02/rnf-02-login-1280.png)
+![Pantalla de login](week-03/evidence/rnf-02/rnf-02-login-1280.png)
 
 ### 5.2 Buscar salas y equipos
 
@@ -123,7 +123,7 @@ vacíos: la vista no muestra resultados hasta elegir fecha y bloque. El horizont
 de reserva es de 7 días y, para el día actual, solo se ofrecen bloques que
 comienzan al menos 15 minutos después de la hora actual.
 
-![Búsqueda de recursos](docs/week-03/evidence/rnf-02/rnf-02-buscar-1280.png)
+![Búsqueda de recursos](week-03/evidence/rnf-02/rnf-02-buscar-1280.png)
 
 En la pestaña **Libros** se puede filtrar por título, autor o género y abrir la
 ficha del libro. La ficha muestra carátula, autor, editorial, año, ISBN, páginas,
@@ -138,7 +138,7 @@ La aplicación registra la reserva, bloquea el recurso para ese bloque y muestra
 comprobante con un código QR y el ID `RSV-NNNN`. El QR se puede descargar o
 volver a abrir desde **Mis reservas**.
 
-![Comprobante con QR](docs/week-03/evidence/rnf-02/rnf-02-qr-1280.png)
+![Comprobante con QR](week-03/evidence/rnf-02/rnf-02-qr-1280.png)
 
 ### 5.4 Validar la entrega
 
@@ -190,7 +190,7 @@ Una reserva pendiente de entrega se puede cancelar con un motivo. La reserva pas
 a **Cancelada**, se libera el bloque y el cupo diario, y el QR anterior deja de ser
 válido. Una reserva **En Uso** no se cancela: se registra como devolución.
 
-![Mis reservas](docs/week-03/evidence/rnf-02/rnf-02-mis-reservas-1280.png)
+![Mis reservas](week-03/evidence/rnf-02/rnf-02-mis-reservas-1280.png)
 
 ### 5.9 Panel del bibliotecario
 
@@ -205,7 +205,7 @@ El panel agrupa la operación en cuatro pestañas:
 
 La barra superior muestra el nombre del usuario, no el rol.
 
-![Panel del bibliotecario](docs/week-03/evidence/rnf-02/rnf-02-bibliotecario-1280.png)
+![Panel del bibliotecario](week-03/evidence/rnf-02/rnf-02-bibliotecario-1280.png)
 
 ### 5.10 Interfaz responsiva
 
