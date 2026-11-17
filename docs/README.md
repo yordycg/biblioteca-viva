@@ -1,33 +1,64 @@
-# Semana 3 — Construcción y validación
+# Documentación — BibliotecaViva
 
-> Artefactos evaluables de la semana 3 del proyecto BibliotecaViva.
-> El flujo de trabajo interno vive en `local/` y no se versiona.
+Artefactos evaluables del proyecto. La documentación está agrupada por tipo; la
+semana en que se produjo cada artefacto queda registrada más abajo y en el
+historial de Git (rama y PR de cada semana). El flujo de trabajo interno vive en
+`local/` y no se versiona.
 
-| Artefacto | Dónde |
+## Estructura
+
+| Carpeta | Qué contiene |
 |---|---|
-| Sistema de diseño (SEM3-T1) | [`design/design-system.md`](design/design-system.md) |
-| Mockups v2 (SEM3-T1) | [`mockups/`](mockups/) |
-| Casos de prueba | [`qa/casos-prueba.md`](qa/casos-prueba.md) |
-| Matriz de trazabilidad | [`qa/matriz-trazabilidad.md`](qa/matriz-trazabilidad.md) |
-| Bitácora de defectos | [`qa/defectos.md`](qa/defectos.md) |
-| Revisión de backend y scripts (S3-02) | [`qa/revision-backend.md`](qa/revision-backend.md) |
-| Evidencias de ejecución | [`evidence/`](evidence/) |
-| Capturas de interfaz 360/1280 (RNF-02) | [`evidence/rnf-02/`](evidence/rnf-02/) |
-| Manual de ejecución (S3-05) | [`../manual-ejecucion.md`](../manual-ejecucion.md) |
+| [`requirements/`](requirements/) | Ficha del proyecto, requisitos RF/RNF, plan de calidad y evidencia del tablero |
+| [`design/`](design/) | Sistema de diseño, checklist aplicado, diagramas UML y mockups |
+| [`qa/`](qa/) | Casos de prueba, matriz de trazabilidad, bitácora de defectos y revisión de backend |
+| [`evidence/`](evidence/) | Evidencias de ejecución y capturas de interfaz a 360 y 1280 px |
+| [`manual/`](manual/) | Manual de ejecución e instalación |
+
+## Artefactos
+
+| Artefacto | Dónde | Requisito |
+|---|---|---|
+| Ficha del proyecto | [`requirements/ficha-proyecto.md`](requirements/ficha-proyecto.md) | Alcance |
+| Requisitos funcionales y no funcionales | [`requirements/requisitos.md`](requirements/requisitos.md) | RF-01…RF-08, RNF-01…03 |
+| Plan de calidad | [`requirements/plan-calidad.md`](requirements/plan-calidad.md) | Gestión y calidad |
+| Tablero ClickUp | [`requirements/kanban-board.png`](requirements/kanban-board.png) | Gestión y calidad |
+| Sistema de diseño (SEM3-T1) | [`design/design-system.md`](design/design-system.md) | RNF-02 |
+| Checklist de diseño aplicado | [`design/checklist-diseno.md`](design/checklist-diseno.md) | Diseño |
+| Diagramas UML: casos de uso, secuencia y clases | [`design/diagrams/`](design/diagrams/) | Diseño |
+| Mockups v1 (Google Stitch) | [`design/mockups/v1/`](design/mockups/v1/) | RNF-02 |
+| Mockups v2 (rediseño de la semana 3) | [`design/mockups/v2/`](design/mockups/v2/) | RNF-02 |
+| Casos de prueba | [`qa/casos-prueba.md`](qa/casos-prueba.md) | Pruebas |
+| Matriz de trazabilidad | [`qa/matriz-trazabilidad.md`](qa/matriz-trazabilidad.md) | Trazabilidad |
+| Bitácora de defectos | [`qa/defectos.md`](qa/defectos.md) | Defectos |
+| Revisión de backend y scripts (S3-02) | [`qa/revision-backend.md`](qa/revision-backend.md) | Calidad |
+| Guía de evidencias | [`qa/guia-evidencias.md`](qa/guia-evidencias.md) | Pruebas |
+| Evidencias de ejecución | [`evidence/`](evidence/) | Pruebas |
+| Capturas de interfaz 360/1280 (RNF-02) | [`evidence/rnf-02/`](evidence/rnf-02/) | RNF-02 |
+| Manual de ejecución (S3-05) | [`manual/manual-ejecucion.md`](manual/manual-ejecucion.md) | Manual |
+
+## Trazabilidad por semana
+
+| Semana | Se produjo | Dónde está ahora |
+|---|---|---|
+| 1 · Definición | Ficha, requisitos, plan de calidad y tablero | `requirements/` |
+| 2 · Diseño | Mockups v1, casos de uso, secuencia, clases y checklist | `design/` |
+| 3 · Construcción | Sistema de diseño, mockups v2, CP-01 a CP-14, matriz, defectos, revisión de backend y manual | `design/`, `qa/`, `evidence/` y `manual/` |
 
 ## Interfaz
 
 El MVP usa los tokens y componentes del sistema de diseño institucional (paleta
 IPVG, tipografía del sistema, badges de estado y medidor de cupo diario). La
-implementación es **CSS propio** en `reservas/static/reservas/styles.css`: sin
+implementación es **CSS propio** en `src/reservas/static/reservas/styles.css`: sin
 Tailwind, sin CDN, sin fuentes ni imágenes remotas. La aplicación se ve igual sin
 conexión a internet, requisito del entorno de evaluación.
 
-Los mockups de `mockups/` son las láminas de Google Stitch que se usaron como
-referencia. Las demás pantallas del rediseño no se conservaron como imagen porque
-fueron renders de un lienzo de 1600 px con contenido móvil; su especificación
-está en `design/design-system.md` y su resultado real se verifica en las capturas
-de `evidence/`.
+Los mockups de [`design/mockups/`](design/mockups/) son las láminas de Google
+Stitch que se usaron como referencia. Las demás pantallas del rediseño no se
+conservaron como imagen porque fueron renders de un lienzo de 1600 px con
+contenido móvil; su especificación está en
+[`design/design-system.md`](design/design-system.md) y su resultado real se
+verifica en las capturas de [`evidence/`](evidence/).
 
 Los mockups usan un cuadrado amarillo con las iniciales «VG» como marcador de
 posición. La implementación usa el **logo oficial del instituto** en la barra
@@ -96,7 +127,7 @@ Cubierto por CP-20, CP-21 y CP-22 a CP-26, con `python manage.py test` (90 prueb
 
 ## Orden de revisión
 
-1. `design/design-system.md` — tokens, componentes y reglas de contenido.
-2. `mockups/` — láminas de referencia.
-3. `qa/` — casos y trazabilidad (estado real de cada uno).
-4. `evidence/` — capturas a 360×800 y 1280×800.
+1. [`design/design-system.md`](design/design-system.md) — tokens, componentes y reglas de contenido.
+2. [`design/mockups/`](design/mockups/) — láminas de referencia (v1 y v2).
+3. [`qa/`](qa/) — casos y trazabilidad (estado real de cada uno).
+4. [`evidence/`](evidence/) — capturas a 360 y 1280 px.

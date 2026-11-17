@@ -167,7 +167,7 @@ Datos de recursos: deben coincidir con el seed (`Sala 3`: 8 personas, Piso 1;
 | 768–1023 px | Filtros en una fila, tarjetas en dos columnas, tabla visible con scroll horizontal si hace falta |
 | ≥ 1024 px | Contenedor de 1280 px, dos columnas de contenido, panel lateral para el QR y el resumen |
 
-Verificación: capturas a 360×800 y 1280×800 en `docs/week-03/evidence/`.
+Verificación: capturas a 360×800 y 1280×800 en `docs/evidence/`.
 
 
 ### 3.1 Estados de error de formulario
@@ -210,7 +210,7 @@ Verificación: capturas a 360×800 y 1280×800 en `docs/week-03/evidence/`.
 - **v1:** Google Stitch (SEM3-T1). El `.zip` está en Drive; no es editable ni se
   versiona porque depende de Tailwind CDN y fotos remotas.
 - **v2:** implementación real en Django. Las capturas de
-  `docs/week-03/mockups/v2/` son la referencia visual final.
+  `docs/design/mockups/v2/` son la referencia visual final.
 - Cambios principales de la revisión: login limpio y sin credenciales demo,
   búsqueda con pestañas, catálogo de libros con carátulas SVG, ficha de una sola
   card, 13 bloques de 09:00 a 22:00, panel con KPIs/agenda/ocupación y errores

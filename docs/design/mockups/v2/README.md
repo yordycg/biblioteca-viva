@@ -34,4 +34,4 @@ fijada en cada resolución.
 ## Nota para el informe
 
 Los mockups v1 se mantienen como referencia histórica del rediseño. Para evaluar
-la entrega se usan estas capturas v2 y `docs/week-03/design/design-system.md`.
+la entrega se usan estas capturas v2 y `docs/design/design-system.md`.
