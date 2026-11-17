@@ -1,0 +1,30 @@
+CP-08 - Reserva y QR dentro de 1,5 s (RNF-01)
+Servidor: http://127.0.0.1:8000
+Peticiones medidas: 20
+Promedio: 27 ms
+Maximo: 29 ms
+p95: 28 ms
+Umbral: 1500 ms -> CUMPLE
+
+Detalle:
+01 estudiante1@example.com 2026-11-17 10:00-11:00 RSV-0347: 27 ms
+02 estudiante2@example.com 2026-11-17 10:00-11:00 RSV-0348: 28 ms
+03 estudiante1@example.com 2026-11-17 12:00-13:00 RSV-0349: 28 ms
+04 estudiante2@example.com 2026-11-17 12:00-13:00: sin QR
+05 estudiante1@example.com 2026-11-18 15:00-16:00 RSV-0350: 27 ms
+06 estudiante2@example.com 2026-11-18 15:00-16:00 RSV-0351: 27 ms
+07 estudiante1@example.com 2026-11-18 16:00-17:00 RSV-0352: 28 ms
+08 estudiante2@example.com 2026-11-18 16:00-17:00 RSV-0353: 26 ms
+09 estudiante1@example.com 2026-11-19 10:00-11:00 RSV-0354: 27 ms
+10 estudiante2@example.com 2026-11-19 10:00-11:00 RSV-0355: 27 ms
+11 estudiante1@example.com 2026-11-19 12:00-13:00 RSV-0356: 29 ms
+12 estudiante2@example.com 2026-11-19 12:00-13:00 RSV-0357: 26 ms
+13 estudiante1@example.com 2026-11-20 15:00-16:00 RSV-0358: 25 ms
+14 estudiante2@example.com 2026-11-20 15:00-16:00 RSV-0359: 26 ms
+15 estudiante1@example.com 2026-11-20 16:00-17:00 RSV-0360: 27 ms
+16 estudiante2@example.com 2026-11-20 16:00-17:00 RSV-0361: 26 ms
+17 estudiante1@example.com 2026-11-21 10:00-11:00 RSV-0362: 25 ms
+18 estudiante2@example.com 2026-11-21 10:00-11:00 RSV-0363: 27 ms
+19 estudiante1@example.com 2026-11-21 12:00-13:00 RSV-0364: 26 ms
+20 estudiante2@example.com 2026-11-21 12:00-13:00 RSV-0365: 28 ms
+21 estudiante1@example.com 2026-11-22 15:00-16:00 RSV-0366: 27 ms

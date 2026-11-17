@@ -56,6 +56,20 @@ ejecutaron el 2026-11-13 con el script local.
 | CP-12 | `CP-12.png` | Devolución en la hora límite, sin sanción |
 | CP-13 | `CP-13.png` | “Mis reservas” con el QR reabrible |
 | CP-14 | `CP-14.png` | QR de una reserva ajena rechazado |
+| CP-10 | `CP-10.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-15 | `CP-15.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-16 | `CP-16.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-17 | `CP-17.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-18 | `CP-18.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-19 | `CP-19.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-20 | `CP-20.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-21 | `CP-21.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-22 | `CP-22.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-23 | `CP-23.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-24 | `CP-24.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-25 | `CP-25.png` | Ejecutado y aprobado el 2026-11-17 |
+| CP-08 | `CP-08.txt` | 20 peticiones de reserva + QR: 27 ms de promedio (RNF-01) |
+| CP-09 | `rnf-02/` | Seis pantallas a 360 y 1280 px y tres a 768 px (RNF-02) |
 
 **Cómo se generaron.** CP-07 y CP-11 a CP-14 con `local/tools/ejecutar_cp.py`,
 que reinicia el seed, recorre el flujo con el cliente de Django y captura la
