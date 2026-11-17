@@ -29,16 +29,16 @@ Si la base está vacía o con datos de prueba, las pantallas se ven distintas: p
 reproducirlas hay que ejecutar `python manage.py seed --reset` antes.
 
 **Qué acredita.** Que las seis pantallas renderizan sin desbordes ni solapamientos
-a 360 px y 1280 px, con la barra superior, los filtros, las tarjetas y la tabla
-del día adaptándose según el sistema de diseño.
+a 360, 768 y 1280 px, con la barra superior, los filtros, las tarjetas y la tabla
+del día adaptándose según el sistema de diseño. Estas capturas son la evidencia de
+CP-09 (RNF-02).
 
-**Qué no acredita.** No es la ejecución de CP-09 ni reemplaza la medición de
-Lighthouse: la accesibilidad (contraste, foco, navegación por teclado) se audita
-en la semana 4 y se registra en su propio archivo.
+**Qué no acredita.** Lighthouse no se ejecutó porque la pauta no lo solicita; la
+accesibilidad se documenta con la revisión visual en las tres resoluciones.
 
-## Casos ejecutados (2026-11-13 y 2026-11-14)
+## Casos ejecutados (2026-11-13 a 2026-11-17)
 
-Once casos ejecutados sobre el flujo real y aprobados. Cada uno se registra en
+25 de los 26 casos ejecutados sobre el flujo real y aprobados; CP-26 queda pendiente de la verificación con JavaScript en el navegador. Cada uno se registra en
 `../qa/casos-prueba.md` con su resultado y la ruta de su evidencia. CP-01 a CP-06
 se re-ejecutaron el 2026-11-14 en el navegador; CP-07 y CP-11 a CP-14 se
 ejecutaron el 2026-11-13 con el script local.
