@@ -4,7 +4,7 @@
 >
 > Aplicar a requisitos, mockups y UML. Registrar cada hallazgo con fecha y responsable. No marcar “Cumple” sin evidencia.
 >
-> Aplicado el 2026-11-04 sobre los artefactos integrados en `week/sem2`: requisitos (`docs/week-01/02-requisitos.md`), mockups (`docs/week-02/mockups/`) y casos de uso (`docs/week-02/diagrams/casos-de-uso.mmd`). **Segunda pasada el 2026-11-05** sobre los artefactos integrados desde Drive: secuencia y clases (T3), casos de prueba (T6) y matriz de trazabilidad (T5). Queda `Pendiente` solo lo que depende de la ejecución de pruebas (semanas 3–4).
+> Aplicado el 2026-11-04 sobre los artefactos integrados en `week/sem2`: requisitos (`docs/requirements/requisitos.md`), mockups (`docs/design/mockups/v1/`) y casos de uso (`docs/design/diagrams/casos-de-uso.mmd`). **Segunda pasada el 2026-11-05** sobre los artefactos integrados desde Drive: secuencia y clases (T3), casos de prueba (T6) y matriz de trazabilidad (T5). Queda `Pendiente` solo lo que depende de la ejecución de pruebas (semanas 3–4).
 
 ## 1. Requisitos
 
@@ -45,7 +45,7 @@
 
 | Criterio | Estado | Evidencia / observación |
 |---|---|---|
-| Actores: Estudiante/Docente y Bibliotecario | Cumple | `docs/week-02/diagrams/casos-de-uso.mmd` — “Docente / Estudiante” y “Bibliotecario / Resolutor” |
+| Actores: Estudiante/Docente y Bibliotecario | Cumple | `docs/design/diagrams/casos-de-uso.mmd` — “Docente / Estudiante” y “Bibliotecario / Resolutor” |
 | Casos: buscar, reservar, ver QR, validar inicio, devolver, sancionar | Cumple | CU1, CU2, CU3, CU4, CU5 y CU6; se agrega CU0 Iniciar Sesión (RF-08) |
 | Secuencia del flujo principal | Cumple | `sem2-t2-diagrama-secuencia.png` — reserva completa desde la interfaz hasta la confirmación con QR |
 | Rama de error: límite diario (RF-06) | Cumple | Diagrama de secuencia, bloque `alt` “Límite diario alcanzado (RF-06)” con rechazo y mensaje |

@@ -14,7 +14,7 @@ Cuentas ficticias: `estudiante1@example.com`, `estudiante2@example.com`,
 `bibliotecario1@example.com`, contraseña `demo1234`.
 
 Capturas: 1280×800 y 360×800 cuando el caso sea visual. Nombres:
-`docs/week-03/evidence/CP-XX-1280.png` y `CP-XX-360.png`.
+`docs/evidence/CP-XX-1280.png` y `CP-XX-360.png`.
 
 ## CP-15 — Fecha pasada
 

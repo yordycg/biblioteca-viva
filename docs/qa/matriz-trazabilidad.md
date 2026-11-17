@@ -8,17 +8,17 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 
 | ID Req | Funcionalidad | ID Prueba | Resultado | Evidencia | Estado de implementación |
 |---|---|---|---|---|---|
-| RF-01 | Búsqueda de recurso | CP-01, CP-11, CP-15, CP-17, CP-18, CP-20, CP-24, CP-25, CP-26 | Parcial: CP-01 y CP-11 aprobados; CP-15, CP-17, CP-18, CP-20, CP-24, CP-25 y CP-26 pendientes | `docs/week-03/evidence/CP-01.png`, `docs/week-03/evidence/CP-11.png`, `docs/week-03/evidence/CP-15.png`, `docs/week-03/evidence/CP-17.png`, `docs/week-03/evidence/CP-18.png`, `docs/week-03/evidence/CP-20.png`, `docs/week-03/evidence/CP-24.png`, `docs/week-03/evidence/CP-25.png`, `docs/week-03/evidence/CP-26.png` | Implementado (catálogo por bloque, filtros vacíos y reactivos, filtro de inventario y horario 09–22); CP-15, CP-17, CP-18, CP-20, CP-24, CP-25 y CP-26 pendientes |
-| RF-02 | Reserva de recurso | CP-02, CP-13, CP-15, CP-17, CP-18, CP-19, CP-22, CP-23 | Parcial: CP-02 y CP-13 aprobados; CP-15, CP-17, CP-18, CP-19, CP-22 y CP-23 pendientes | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png`, `docs/week-03/evidence/CP-15.png`, `docs/week-03/evidence/CP-17.png`, `docs/week-03/evidence/CP-18.png`, `docs/week-03/evidence/CP-19.png`, `docs/week-03/evidence/CP-22.png`, `docs/week-03/evidence/CP-23.png` | Implementado (incluye ventana, préstamo de libros y cancelación con auditoría) |
-| RF-03 | Generación de comprobante (QR) | CP-02, CP-13, CP-14 | Aprobado: CP-02, CP-13 y CP-14 con evidencia | `docs/week-03/evidence/CP-02.png`, `docs/week-03/evidence/CP-13.png`, `docs/week-03/evidence/CP-14.png` | Implementado (QR con ID de reserva) |
-| RF-04 | Validación de entrega (check-in) | CP-04, CP-16, CP-21, CP-25 | Parcial: CP-04 aprobado; CP-16, CP-21 y CP-25 pendientes | `docs/week-03/evidence/CP-04.png`, `docs/week-03/evidence/CP-16.png`, `docs/week-03/evidence/CP-21.png`, `docs/week-03/evidence/CP-25.png` | Implementado (validación manual del código y panel con pestañas) |
-| RF-05 | Registro de devolución (check-out) | CP-05, CP-16, CP-21 | Parcial: CP-05 aprobado; CP-16 y CP-21 pendientes | `docs/week-03/evidence/CP-05.png`, `docs/week-03/evidence/CP-16.png`, `docs/week-03/evidence/CP-21.png` | Implementado |
-| RF-06 | Control de tope de reservas | CP-03, CP-19 | Parcial: CP-03 aprobado; CP-19 pendiente | `docs/week-03/evidence/CP-03.png` | Implementado |
-| RF-07 | Gestión de penalizaciones por retraso | CP-06, CP-12 | Aprobado: CP-06 y CP-12 con evidencia | `docs/week-03/evidence/CP-06.png`, `docs/week-03/evidence/CP-12.png` | Implementado (sanción de 7 días) |
-| RF-08 | Autenticación y roles básicos | CP-07, CP-14, CP-21 | Parcial: CP-07 y CP-14 aprobados; CP-21 pendiente | `docs/week-03/evidence/CP-07.png`, `docs/week-03/evidence/CP-14.png`, `docs/week-03/evidence/CP-21.png` | Implementado (login y roles) |
-| RNF-01 | Rendimiento en reserva y QR | CP-08 | Pendiente | `docs/week-03/evidence/CP-08.txt` | Implementado; medición HTTP formal pendiente (S4) |
-| RNF-02 | Usabilidad y diseño responsivo | CP-09 | Pendiente | `docs/week-03/evidence/CP-09.png`, `docs/week-03/evidence/rnf-02/` | Implementado (interfaz 360–1280 px); Lighthouse pendiente |
-| RNF-03 | Seguridad de datos | CP-10 | Pendiente | `docs/week-03/evidence/CP-10.md` | Parcial: hash PBKDF2 y `.gitignore` verificados; auditoría formal pendiente |
+| RF-01 | Búsqueda de recurso | CP-01, CP-11, CP-15, CP-17, CP-18, CP-20, CP-24, CP-25, CP-26 | Parcial: CP-01 y CP-11 aprobados; CP-15, CP-17, CP-18, CP-20, CP-24, CP-25 y CP-26 pendientes | `docs/evidence/CP-01.png`, `docs/evidence/CP-11.png`, `docs/evidence/CP-15.png`, `docs/evidence/CP-17.png`, `docs/evidence/CP-18.png`, `docs/evidence/CP-20.png`, `docs/evidence/CP-24.png`, `docs/evidence/CP-25.png`, `docs/evidence/CP-26.png` | Implementado (catálogo por bloque, filtros vacíos y reactivos, filtro de inventario y horario 09–22); CP-15, CP-17, CP-18, CP-20, CP-24, CP-25 y CP-26 pendientes |
+| RF-02 | Reserva de recurso | CP-02, CP-13, CP-15, CP-17, CP-18, CP-19, CP-22, CP-23 | Parcial: CP-02 y CP-13 aprobados; CP-15, CP-17, CP-18, CP-19, CP-22 y CP-23 pendientes | `docs/evidence/CP-02.png`, `docs/evidence/CP-13.png`, `docs/evidence/CP-15.png`, `docs/evidence/CP-17.png`, `docs/evidence/CP-18.png`, `docs/evidence/CP-19.png`, `docs/evidence/CP-22.png`, `docs/evidence/CP-23.png` | Implementado (incluye ventana, préstamo de libros y cancelación con auditoría) |
+| RF-03 | Generación de comprobante (QR) | CP-02, CP-13, CP-14 | Aprobado: CP-02, CP-13 y CP-14 con evidencia | `docs/evidence/CP-02.png`, `docs/evidence/CP-13.png`, `docs/evidence/CP-14.png` | Implementado (QR con ID de reserva) |
+| RF-04 | Validación de entrega (check-in) | CP-04, CP-16, CP-21, CP-25 | Parcial: CP-04 aprobado; CP-16, CP-21 y CP-25 pendientes | `docs/evidence/CP-04.png`, `docs/evidence/CP-16.png`, `docs/evidence/CP-21.png`, `docs/evidence/CP-25.png` | Implementado (validación manual del código y panel con pestañas) |
+| RF-05 | Registro de devolución (check-out) | CP-05, CP-16, CP-21 | Parcial: CP-05 aprobado; CP-16 y CP-21 pendientes | `docs/evidence/CP-05.png`, `docs/evidence/CP-16.png`, `docs/evidence/CP-21.png` | Implementado |
+| RF-06 | Control de tope de reservas | CP-03, CP-19 | Parcial: CP-03 aprobado; CP-19 pendiente | `docs/evidence/CP-03.png` | Implementado |
+| RF-07 | Gestión de penalizaciones por retraso | CP-06, CP-12 | Aprobado: CP-06 y CP-12 con evidencia | `docs/evidence/CP-06.png`, `docs/evidence/CP-12.png` | Implementado (sanción de 7 días) |
+| RF-08 | Autenticación y roles básicos | CP-07, CP-14, CP-21 | Parcial: CP-07 y CP-14 aprobados; CP-21 pendiente | `docs/evidence/CP-07.png`, `docs/evidence/CP-14.png`, `docs/evidence/CP-21.png` | Implementado (login y roles) |
+| RNF-01 | Rendimiento en reserva y QR | CP-08 | Pendiente | `docs/evidence/CP-08.txt` | Implementado; medición HTTP formal pendiente (S4) |
+| RNF-02 | Usabilidad y diseño responsivo | CP-09 | Pendiente | `docs/evidence/CP-09.png`, `docs/evidence/rnf-02/` | Implementado (interfaz 360–1280 px); Lighthouse pendiente |
+| RNF-03 | Seguridad de datos | CP-10 | Pendiente | `docs/evidence/CP-10.md` | Parcial: hash PBKDF2 y `.gitignore` verificados; auditoría formal pendiente |
 
 ## (a) Casos de prueba CP-01 a CP-06 y CP-13 a CP-26
 
@@ -61,7 +61,7 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 ## Cómo mantener la matriz
 
 - Enlazar cada caso nuevo a su requisito. Todo CP nuevo debe aparecer en ID Prueba de al menos un requisito, y viceversa.
-- Cambiar "Resultado" solo con evidencia real. Pasar de Pendiente a otro valor exige el archivo de evidencia existente en `docs/week-03/evidence/` y el registro de quién ejecutó y cuándo en `casos-prueba.md`.
+- Cambiar "Resultado" solo con evidencia real. Pasar de Pendiente a otro valor exige el archivo de evidencia existente en `docs/evidence/` y el registro de quién ejecutó y cuándo en `casos-prueba.md`.
 - La columna «Estado de implementación» describe el código, no la calidad verificada: "Implementado" no equivale a "Aprobado".
 - Declarar explícitamente lo no implementado. Mientras un requisito no tenga código, su estado debe decir "No implementado (semana N)"; no dejar celdas vacías.
 - Los defectos hallados al ejecutar se registran en `qa/defectos.md` con `DEF-XX` y se enlazan desde la ficha del caso. Un caso con defecto queda "Fallido" hasta su re-prueba.

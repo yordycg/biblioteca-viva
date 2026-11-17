@@ -12,7 +12,7 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 - Revisión docente (MVP 2): catálogo inicial con estado, filtro “Solo disponibles” y horario de 09:00 a 22:00 en bloques de una hora.
 - Panel del bibliotecario v2: KPIs, agenda de entregas/devoluciones, ocupación por bloque, sanciones activas y filtros de la tabla.
 
-> Manual de ejecución completo, con capturas y flujo paso a paso: [`docs/manual-ejecucion.md`](docs/manual-ejecucion.md).
+> Manual de ejecución completo, con capturas y flujo paso a paso: [`docs/manual/manual-ejecucion.md`](docs/manual/manual-ejecucion.md).
 
 ## Stack
 
@@ -129,7 +129,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Vicente (UI) | `/login/`, `/buscar/`, reserva, QR y `/bibliotecario/`; DevTools en 360 y 1280 | 3 capturas + 3 observaciones |
 | Héctor (backend) | `src/reservas/models.py`, `src/reservas/services.py`, `src/reservas/management/commands/seed.py`, `scripts/`; ejecutar `seed`, `demo_flujo` y `simular_retraso` | Nota de 1 página + salida de scripts |
 | Héctor (medición) | `python scripts/medir_rendimiento.py` | Salida con promedio y máximo |
-| Gerald (QA) | App + `docs/week-03/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
+| Gerald (QA) | App + `docs/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
 | Lucas (docs) | `README.md` + informe SEM-03 | Documentos finales en Drive |
 | Yordy (integración) | `manage.py check`, `manage.py test` y flujo completo | PR actualizado, demo y tag |
 
@@ -188,7 +188,7 @@ reservas del seed no coinciden con esa fecha, vuelve a sembrar con
 El rediseño de la semana 3 se implementó con CSS propio: no hay Tailwind, CDN,
 Google Fonts ni imágenes remotas, así que la aplicación se ve igual sin conexión.
 
-- Tokens y componentes: [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md).
+- Tokens y componentes: [`docs/design/design-system.md`](docs/design/design-system.md).
 - Estilos: `src/reservas/static/reservas/styles.css`.
 - Logo institucional: `src/reservas/static/reservas/img/ipvg-logo.png` (copia del
   logo oficial; procedencia, hash y paleta medida en el sistema de diseño).
@@ -198,7 +198,7 @@ Google Fonts ni imágenes remotas, así que la aplicación se ve igual sin conex
   formularios siguen funcionando.
 
 Para revisar la responsividad, abre las pantallas a 360×800 y 1280×800 y compara
-con `docs/week-03/evidence/rnf-02/`.
+con `docs/evidence/rnf-02/`.
 
 ## Datos y seguridad
 
@@ -210,15 +210,15 @@ con `docs/week-03/evidence/rnf-02/`.
 
 ## Documentación
 
-- [`docs/week-01/01-ficha-proyecto.md`](docs/week-01/01-ficha-proyecto.md)
-- [`docs/week-01/02-requisitos.md`](docs/week-01/02-requisitos.md)
-- [`docs/week-01/03-plan-calidad.md`](docs/week-01/03-plan-calidad.md)
-- [`docs/week-02/README.md`](docs/week-02/README.md)
-- [`docs/week-03/README.md`](docs/week-03/README.md)
-- [`docs/manual-ejecucion.md`](docs/manual-ejecucion.md)
-- [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md)
-- [`docs/week-03/qa/casos-prueba.md`](docs/week-03/qa/casos-prueba.md)
-- [`docs/week-03/qa/matriz-trazabilidad.md`](docs/week-03/qa/matriz-trazabilidad.md)
+- [`docs/requirements/ficha-proyecto.md`](docs/requirements/ficha-proyecto.md)
+- [`docs/requirements/requisitos.md`](docs/requirements/requisitos.md)
+- [`docs/requirements/plan-calidad.md`](docs/requirements/plan-calidad.md)
+- [`docs/README.md`](docs/README.md)
+- [`docs/README.md`](docs/README.md)
+- [`docs/manual/manual-ejecucion.md`](docs/manual/manual-ejecucion.md)
+- [`docs/design/design-system.md`](docs/design/design-system.md)
+- [`docs/qa/casos-prueba.md`](docs/qa/casos-prueba.md)
+- [`docs/qa/matriz-trazabilidad.md`](docs/qa/matriz-trazabilidad.md)
 
 ## Uso de IA
 
