@@ -34,12 +34,26 @@
 | Corrección (commit) | CP-01 actualizado al RF-01 vigente: resultado esperado y pasos ajustados a «todos los recursos con su estado» + «Solo disponibles». |
 | Re-prueba | CP-01 re-evaluado con la evidencia del 2026-11-14 → Aprobado. |
 
+### DEF-02 — CP-23 esperaba 404 para una cancelación por GET
+
+| Campo | Detalle |
+|---|---|
+| Descripción | El paso 1 de CP-23 pedía abrir por URL `/mis-reservas/<id>/cancelar/` de una reserva ajena y esperaba 404. La vista tiene `@require_POST`, así que un GET responde 405 y no ejecuta nada; con POST la respuesta sí es 404. La aplicación es correcta: el caso describía el método equivocado. |
+| Pasos para reproducir | 1. Iniciar sesión como estudiante1@example.com. 2. Abrir por GET `/mis-reservas/<id-de-estudiante2>/cancelar/`: responde 405. 3. Repetir con POST: responde 404 y la reserva no cambia. |
+| Severidad | Baja (documentación): no hay efecto sobre datos. |
+| Caso asociado | CP-23 |
+| Responsable | Yordy Carmona |
+| Estado | Cerrado |
+| Corrección (commit) | CP-23 actualizado en la ejecución del 2026-11-17: el paso indica POST y se acepta 404; se documenta que GET responde 405. |
+| Re-prueba | CP-23 re-ejecutado el 2026-11-17 → Aprobado. |
+
 ## Resumen de ejecución
 
 | Fecha | Casos ejecutados | Aprobados | Fallidos | Bloqueados | Ejecutado por |
 |---|---|---|---|---|---|
 | 2026-11-13 | 11 | 11 | 0 | 0 | Script local · Yordy Carmona |
 | 2026-11-14 | 6 (CP-01 a CP-06, re-ejecución en navegador) | 6 | 0 | 0 | Gerald Sobarzo |
+| 2026-11-17 | 12 (CP-10, CP-15 a CP-25) + CP-08 y CP-09 | 14 | 0 | 0 | Script local · verificó Gerald Sobarzo |
 
 DEF-01 no altera el conteo de fallidos de la aplicación: es una corrección del
 caso CP-01, registrada para dejar trazabilidad entre el criterio de semana 2 y el

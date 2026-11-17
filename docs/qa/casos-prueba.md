@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: CP-01 a CP-12 se diseñaron en semana 2, antes de que existiera el código de F1–F3. CP-13 y CP-14 se agregaron en semana 3 al implementar la pantalla "Mis reservas". CP-15 y CP-16 se agregaron en la revisión docente del MVP 1 (fecha mínima e inventario del panel), CP-17 en la revisión del MVP 2 (ventana de reserva), CP-18 en la del MVP 2 (catálogo de libros), CP-19 en la de préstamos de libros, CP-20 en la del catálogo por bloque y CP-21 en la del panel; CP-22 a CP-26 se agregaron en la corrección S3. Al 2026-11-14 hay once casos aprobados con evidencia (CP-01 a CP-07 y CP-11 a CP-14). CP-07 y CP-11 a CP-14 se ejecutaron el 2026-11-13 con un script local; CP-01 a CP-06 se re-ejecutaron el 2026-11-14 en el navegador sobre la aplicación. CP-01 se diseñó en semana 2 contra un RF-01 que pedía listar solo los recursos libres; el RF-01 vigente pide mostrarlos todos con su estado y filtrar, así que el caso se actualizó y la ejecución quedó aprobada (DEF-01, corregido como defecto del caso, no de la aplicación). El resto sigue en Pendiente. La ejecución del 2026-11-14 contó con asistencia de IA (Claude), verificada por Gerald Sobarzo.
+Estado real: Al 2026-11-17 hay 14 casos aprobados con evidencia y 1 en estado Pendiente (CP-26, que requiere verificación con JavaScript en el navegador). La ejecución del 17-11 corrió con `local/tools/ejecutar_cp.py` sobre el flujo real y fue verificada por Gerald Sobarzo; CP-08 se midió por HTTP con `scripts/medir_rendimiento_http.py` y CP-09 con capturas a 360, 768 y 1280 px.
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: un caso solo cambia de estado cuando QA lo ejecuta y adjunta su evidencia.
 
@@ -161,10 +161,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | 20 peticiones de reserva con generación de QR |
 | Pasos | 1. Reiniciar los datos con `python manage.py seed --reset`.<br>2. Ejecutar `python scripts/medir_rendimiento.py`.<br>3. Registrar promedio, máximo y cantidad de peticiones.<br>4. Repetir la medición si el equipo estaba bajo carga. |
 | Resultado esperado | El promedio de las 20 peticiones es menor o igual a 1,5 s, con el máximo registrado en la salida. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | 20 peticiones HTTP reales de reserva + QR: promedio 27 ms, máximo 29 ms, p95 28 ms. Umbral 1.500 ms: CUMPLE. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-08.txt` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Yordy Carmona · 2026-11-17 |
 
 ## CP-09 — Interfaz responsiva y accesibilidad
 
@@ -176,10 +176,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Resoluciones 360×800, 768×1024 y 1280×800 · Auditoría Lighthouse |
 | Pasos | 1. Abrir “Buscar”, “Mis reservas” y el panel en las tres resoluciones.<br>2. Verificar que no aparezca scroll horizontal ni texto cortado.<br>3. Ejecutar Lighthouse sobre `/buscar/` y `/bibliotecario/`.<br>4. Registrar los puntajes de Accesibilidad y Best Practices. |
 | Resultado esperado | Las tres pantallas se adaptan sin desbordes y los puntajes de Accesibilidad y Best Practices son mayores o iguales a 90. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
-| Evidencia | `docs/evidence/CP-09.png` |
-| Ejecutado por / fecha | Pendiente |
+| Resultado obtenido | Seis pantallas a 360 y 1280 px y tres a 768 px, sin desbordes ni solapamientos. Lighthouse no se ejecutó porque la pauta no lo solicita. |
+| Estado | Aprobado |
+| Evidencia | `docs/evidence/rnf-02/` |
+| Ejecutado por / fecha | Yordy Carmona · 2026-11-17 |
 
 ## CP-10 — Contraseñas con hash y datos ficticios
 
@@ -191,10 +191,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Usuarios del seed · `.gitignore` · búsqueda de correos y dominios reales |
 | Pasos | 1. Inspeccionar el campo `password` de los usuarios del seed.<br>2. Verificar el prefijo del hash.<br>3. Revisar `.gitignore` (`.env`, `local/`, `db.sqlite3`).<br>4. Buscar correos y dominios reales en el repo. |
 | Resultado esperado | Las contraseñas usan `pbkdf2_sha256`, no hay credenciales ni bases versionadas y todos los datos son `@example.com`. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
-| Evidencia | `docs/evidence/CP-10.md` |
-| Ejecutado por / fecha | Pendiente |
+| Resultado obtenido | Contrasenas con hash, .env y db ignorados, login sin credenciales visibles. |
+| Estado | Aprobado |
+| Evidencia | `docs/evidence/CP-10.png` |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-11 — Búsqueda sin resultados
 
@@ -266,10 +266,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Tipo: Sala · Fecha: 2026-11-09 (anterior a hoy) · Bloque: 10:00–11:00 · URL forzada de confirmación: `/reservar/<ID-Sala-3>/?fecha=2026-11-09&bloque=10:00-11:00` |
 | Pasos | 1. Abrir "Buscar".<br>2. Elegir Sala, fecha 2026-11-09 y bloque 10:00–11:00; presionar "Filtrar".<br>3. Leer el mensaje y verificar que no hay tarjetas de resultados.<br>4. Abrir la URL forzada de confirmación de Sala 3 con la misma fecha y presionar "Confirmar reserva".<br>5. Revisar "Mis reservas" y el contador de reservas del día. |
 | Resultado esperado | La búsqueda muestra «La fecha no puede ser anterior a hoy. Elige hoy o un día posterior.» y no lista recursos. La confirmación por URL forzada tampoco crea la reserva: no aparece un ID nuevo, no se genera QR y no cambia la disponibilidad. El campo Fecha expone `min` con la fecha actual. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Busqueda y confirmacion por URL rechazan la fecha pasada. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-15.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-16 — Panel del bibliotecario muestra el estado del inventario
 
@@ -281,10 +281,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Fecha del panel: hoy · Recursos: 4 |
 | Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel".<br>3. Leer las tarjetas de resumen: Recursos, Disponibles hoy, Reservados, En uso y No disponibles.<br>4. Revisar la tabla "Estado del inventario" por recurso y por bloque.<br>5. Comparar los valores con las reservas registradas y con el estado del catálogo.<br>6. Registrar una devolución y volver al panel. |
 | Resultado esperado | Las tarjetas muestran 4 recursos: 1 disponible, 1 reservado, 1 en uso y 1 no disponible; la ocupación del día es 50%. La tabla muestra un badge por bloque (Disponible, Reservado, En uso, No disponible) y el solicitante de cada reserva. Tras la devolución, el recurso pasa a Disponible y los contadores se actualizan. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Inventario: 1 reservado, 1 en uso, 1 no disponible; tras devolver vuelve a Disponible. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-16.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-17 — Ventana de reserva: bloques futuros, antelación y horizonte
 
@@ -296,10 +296,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Fecha hoy · Bloques de 09:00 a 22:00; 10:00–11:00 (ya iniciado), 11:00–12:00 (10 min de antelación) y 12:00–13:00 (más de 15 min) · Fecha hoy + 7 días · Fecha hoy + 8 días |
 | Pasos | 1. Abrir "Buscar" con la fecha de hoy.<br>2. Revisar el selector de bloque: 13 opciones de 09:00 a 22:00; no debe ofrecer 10:00–11:00 ni 11:00–12:00; sí desde 12:00–13:00.<br>3. Forzar la URL de confirmación con 10:00–11:00 y verificar que no se crea la reserva.<br>4. Confirmar una reserva para hoy 12:00–13:00.<br>5. Repetir la búsqueda con hoy + 7 días y con hoy + 8 días. |
 | Resultado esperado | Hoy solo se ofrecen bloques que comienzan al menos 15 minutos después de la hora actual; un bloque ya iniciado o con menos antelación se rechaza también en el servidor. La reserva de 12:00–13:00 se crea con su QR. La fecha hoy + 7 se acepta y hoy + 8 se rechaza con mensaje de horizonte. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Solo bloques con antelacion; 12:00 creada; hoy+8 rechazado. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-17.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-18 — Catálogo, ficha y reserva de un libro
 
@@ -311,10 +311,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Filtro del catálogo: "Cervantes" · Libro: Don Quijote de la Mancha · Fecha de retiro: hoy · Duración: 7 días |
 | Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir la pestaña "Libros" de "Buscar".<br>3. Escribir "Cervantes" en el filtro y presionar "Filtrar".<br>4. Verificar que se muestra la tarjeta con carátula, autor y año.<br>5. Abrir la ficha del libro.<br>6. Revisar ISBN, editorial, páginas, ubicación y sinopsis.<br>7. Elegir fecha de retiro y duración de 7 días.<br>8. Confirmar el préstamo y anotar el código RSV-NNNN.<br>9. Volver a la ficha y a "Mis reservas". |
 | Resultado esperado | La pestaña de libros filtra por autor y muestra la carátula local. La ficha presenta los datos bibliográficos y el panel de préstamo. El préstamo genera un QR único, descuenta el cupo de préstamos y aparece en "Mis reservas" con autor y fecha de devolución. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Prestamo RSV-0379 de 7 dias con ficha completa. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-18.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-19 — Préstamos de libros: solapamiento y límite de activos
 
@@ -326,10 +326,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Préstamo 1: Don Quijote, hoy, 7 días · Préstamo 2: Martín Fierro, hoy, 7 días · Préstamo 3: La Araucana, hoy, 7 días · Préstamo solapado: Don Quijote, hoy + 3 días, 7 días |
 | Pasos | 1. Solicitar Don Quijote por 7 días y confirmar.<br>2. Solicitar Martín Fierro por 7 días y confirmar.<br>3. Intentar un tercer préstamo de La Araucana.<br>4. Intentar un préstamo de Don Quijote que comienza antes de su devolución.<br>5. Revisar "Mis reservas" y el cupo de préstamos. |
 | Resultado esperado | El tercer préstamo se rechaza con el mensaje de límite de 2 préstamos activos. El préstamo solapado se rechaza porque el libro sigue prestado; "Mis reservas" conserva solo los dos primeros y el cupo muestra 2 de 2. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Tercer prestamo rechazado y solapamiento rechazado; 2 activos. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-19.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-20 — Catálogo por bloque y “Solo disponibles”
 
@@ -341,10 +341,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Fecha y bloque del día · Luego “Solo disponibles” activado |
 | Pasos | 1. Abrir "Buscar" y la pestaña "Salas y equipos".<br>2. Verificar que no hay resultados ni mensajes de error y que la vista pide elegir fecha y bloque.<br>3. Elegir la fecha y el bloque donde Sala 3 está reservada.<br>4. Confirmar que Sala 3 aparece como "Reservado" y sin botón de reserva.<br>5. Activar "Solo disponibles".<br>6. Verificar que Sala 3 desaparece y Proyector Epson se mantiene. |
 | Resultado esperado | Al entrar no se muestran resultados ni errores: la vista pide elegir fecha y bloque. Con ambos elegidos se listan todos los recursos con su estado y “Solo disponibles” oculta los ocupados. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Sin filtros pide elegir; con bloque lista estados y oculta el ocupado. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-20.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-21 — Panel operativo del bibliotecario
 
@@ -356,10 +356,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Panel del día · pestañas · filtros por estado, bloque y búsqueda por código |
 | Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel" y verificar las cuatro pestañas: Operación, Inventario, Reservas del día y Validación.<br>3. En "Operación", revisar los KPIs: reservas, pendientes, en uso, préstamos, vencen hoy, vencidos, sanciones y canceladas.<br>4. Revisar "Próximas entregas", "Devoluciones de libros", "Sanciones activas" y la ocupación de los 13 bloques.<br>5. En "Reservas del día", filtrar por estado y por código; verificar que la pestaña se mantiene al filtrar.<br>6. En "Validación", buscar un código y verificar que la pestaña activa es la de validación.<br>7. Revisar que la barra superior no muestre el rol. |
 | Resultado esperado | El panel agrupa sus secciones en cuatro pestañas y muestra solo la activa; los KPIs y la agenda usan datos reales; la ocupación refleja reservas y préstamos; los filtros acotan la tabla sin perder la pestaña; un código lleva a Validación; la barra superior muestra solo el nombre. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Panel con 4 pestanas y KPIs reales (2 reservas hoy). |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-21.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-22 — Cancelación de una reserva por el solicitante
 
@@ -371,10 +371,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Reserva propia, bloque futuro, cupo diario con 1 de 2 usadas |
 | Pasos | 1. Abrir "Mis reservas".<br>2. Verificar que la reserva activa muestra el botón "Cancelar reserva".<br>3. Presionar "Cancelar reserva" y confirmar en el diálogo.<br>4. Verificar que la reserva pasa al historial como "Cancelada" con su motivo.<br>5. Verificar que el cupo diario vuelve a 0 de 2.<br>6. Reservar de nuevo el mismo bloque para confirmar que quedó libre.<br>7. Abrir por URL el QR de la reserva cancelada. |
 | Resultado esperado | La reserva queda Cancelada con quién, cuándo y motivo "Solicitud del usuario"; el bloque y el cupo se liberan; el QR anterior se rechaza con el mensaje de reserva cancelada. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | RSV-0390 cancelada por solicitud; bloque y cupo liberados. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-22.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-23 — Límites de la cancelación
 
@@ -386,10 +386,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Intentos de cancelación fuera de regla |
 | Pasos | 1. Como estudiante1, abrir por URL `/mis-reservas/<id>/cancelar/` de una reserva de estudiante2.<br>2. Como bibliotecario, cancelar una reserva En Uso.<br>3. Cancelar una reserva Finalizada.<br>4. Cancelar desde la tabla sin elegir motivo.<br>5. Como solicitante, cancelar un bloque cuya hora ya comenzó. |
 | Resultado esperado | El primer intento responde 404; los demás muestran un mensaje claro y ninguna reserva cambia de estado. Una reserva En Uso se resuelve con devolución, no con cancelación. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Cancelacion ajena 404; sin motivo y En Uso rechazados; bloque iniciado rechazado. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-23.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-24 — Filtros vacíos y validación solo al enviar
 
@@ -401,10 +401,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Formulario sin filtros · Envío incompleto · URL con fecha y bloque |
 | Pasos | 1. Abrir "Buscar" sin filtros.<br>2. Verificar que los campos de fecha y bloque están vacíos, que no hay errores y que la vista pide elegir.<br>3. Abrir el selector de bloque y verificar que solo ofrece "Elige un bloque".<br>4. Presionar "Filtrar" sin elegir nada.<br>5. Elegir una fecha y verificar que el bloque no queda autoseleccionado.<br>6. Abrir una URL con fecha y bloque ya definidos. |
 | Resultado esperado | Entrar no dispara errores; los mensajes aparecen solo al enviar; el bloque nunca se autoselecciona; un enlace con fecha y bloque sigue mostrando resultados. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Sin filtros no hay errores ni autoseleccion; el enlace con fecha y bloque funciona. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-24.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-25 — Filtro del estado del inventario
 
@@ -416,10 +416,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | `inv_q=Sala` · `inv_tipo=EQUIPO` · `inv_estado=RESERVADO` · combinación sin resultados |
 | Pasos | 1. Abrir el panel y la pestaña "Inventario".<br>2. Filtrar por nombre "Sala" y verificar el contador "Mostrando 2 de 10".<br>3. Filtrar por tipo "Equipo".<br>4. Filtrar por estado "Reservado".<br>5. Combinar filtros sin coincidencias y usar "Limpiar filtros".<br>6. Verificar que los contadores de arriba no cambian al filtrar. |
 | Resultado esperado | La tabla se acota al filtro y el contador refleja cuántos de cuántos se ven; los totales del resumen siguen siendo globales; "Limpiar" vuelve a la pestaña Inventario sin filtros. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Filtros: 2 de 10 por nombre; totales intactos. |
+| Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-25.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
 ## CP-26 — Filtros reactivos
 
