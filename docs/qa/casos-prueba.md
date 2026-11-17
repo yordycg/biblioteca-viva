@@ -277,7 +277,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-04, RF-05 (CU4 Validar inicio, CU5 Registrar devolución) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Sala 3 con reserva Reservada hoy 10:00–11:00; Proyector Epson En Uso hoy 11:00–12:00; Notebook Dell marcado No disponible; Sala 1 libre todo el día. Sesión como bibliotecario1@example.com. |
+| Precondiciones | Seed cargado. Sala 1 con la reserva de ejemplo del seed (Reservada); Proyector Epson creado En Uso en ese mismo bloque; Notebook Dell marcado No disponible; Sala 3 libre. Sesión como bibliotecario1@example.com. |
 | Datos de entrada | Fecha del panel: hoy · Recursos: 4 |
 | Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel".<br>3. Leer las tarjetas de resumen: Recursos, Disponibles hoy, Reservados, En uso y No disponibles.<br>4. Revisar la tabla "Estado del inventario" por recurso y por bloque.<br>5. Comparar los valores con las reservas registradas y con el estado del catálogo.<br>6. Registrar una devolución y volver al panel. |
 | Resultado esperado | Las tarjetas muestran 4 recursos: 1 disponible, 1 reservado, 1 en uso y 1 no disponible; la ocupación del día es 50%. La tabla muestra un badge por bloque (Disponible, Reservado, En uso, No disponible) y el solicitante de cada reserva. Tras la devolución, el recurso pasa a Disponible y los contadores se actualizan. |
