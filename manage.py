@@ -2,6 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from pathlib import Path
+
+# El código vive en src/: se agrega al path para que `config` y `reservas` importen.
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 
 def main():

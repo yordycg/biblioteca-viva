@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anotador UI · BibliotecaViva</title>
+  <style>
+    :root { --primary:#001c71; --accent:#e8c400; --border:#e5e7eb; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; margin:0; background:#f5f7fa; color:#1f2937; }
+    header { background:var(--primary); border-bottom:3px solid var(--accent); padding:14px 20px; color:#fff; }
+    header strong { font-size:1rem; }
+    main { max-width:760px; margin:0 auto; padding:28px 20px 60px; }
+    h1 { color:var(--primary); font-size:1.6rem; margin:0 0 8px; }
+    p { line-height:1.55; color:#374151; }
+    .card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:22px; margin-top:20px; box-shadow:0 1px 3px rgba(0,28,113,.06); }
+    .bm { display:inline-block; background:var(--primary); color:#fff; text-decoration:none; font-weight:700; padding:12px 20px; border-radius:10px; margin:10px 0 4px; cursor:grab; }
+    .bm:active { cursor:grabbing; }
+    code, textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    textarea { width:100%; min-height:90px; margin-top:10px; padding:10px; border:1px solid var(--border); border-radius:8px; font-size:12px; }
+    ol { line-height:1.8; }
+    .hint { background:#fffbe6; border-left:4px solid var(--accent); padding:12px 14px; border-radius:8px; color:#713f12; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <header><strong>BibliotecaViva · Anotador UI</strong></header>
+  <main>
+    <h1>Anotar un elemento de la interfaz</h1>
+    <p>
+      Arrastra el botón a tu barra de marcadores. Después, en la app, mantén
+      <strong>Alt</strong> (o <strong>Ctrl+Shift</strong>) y haz clic sobre el elemento que quieres cambiar.
+      Se copiará una anotación con selector, estilos y caja; pégala en el chat
+      de OpenCode.
+    </p>
+
+    <div class="card">
+      <a class="bm" id="bm" href="#" draggable="true">Anotar UI</a>
+      <p class="hint">
+        Si tu navegador no permite arrastrarlo, copia el texto de abajo y crea
+        un marcador manualmente con esa URL.
+      </p>
+      <textarea id="code-out" readonly aria-label="URL del bookmarklet"></textarea>
+      <p><button id="copy-bm" type="button">Copiar URL del bookmarklet</button></p>
+    </div>
+
+    <div class="card">
+      <h2>Uso</h2>
+      <ol>
+        <li>Arrastra <strong>Anotar UI</strong> a la barra de marcadores.</li>
+        <li>Abre la app en <code>http://localhost:8000</code> e inicia sesión.</li>
+        <li>Mantén <code>Alt</code> o <code>Ctrl+Shift</code> y haz clic en el elemento.</li>
+        <li>Escribe qué quieres cambiar y acepta.</li>
+        <li>Pega la anotación en OpenCode.</li>
+      </ol>
+      <p class="hint">
+        No modifica el servidor ni instala nada. Solo captura DOM, CSS y posición
+        del elemento en tu navegador.
+      </p>
+    </div>
+  </main>
+
+  <script type="text/plain" id="bookmarklet-code">
+(function () {
+  if (window.__uiAnotar) {
+    alert("El anotador ya está activo.");
+    return;
+  }
+  window.__uiAnotar = true;
+
+  function esc(value) {
+    if (window.CSS && CSS.escape) return CSS.escape(value);
+    return String(value).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+  }
+
+  function selector(el) {
+    if (el.id) return "#" + esc(el.id);
+    var parts = [];
+    var node = el;
+    while (node && node.nodeType === 1 && parts.length < 5) {
+      var part = node.tagName.toLowerCase();
+      if (node.classList && node.classList.length) {
+        part += "." + Array.prototype.map.call(node.classList, esc).join(".");
+      }
+      var parent = node.parentElement;
+      if (parent) {
+        var same = Array.prototype.filter.call(parent.children, function (child) {
+          return child.tagName === node.tagName;
+        });
+        if (same.length > 1) part += ":nth-of-type(" + (same.indexOf(node) + 1) + ")";
+      }
+      parts.unshift(part);
+      if (node.id) {
+        parts[0] = "#" + esc(node.id);
+        break;
+      }
+      node = parent;
+    }
+    return parts.join(" > ");
+  }
+
+  var PROPS = [
+    "display", "position", "width", "height", "margin", "padding", "gap",
+    "row-gap", "column-gap", "grid-template-columns", "grid-template-rows",
+    "align-items", "justify-content", "color", "background-color", "border",
+    "border-radius", "font-family", "font-size", "font-weight", "line-height",
+    "overflow", "flex-direction"
+  ];
+
+  function capture(el) {
+    var box = el.getBoundingClientRect();
+    var styles = getComputedStyle(el);
+    var css = PROPS.map(function (prop) {
+      return prop + ": " + styles.getPropertyValue(prop);
+    }).join("; ");
+    var text = (el.innerText || el.textContent || "").trim().slice(0, 300);
+    var html = el.outerHTML.slice(0, 1500).replace(/`/g, "'");
+    return {
+      url: location.href,
+      viewport: innerWidth + "x" + innerHeight + " @" + devicePixelRatio + "x",
+      selector: selector(el),
+      tag: el.tagName.toLowerCase(),
+      text: text,
+      box: [Math.round(box.x), Math.round(box.y), Math.round(box.width), Math.round(box.height)],
+      styles: css,
+      parent: el.parentElement ? selector(el.parentElement) : "—",
+      html: html
+    };
+  }
+
+  function markdown(data, note) {
+    return [
+      "### Anotación UI",
+      "- URL: " + data.url,
+      "- Viewport: " + data.viewport,
+      "- Selector: `" + data.selector + "`",
+      "- Elemento: `<" + data.tag + ">`",
+      "- Caja: x=" + data.box[0] + ", y=" + data.box[1] + ", w=" + data.box[2] + ", h=" + data.box[3],
+      "- Texto: " + (data.text || "—"),
+      "- Estilos: `" + data.styles + "`",
+      "- Padre: `" + data.parent + "`",
+      "- HTML: `" + data.html + "`",
+      "- Comentario: **" + note + "**",
+      ""
+    ].join("\n");
+  }
+
+  function copy(text) {
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.cssText = "position:fixed;top:-1000px;left:-1000px;opacity:0;";
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch (error) {
+      ok = false;
+    }
+    area.remove();
+    if (!ok) {
+      window.prompt("Copia esta anotación:", text);
+    }
+    return ok;
+  }
+
+  function toast(message) {
+    var el = document.getElementById("__anotar_toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "__anotar_toast";
+      el.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147483647;background:#001c71;color:#fff;padding:10px 14px;border-radius:8px;font:14px system-ui;box-shadow:0 8px 24px rgba(0,0,0,.3);pointer-events:none;transition:opacity .2s;";
+      document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.style.opacity = "1";
+    clearTimeout(el.__timer);
+    el.__timer = setTimeout(function () {
+      el.style.opacity = "0";
+    }, 3000);
+  }
+
+  document.addEventListener("click", function (event) {
+    if (!event.altKey && !(event.ctrlKey && event.shiftKey) && !event.metaKey) return;
+    var target = event.target;
+    if (target.closest && target.closest("#__anotar_toast")) return;
+    event.preventDefault();
+    event.stopPropagation();
+    var note = window.prompt("¿Qué cambiamos en este elemento?");
+    if (note === null) return;
+    var data = capture(target);
+    copy(markdown(data, note));
+    toast("Anotación copiada. Pégala en OpenCode.");
+  }, true);
+
+  toast("Anotador activo: Alt+Click o Ctrl+Shift+Click en un elemento");
+})();
+  </script>
+
+  <script>
+    (function () {
+      var raw = document.getElementById("bookmarklet-code").textContent.trim();
+      var url = "javascript:" + encodeURIComponent(raw);
+      var link = document.getElementById("bm");
+      var out = document.getElementById("code-out");
+      link.setAttribute("href", url);
+      out.value = url;
+
+      document.getElementById("copy-bm").addEventListener("click", function () {
+        out.select();
+        var ok = false;
+        try {
+          ok = document.execCommand("copy");
+        } catch (error) {
+          ok = false;
+        }
+        if (ok) {
+          this.textContent = "Copiado";
+          var button = this;
+          setTimeout(function () { button.textContent = "Copiar URL del bookmarklet"; }, 1600);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
