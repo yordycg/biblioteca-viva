@@ -21,21 +21,24 @@ Aplicación web responsiva para buscar, reservar y validar salas, equipos y libr
 - Iconografía con sprite SVG inline; JavaScript mínimo y progresivo.
 - QR generado en el servidor con `qrcode`.
 - Validación del QR por ingreso manual del código.
-- Monolito modular: `config/` + `reservas/`.
+- Monolito modular: `src/config/` + `src/reservas/`, con la suite en `tests/`.
 
 ## Estructura
 
 ```text
-config/                 # settings y urls
-reservas/
-  models.py             # Usuario, Recurso, Libro, Reserva, QR, Sancion
-  services.py           # búsqueda, reservas, préstamos y reglas RF-06/RF-07
-  views.py              # login, búsqueda unificada, ficha, reserva, préstamo, QR, bibliotecario
-  forms.py
-  urls.py
-  templates/reservas/     # base, login, búsqueda, ficha, confirmación, QR, panel
-  static/reservas/        # styles.css, app.js, covers/ (carátulas SVG locales)
-  management/commands/seed.py
+manage.py               # entrypoint; agrega src/ al path de Python
+src/
+  config/               # settings y urls
+  reservas/
+    models.py           # Usuario, Recurso, Libro, Reserva, QR, Sancion
+    services.py         # búsqueda, reservas, préstamos y reglas RF-06/RF-07
+    views.py            # login, búsqueda unificada, ficha, reserva, préstamo, QR, bibliotecario
+    forms.py
+    urls.py
+    templates/reservas/ # base, login, búsqueda, ficha, confirmación, QR, panel
+    static/reservas/    # styles.css, app.js, covers/ (carátulas SVG locales)
+    management/commands/seed.py
+tests/                  # suite por dominio: reglas, reservas, inventario, libros, interfaz
 scripts/
   demo_flujo.py
   simular_retraso.py
@@ -124,7 +127,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 | Rol | Dónde revisar | Qué entregar |
 |---|---|---|
 | Vicente (UI) | `/login/`, `/buscar/`, reserva, QR y `/bibliotecario/`; DevTools en 360 y 1280 | 3 capturas + 3 observaciones |
-| Héctor (backend) | `reservas/models.py`, `reservas/services.py`, `reservas/management/commands/seed.py`, `scripts/`; ejecutar `seed`, `demo_flujo` y `simular_retraso` | Nota de 1 página + salida de scripts |
+| Héctor (backend) | `src/reservas/models.py`, `src/reservas/services.py`, `src/reservas/management/commands/seed.py`, `scripts/`; ejecutar `seed`, `demo_flujo` y `simular_retraso` | Nota de 1 página + salida de scripts |
 | Héctor (medición) | `python scripts/medir_rendimiento.py` | Salida con promedio y máximo |
 | Gerald (QA) | App + `docs/week-03/qa/casos-prueba.md` | 6 evidencias + matriz actualizada |
 | Lucas (docs) | `README.md` + informe SEM-03 | Documentos finales en Drive |
@@ -186,11 +189,11 @@ El rediseño de la semana 3 se implementó con CSS propio: no hay Tailwind, CDN,
 Google Fonts ni imágenes remotas, así que la aplicación se ve igual sin conexión.
 
 - Tokens y componentes: [`docs/week-03/design/design-system.md`](docs/week-03/design/design-system.md).
-- Estilos: `reservas/static/reservas/styles.css`.
-- Logo institucional: `reservas/static/reservas/img/ipvg-logo.png` (copia del
+- Estilos: `src/reservas/static/reservas/styles.css`.
+- Logo institucional: `src/reservas/static/reservas/img/ipvg-logo.png` (copia del
   logo oficial; procedencia, hash y paleta medida en el sistema de diseño).
-- Iconos: sprite SVG inline en `reservas/templates/reservas/_icons.html`.
-- Interacción opcional: `reservas/static/reservas/app.js` (mostrar contraseña,
+- Iconos: sprite SVG inline en `src/reservas/templates/reservas/_icons.html`.
+- Interacción opcional: `src/reservas/static/reservas/app.js` (mostrar contraseña,
   cargar credenciales de demostración, confirmar devolución). Sin JavaScript, los
   formularios siguen funcionando.
 

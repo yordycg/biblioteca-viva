@@ -8,7 +8,9 @@ por defecto son ficticios y solo sirven para ejecutar el MVP en local.
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+# El proyecto vive en src/config/: la raíz del repo es dos niveles arriba.
+# BASE_DIR queda en la raíz para que db.sqlite3 y las rutas relativas no cambien.
+BASE_DIR = Path(__file__).resolve().parents[2]
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-only-bibliotecaviva")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
