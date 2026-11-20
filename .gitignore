@@ -27,6 +27,9 @@ staticfiles/
 .pytest_cache/
 htmlcov/
 
+# Herramientas de prueba
+jmeter.log
+
 # Sistemas operativos e IDEs
 .DS_Store
 .vscode/
