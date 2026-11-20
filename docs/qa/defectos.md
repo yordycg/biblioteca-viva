@@ -47,6 +47,19 @@
 | Corrección (commit) | CP-23 actualizado en la ejecución del 2026-11-17: el paso indica POST y se acepta 404; se documenta que GET responde 405. |
 | Re-prueba | CP-23 re-ejecutado el 2026-11-17 → Aprobado. |
 
+### DEF-03 — Sin JavaScript, «Filtrar» no funciona en «Salas y equipos»
+
+| Campo | Detalle |
+|---|---|
+| Descripción | En Buscar › Salas y equipos, la lista de bloques horarios se llena con JavaScript al elegir la fecha. Sin JavaScript el selector queda solo con «Elige un bloque» y es obligatorio, de modo que el navegador impide enviar el formulario. El comentario de `app.js` indica que sin JavaScript los formularios siguen funcionando; en esta vista no se cumple. |
+| Pasos para reproducir | 1. Desactivar JavaScript en el navegador. 2. Iniciar sesión como estudiante1@example.com. 3. Abrir «Buscar» › «Salas y equipos». 4. Escribir la fecha 2026-11-10. 5. Presionar «Filtrar». Resultado: aviso «Please select an item in the list.» en «Bloque horario», sin recarga ni resultados. |
+| Severidad | Media: la función es inaccesible sin JavaScript, sin pérdida de datos; con JavaScript todo funciona. |
+| Caso asociado | CP-26 (paso 5) |
+| Responsable | Reportó Gerald Sobarzo · corrige Yordy Carmona |
+| Estado | Abierto |
+| Corrección (commit) | Pendiente (`src/reservas/forms.py`, `BusquedaForm`) |
+| Re-prueba | Pendiente: repetir el paso 5 de CP-26 sin JavaScript tras la corrección. |
+
 ## Resumen de ejecución
 
 | Fecha | Casos ejecutados | Aprobados | Fallidos | Bloqueados | Ejecutado por |
@@ -54,10 +67,13 @@
 | 2026-11-13 | 11 | 11 | 0 | 0 | Script local · Yordy Carmona |
 | 2026-11-14 | 6 (CP-01 a CP-06, re-ejecución en navegador) | 6 | 0 | 0 | Gerald Sobarzo |
 | 2026-11-17 | 12 (CP-10, CP-15 a CP-25) + CP-08 y CP-09 | 14 | 0 | 0 | Script local · verificó Gerald Sobarzo |
+| 2026-11-19 | 1 (CP-26, navegador con y sin JavaScript) | 0 | 1 | 0 | Gerald Sobarzo |
 
 DEF-01 no altera el conteo de fallidos de la aplicación: es una corrección del
 caso CP-01, registrada para dejar trazabilidad entre el criterio de semana 2 y el
-RF-01 vigente.
+RF-01 vigente. DEF-02 tampoco es un defecto de la aplicación: corrige el método
+HTTP descrito en CP-23. El único fallo real contra el producto es **DEF-03**
+(CP-26, ejecución del 2026-11-19).
 
 ## Observaciones de la ejecución del 2026-11-14 (no son defectos)
 
