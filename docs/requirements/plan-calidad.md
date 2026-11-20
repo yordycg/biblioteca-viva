@@ -56,7 +56,7 @@
    datos; la columna «Re-prueba» no se completa sin esa ejecución.
 4. Un caso con defecto abierto queda «Fallido» hasta su re-prueba.
 
-Resultado del proyecto: 5 defectos registrados (2 de documentación y 3 de
+Resultado del proyecto: 6 defectos registrados (3 de documentación y 3 de
 producto: DEF-03, DEF-04 y DEF-05), todos cerrados con re-prueba.
 
 ## 5. Observaciones docentes y su seguimiento

@@ -130,4 +130,5 @@ forman parte de la interfaz. CP-26 se ejecutó el 2026-11-19 con Chromium
 contexto de navegador; la re-prueba del paso 5 sin JavaScript se capturó el
 2026-11-20. DEF-01 y DEF-02 son correcciones de los casos CP-01 y CP-23;
 **DEF-03, DEF-04 y DEF-05 son defectos de producto** y los tres se cerraron con
-su re-prueba, registrada en `../qa/defectos.md`.
+su re-prueba. DEF-06 corrigió la evidencia de CP-01, que no reproducía el filtro
+por tipo de sus pasos. Todo el detalle está en `../qa/defectos.md`.
