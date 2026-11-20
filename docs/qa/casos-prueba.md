@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: Al 2026-11-17 hay 14 casos aprobados con evidencia y 1 en estado Pendiente (CP-26, que requiere verificación con JavaScript en el navegador). La ejecución del 17-11 corrió con `local/tools/ejecutar_cp.py` sobre el flujo real y fue verificada por Gerald Sobarzo; CP-08 se midió por HTTP con `scripts/medir_rendimiento_http.py` y CP-09 con capturas a 360, 768 y 1280 px.
+Estado real: Al 2026-11-19 los 26 casos están ejecutados: 25 aprobados con evidencia y CP-26 fallido (DEF-03). La ejecución del 17-11 corrió con `local/tools/ejecutar_cp.py` sobre el flujo real y fue verificada por Gerald Sobarzo; CP-08 se midió por HTTP con `scripts/medir_rendimiento_http.py`, CP-09 con capturas a 360, 768 y 1280 px y CP-26 en Chromium con JavaScript activado y desactivado.
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: un caso solo cambia de estado cuando QA lo ejecuta y adjunta su evidencia.
 
@@ -431,10 +431,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Datos de entrada | Cambios en selectores y casillas de filtro |
 | Pasos | 1. En "Buscar", elegir fecha y luego bloque: los resultados aparecen sin presionar "Filtrar".<br>2. Cambiar "Tipo de recurso" con fecha y bloque ya elegidos.<br>3. En el panel, cambiar el estado del filtro de reservas y el estado del inventario.<br>4. Escribir en "Título o autor" y verificar que no se envía sola.<br>5. Desactivar JavaScript y repetir un filtro con el botón "Filtrar". |
 | Resultado esperado | Los selectores y casillas envían el formulario al cambiar; la búsqueda de texto no se autoenvía; con JavaScript desactivado el botón "Filtrar" sigue funcionando. |
-| Resultado obtenido | Pendiente |
-| Estado | Pendiente |
+| Resultado obtenido | Con JavaScript activo, los selectores y casillas de Buscar (fecha/bloque, tipo, «Solo disponibles») y del panel (estado de reservas, estado de inventario) envían el formulario al cambiar; «Título o autor» no se autoenvía. Con JavaScript desactivado, «Filtrar» funciona en Libros y en el panel, pero no en «Salas y equipos»: los bloques solo se cargan con JavaScript y el campo es obligatorio, así que el navegador bloquea el envío. |
+| Estado | Fallido (DEF-03) |
 | Evidencia | `docs/evidence/CP-26.png` |
-| Ejecutado por / fecha | Pendiente |
+| Ejecutado por / fecha | Gerald Sobarzo / 2026-11-19 · Chromium (Playwright) |
 
 ## (a) Distribución por tipo
 
@@ -541,7 +541,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 
 - Los 6 casos de semana 2 tienen todos los campos de la plantilla.
 - Distribución de semana 2: 3 positivos, 1 negativo, 2 de límite.
-- Los resultados reflejan la ejecución real: 11 casos aprobados con evidencia y el resto en "Pendiente".
+- Los resultados reflejan la ejecución real: 26 casos ejecutados, 25 aprobados con evidencia y CP-26 fallido con su defecto registrado.
 - El plan de 14 casos (6 + 5 + 3) está declarado.
 - Los IDs CP-01…CP-26 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
@@ -579,3 +579,4 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 25 | CP-01 se actualiza al RF-01 vigente y DEF-01 se cierra como corrección del caso. | RF-01 cambió en la semana 3: el catálogo muestra todos los recursos con su estado y permite «Solo disponibles». El caso conservaba el criterio de semana 2; la aplicación cumple el RF vigente. |
 | 26 | Se ajustan los textos de botones y mensajes de CP-02 a CP-06 a la interfaz vigente. | La interfaz usa «Reservar bloque…», «Buscar otro recurso» y mensajes más específicos; además, la hora de inicio no se muestra, así que se verifica el estado y no la hora. |
 | 27 | La ejecución de CP-01 a CP-06 del 2026-11-14 se declara asistida por IA (Claude). | Transparencia exigida por la pauta; Gerald Sobarzo verificó la ejecución y la evidencia. |
+| 28 | CP-26 se ejecuta el 2026-11-19 en Chromium con y sin JavaScript. | Era el último caso pendiente. Con JavaScript todo funciona; sin JavaScript «Salas y equipos» no se puede filtrar porque los bloques solo se cargan con JavaScript. Se registra DEF-03 y no se marca el caso como aprobado hasta corregir y repetir el paso 5. |
