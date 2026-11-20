@@ -113,6 +113,12 @@ repitió el 2026-11-20 tras la corrección.
 | CP-09 | `rnf-02/`, `rnf-02/lighthouse/`, `w3c/` | Seis pantallas a 360 y 1280 px; Lighthouse con 100 en accesibilidad; 0 errores de marcado (RNF-02) |
 | CP-27 | `e2e/` | Flujo completo automatizado con Selenium: 8 de 8 pasos correctos |
 
+**Regeneración del cierre.** Las 23 capturas de casos se volvieron a ejecutar el
+2026-11-20 sobre la versión final (`v1.0-final`), después de DEF-03, DEF-04 y
+DEF-05, para que la evidencia coincida con el código entregado. En esa pasada se
+corrigió el escenario de CP-01, que ahora filtra por tipo «Sala» como describen
+sus pasos.
+
 **Cómo se generaron.** CP-07 y CP-11 a CP-14 con `local/tools/ejecutar_cp.py`,
 que reinicia el seed, recorre el flujo con el cliente de Django y captura la
 pantalla resultante con Chromium a 1280×900. CP-01 a CP-06 se re-ejecutaron el
