@@ -156,3 +156,60 @@ Ran 90 tests in 111.420s
 OK
 Destroying test database for alias 'default'...
 ```
+
+---
+
+# Revisión de cierre y regresión (S4-T6)
+
+| Campo | Detalle |
+|---|---|
+| Responsable | Héctor Oviedo Herrera (verifica) · ejecución del 2026-11-20 |
+| Rama revisada | `week/sem4-5` en `v0.9-rc` |
+| Alcance | Los archivos de S3 más `tests/` (suite separada por dominio) y los scripts de carga, auditoría y E2E |
+
+## 1. Cambios revisados desde la revisión de S3
+
+| Cambio | Archivo | Qué se verificó |
+|---|---|---|
+| DEF-03: bloques disponibles sin JavaScript | `reservas/forms.py` | `BusquedaForm` ofrece el catálogo completo cuando no hay fecha; `clean()` sigue rechazando bloques no disponibles, ya iniciados o fuera del horizonte de 7 días. La validación del servidor no se relajó: solo cambió el conjunto de opciones que ve el usuario |
+| DEF-04: marcado válido | `templates/reservas/buscar.html`, `mis_reservas.html`, `styles.css` | Encabezado oculto en la sección de resultados; la lista de datos dejó de usar `dl` con envoltorio inválido. Las clases nuevas (`data-list__term`, `data-list__value`) reemplazan a `dt`/`dd` sin cambiar el aspecto |
+| DEF-05: antelación visible | `templates/reservas/buscar.html` | El texto de ayuda usa `services.MIN_ANTELACION_MIN`; si la constante cambia, el mensaje cambia con ella |
+| Suite separada por dominio | `tests/test_reglas.py`, `test_reservas.py`, `test_inventario.py`, `test_libros.py`, `test_interfaz.py` | 91 pruebas; ninguna prueba modificada para que pasara, salvo las dos de regresión agregadas con DEF-03 |
+
+## 2. Revisión de los scripts nuevos
+
+| Script | Riesgo | Observación |
+|---|---|---|
+| `scripts/auditar_lighthouse.py` | Bajo | Solo lectura; inicia sesión con usuarios ficticios y escribe en `docs/evidence/` |
+| `scripts/validar_w3c.py` | Bajo | Solo lectura; requiere `vnu.jar` y un JRE, declarados en el README |
+| `scripts/prueba_e2e.py` | Medio | Crea una reserva real en la base de pruebas; exige `DEMO_MODE=1` para no depender de la hora. Se ejecuta sobre el seed reiniciado |
+| `scripts/carga/` (JMeter) | Medio | Genera reservas y carga contra el servidor; se ejecuta sobre una base sembrada y se reinicia después |
+| `requirements-dev.txt` | Bajo | `gunicorn` y `selenium` son dependencias de prueba: la aplicación no las importa en ejecución |
+
+## 3. Regresión sobre la rama final
+
+```text
+Found 91 test(s).
+System check identified no issues (0 silenced).
+Ran 91 tests
+OK
+```
+
+Complementada con la regresión funcional del 2026-11-20:
+
+- CP-26 re-ejecutado sin JavaScript tras DEF-03 → aprobado.
+- Flujo completo con Selenium → 8 de 8 pasos.
+- Validador del W3C → 0 errores en cinco pantallas.
+- Lighthouse → 100 de accesibilidad en seis auditorías.
+
+## 4. Conclusión de la revisión
+
+Sin hallazgos bloqueantes. Las dos correcciones de producto (DEF-03 y DEF-04) no
+relajan ninguna regla del servidor: una amplía las opciones visibles y la otra
+corrige el marcado. La separación de la suite por dominio no cambió la cobertura
+(91 pruebas antes y después de la corrección de DEF-03, sumando las dos de
+regresión).
+
+Pendiente declarado: la sesión de validación con usuario final (S4-T8) no se
+ejecutó; la usabilidad se respalda con Lighthouse, la validación del W3C y el
+flujo automatizado.
