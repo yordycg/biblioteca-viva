@@ -78,6 +78,18 @@ class InterfazTests(TestCase):
             respuesta, f'min="{services.hoy().isoformat()}"'
         )
 
+    def test_busqueda_ofrece_bloques_sin_javascript(self):
+        """El selector de bloque trae el catálogo aunque no haya fecha (DEF-03).
+
+        Con JavaScript el listado se reemplaza por los bloques disponibles de la
+        fecha elegida; sin JavaScript el formulario igual debe poder enviarse.
+        """
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/buscar/")
+        opciones = list(respuesta.context["form"].fields["bloque"].choices)
+        self.assertEqual(len(opciones), len(Reserva.BLOQUES) + 1)
+        self.assertIn("10:00-11:00", [valor for valor, _ in opciones])
+
     def test_panel_bibliotecario_lista_reservas_del_dia(self):
         self.client.force_login(self.bibliotecario)
         respuesta = self.client.get("/bibliotecario/", {"tab": "reservas"})

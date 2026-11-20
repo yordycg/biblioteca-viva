@@ -100,7 +100,15 @@ class BusquedaForm(FechaDesdeHoyMixin, forms.Form):
                     fecha = None
             if fecha:
                 disponibles = services.bloques_disponibles(fecha)
-        self.fields["bloque"].choices = [("", "Elige un bloque")] + disponibles
+        if disponibles:
+            opciones = disponibles
+        else:
+            # Sin fecha, o sin bloques libres, se ofrece el catálogo completo para
+            # que el formulario se pueda enviar sin JavaScript; el servidor valida
+            # la disponibilidad en clean() y la vista muestra el aviso de bloques
+            # agotados (DEF-03).
+            opciones = list(Reserva.BLOQUES)
+        self.fields["bloque"].choices = [("", "Elige un bloque")] + opciones
 
     def clean(self):
         data = super().clean()
