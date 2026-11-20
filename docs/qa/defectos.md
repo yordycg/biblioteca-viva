@@ -74,7 +74,8 @@ caso CP-01, registrada para dejar trazabilidad entre el criterio de semana 2 y e
 RF-01 vigente. DEF-02 tampoco es un defecto de la aplicación: corrige el método
 HTTP descrito en CP-23. Los fallos reales contra el producto son **DEF-03**
 (CP-26, ejecución del 2026-11-19), **DEF-04** y **DEF-05**, los tres cerrados con
-su re-prueba el 2026-11-20. DEF-04 y DEF-05 los detectaron herramientas que no
+su re-prueba el 2026-11-20. **DEF-06** es una corrección de la evidencia de CP-01,
+detectada al regenerar las capturas. DEF-04 y DEF-05 los detectaron herramientas que no
 se habían usado antes: Lighthouse 12.8.2 y el validador Nu del W3C.
 
 | Fecha | Casos re-ejecutados | Aprobados | Fallidos | Bloqueados | Ejecutado por |
@@ -108,8 +109,23 @@ se habían usado antes: Lighthouse 12.8.2 y el validador Nu del W3C.
 | Corrección (commit) | `5691bf8` — texto de ayuda bajo el selector: «Solo se ofrecen bloques con al menos 15 minutos de antelación», con el valor tomado de `services.MIN_ANTELACION_MIN`. |
 | Re-prueba | 2026-11-20: la ayuda se muestra en «Salas y equipos» antes de filtrar; el validador y las 91 pruebas automáticas siguen en verde. |
 
+### DEF-06 — La captura de CP-01 no correspondía a los pasos del caso
+
+| Campo | Detalle |
+|---|---|
+| Descripción | Los pasos de CP-01 indican filtrar por tipo «Sala» y esperar dos recursos (Sala 3 disponible y Sala 1 reservada), sin equipos. La herramienta de captura generaba la pantalla con el filtro en «Todos», de modo que la imagen mostraba cuatro recursos, incluidos el proyector y el notebook. El caso se declaraba aprobado con una evidencia que no reproducía su escenario. |
+| Pasos para reproducir | 1. Ejecutar la captura de CP-01 con la herramienta de casos.<br>2. Abrir `docs/evidence/CP-01.png`.<br>3. Comparar con los pasos del caso: el filtro aparece en «Todos» y hay cuatro recursos. |
+| Severidad | Baja (documentación): no afecta el producto; la evidencia no acreditaba lo que decía acreditar. |
+| Caso asociado | CP-01 |
+| Responsable | Yordy Carmona |
+| Estado | Cerrado |
+| Corrección (commit) | `cd72a25` — la captura envía `tipo=SALA` y verifica que ningún equipo aparezca en los resultados; la imagen regenerada muestra el filtro «Sala» y los dos recursos del bloque. |
+| Re-prueba | 2026-11-20: captura regenerada sobre `v1.0-final`; filtro «Sala», dos recursos y la ayuda de antelación visible. |
+
 El detector de DEF-04 y DEF-05 fue la combinación de Lighthouse 12.8.2 y el
 validador Nu del W3C; ninguno de los dos se había ejecutado antes en el proyecto.
+DEF-06 apareció al regenerar las capturas sobre la versión final: la evidencia no
+coincidía con los pasos del caso.
 
 
 ## Observaciones de la ejecución del 2026-11-14 (no son defectos)

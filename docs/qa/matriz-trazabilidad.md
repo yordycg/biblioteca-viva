@@ -2,7 +2,7 @@
 
 Estado real al 2026-11-20: los 27 casos están ejecutados y aprobados con evidencia. CP-26 falló el 2026-11-19 por DEF-03 y se cerró con la re-prueba del 2026-11-20 (paso 5 sin JavaScript). CP-27 se agregó en el cierre para dejar automatizado el flujo completo en navegador (Selenium).
 
-La columna «Estado de implementación» refleja el código de la semana 3 y las correcciones de DEF-03, DEF-04 y DEF-05, respaldado por `python manage.py test` (91 pruebas automáticas al 2026-11-20), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, y las auditorías de `evidence/rnf-02/lighthouse/` y `evidence/w3c/` son la evidencia de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3 y las correcciones de DEF-03, DEF-04, DEF-05 y la regeneración de capturas de DEF-06, respaldado por `python manage.py test` (91 pruebas automáticas al 2026-11-20), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, y las auditorías de `evidence/rnf-02/lighthouse/` y `evidence/w3c/` son la evidencia de CP-09.
 
 ## Matriz principal
 
