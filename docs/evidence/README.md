@@ -38,12 +38,12 @@ accesibilidad se documenta con la revisión visual en las tres resoluciones.
 
 ## Casos ejecutados (2026-11-13 a 2026-11-17)
 
-26 de los 26 casos ejecutados sobre el flujo real: 25 aprobados y CP-26 fallido
-(DEF-03, sin JavaScript «Salas y equipos» no se puede filtrar). Cada uno se
+26 de los 26 casos ejecutados y aprobados sobre el flujo real. Cada uno se
 registra en `../qa/casos-prueba.md` con su resultado y la ruta de su evidencia.
 CP-01 a CP-06 se re-ejecutaron el 2026-11-14 en el navegador; CP-07 y CP-11 a
 CP-14 se ejecutaron el 2026-11-13 con el script local; CP-26 se ejecutó el
-2026-11-19 en Chromium con y sin JavaScript.
+2026-11-19 en Chromium con y sin JavaScript, falló sin JavaScript (DEF-03) y se
+repitió el 2026-11-20 tras la corrección.
 
 | Caso | Evidencia | Qué muestra |
 |---|---|---|
@@ -70,7 +70,7 @@ CP-14 se ejecutaron el 2026-11-13 con el script local; CP-26 se ejecutó el
 | CP-23 | `CP-23.png` | Ejecutado y aprobado el 2026-11-17 |
 | CP-24 | `CP-24.png` | Ejecutado y aprobado el 2026-11-17 |
 | CP-25 | `CP-25.png` | Ejecutado y aprobado el 2026-11-17 |
-| CP-26 | `CP-26.png` | Filtros reactivos con y sin JavaScript: falla el paso 5 (DEF-03) |
+| CP-26 | `CP-26.png`, `CP-26-reprueba.png` | Filtros reactivos con JavaScript; paso 5 sin JavaScript y su re-prueba tras DEF-03 |
 | CP-08 | `CP-08.txt` | 20 peticiones de reserva + QR: 27 ms de promedio (RNF-01) |
 | CP-09 | `rnf-02/` | Seis pantallas a 360 y 1280 px y tres a 768 px (RNF-02) |
 
@@ -82,6 +82,7 @@ pantalla resultante con Chromium a 1280×900. CP-01 a CP-06 se re-ejecutaron el
 se recortaron y rotularon por escenario (A/B); los rótulos son anotaciones y no
 forman parte de la interfaz. CP-26 se ejecutó el 2026-11-19 con Chromium
 (Playwright) sobre el flujo real, activando y desactivando JavaScript por
-contexto de navegador. DEF-01 y DEF-02 son correcciones de los casos CP-01 y
-CP-23; **DEF-03 es el único defecto de producto** y se registra en
-`../qa/defectos.md`.
+contexto de navegador; la re-prueba del paso 5 sin JavaScript se capturó el
+2026-11-20. DEF-01 y DEF-02 son correcciones de los casos CP-01 y CP-23;
+**DEF-03 fue el único defecto de producto** y se cerró con la re-prueba
+registrada en `../qa/defectos.md`.
