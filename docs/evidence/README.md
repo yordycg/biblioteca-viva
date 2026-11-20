@@ -13,14 +13,15 @@ Carpeta `rnf-02/`. Capturas de las seis pantallas del MVP en dos resoluciones:
 | Mis reservas | `rnf-02-mis-reservas-360.png` | `rnf-02-mis-reservas-1280.png` |
 | Panel bibliotecario | `rnf-02-bibliotecario-360.png` | `rnf-02-bibliotecario-1280.png` |
 
-**Cómo se generaron (2026-11-13).** Sobre la base cargada con
+**Cómo se generaron (2026-11-13; regeneradas el 2026-11-20 tras DEF-04 y
+DEF-05).** Sobre la base cargada con
 `python manage.py seed --reset` y con el servidor local en marcha:
 
 1. Chromium headless (Playwright) abrió la aplicación real y se autenticó con los
    usuarios ficticios del seed (`estudiante1@example.com`,
    `estudiante2@example.com`, `bibliotecario1@example.com`).
 2. Cada pantalla se capturó con la ventana fijada en 360×900 y 1280×900, sin
-   modificar templates, datos ni estilos. Las animaciones se desactivan con
+   modificar templates, datos ni estilos (`local/tools/capturas.py`). Las animaciones se desactivan con
    `prefers-reduced-motion`.
 3. Las capturas de `../mockups/v2/` usan el mismo procedimiento con ventanas de
    360×1400 y 1280×1200.
