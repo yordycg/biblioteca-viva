@@ -146,6 +146,7 @@
 
   <section class="stack" aria-labelledby="libros-title">
     {% if elegir %}
+      <h2 id="libros-title" class="sr-only">Resultados del catálogo de libros</h2>
       <div class="empty">
         <span class="empty__icon" aria-hidden="true">
           <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
@@ -261,6 +262,10 @@
             Bloque horario
           </label>
           {{ form.bloque|widget_con_error:"error-bloque" }}
+          <p class="field__help">
+            Solo se ofrecen bloques con al menos {{ min_antelacion }} minutos de
+            antelación.
+          </p>
           {% for error in form.bloque.errors %}
             <p class="field__error"{% if forloop.first %} id="error-bloque"{% endif %}>{{ error }}</p>
           {% endfor %}
@@ -322,6 +327,7 @@
 
   <section aria-labelledby="resultados-title" class="stack">
     {% if elegir %}
+      <h2 id="resultados-title" class="sr-only">Resultados de la búsqueda</h2>
       <div class="empty">
         <span class="empty__icon" aria-hidden="true">
           <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>

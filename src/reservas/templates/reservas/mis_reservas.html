@@ -60,22 +60,22 @@
               {% endif %}
             </div>
 
-            <dl class="data-list">
+            <div class="data-list">
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
                 <div>
-                  <dt>Fecha</dt>
-                  <dd>{{ reserva.fecha|date:"d-m-Y" }}</dd>
+                  <span class="data-list__term">Fecha</span>
+                  <span class="data-list__value">{{ reserva.fecha|date:"d-m-Y" }}</span>
                 </div>
               </div>
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
-                  <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
-                  <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
+                  <span class="data-list__term">{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</span>
+                  <span class="data-list__value">{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</span>
                 </div>
               </div>
-            </dl>
+            </div>
 
             <div class="card__foot">
               <a class="btn" href="{% url 'qr' reserva.id %}">
@@ -129,22 +129,22 @@
               {% endif %}
             </div>
 
-            <dl class="data-list">
+            <div class="data-list">
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg></span>
                 <div>
-                  <dt>Fecha</dt>
-                  <dd>{{ reserva.fecha|date:"d-m-Y" }}</dd>
+                  <span class="data-list__term">Fecha</span>
+                  <span class="data-list__value">{{ reserva.fecha|date:"d-m-Y" }}</span>
                 </div>
               </div>
               <div>
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
-                  <dt>{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</dt>
-                  <dd>{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</dd>
+                  <span class="data-list__term">{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</span>
+                  <span class="data-list__value">{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</span>
                 </div>
               </div>
-            </dl>
+            </div>
           </article>
         {% endfor %}
       </div>
