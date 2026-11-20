@@ -55,10 +55,10 @@
 | Pasos para reproducir | 1. Desactivar JavaScript en el navegador. 2. Iniciar sesión como estudiante1@example.com. 3. Abrir «Buscar» › «Salas y equipos». 4. Escribir la fecha 2026-11-10. 5. Presionar «Filtrar». Resultado: aviso «Please select an item in the list.» en «Bloque horario», sin recarga ni resultados. |
 | Severidad | Media: la función es inaccesible sin JavaScript, sin pérdida de datos; con JavaScript todo funciona. |
 | Caso asociado | CP-26 (paso 5) |
-| Responsable | Reportó Gerald Sobarzo · corrige Yordy Carmona |
-| Estado | Abierto |
-| Corrección (commit) | Pendiente (`src/reservas/forms.py`, `BusquedaForm`) |
-| Re-prueba | Pendiente: repetir el paso 5 de CP-26 sin JavaScript tras la corrección. |
+| Responsable | Reportó Gerald Sobarzo · corrigió Yordy Carmona |
+| Estado | Cerrado |
+| Corrección (commit) | `c15e1c9` — `BusquedaForm` ofrece el catálogo de bloques cuando no hay fecha; el servidor sigue validando la disponibilidad en `clean()`. Regresión en `tests/test_interfaz.py` y `tests/test_inventario.py` (91 pruebas). |
+| Re-prueba | 2026-11-20, Chromium (Playwright) con JavaScript desactivado: el selector muestra 14 opciones y «Filtrar» responde con los 4 recursos del bloque 10:00–11:00 → Aprobado (`docs/evidence/CP-26-reprueba.png`). |
 
 ## Resumen de ejecución
 
@@ -73,7 +73,11 @@ DEF-01 no altera el conteo de fallidos de la aplicación: es una corrección del
 caso CP-01, registrada para dejar trazabilidad entre el criterio de semana 2 y el
 RF-01 vigente. DEF-02 tampoco es un defecto de la aplicación: corrige el método
 HTTP descrito en CP-23. El único fallo real contra el producto es **DEF-03**
-(CP-26, ejecución del 2026-11-19).
+(CP-26, ejecución del 2026-11-19), cerrado con la re-prueba del 2026-11-20.
+
+| Fecha | Casos re-ejecutados | Aprobados | Fallidos | Bloqueados | Ejecutado por |
+|---|---|---|---|---|---|
+| 2026-11-20 | 1 (CP-26, paso 5 sin JavaScript) | 1 | 0 | 0 | Yordy Carmona |
 
 ## Observaciones de la ejecución del 2026-11-14 (no son defectos)
 

@@ -1,14 +1,14 @@
 # Matriz de trazabilidad — BibliotecaViva (diseño SEM2-T5, ejecución semana 3)
 
-Estado real al 2026-11-19: los 26 casos están ejecutados; 25 aprobados con evidencia y CP-26 fallido por DEF-03. Los requisitos marcados «Parcial» tienen casos aprobados y al menos un caso fallido o pendiente del mismo requisito.
+Estado real al 2026-11-20: los 26 casos están ejecutados y aprobados con evidencia. CP-26 falló el 2026-11-19 por DEF-03 y se cerró con la re-prueba del 2026-11-20 (paso 5 sin JavaScript).
 
-La columna «Estado de implementación» refleja el código de la semana 3, respaldado por `python manage.py test` (90 pruebas automáticas al 2026-11-13; 69 al 2026-11-12, antes del PR #11), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3 y la corrección de DEF-03, respaldado por `python manage.py test` (91 pruebas automáticas al 2026-11-20; 90 al 2026-11-13 y 69 al 2026-11-12), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
 
 ## Matriz principal
 
 | ID Req | Funcionalidad | ID Prueba | Resultado | Evidencia | Estado de implementación |
 |---|---|---|---|---|---|
-| RF-01 | Búsqueda de recurso | CP-01, CP-11, CP-15, CP-17, CP-18, CP-20, CP-24, CP-25, CP-26 | Parcial: CP-26 fallido (DEF-03) | `docs/evidence/CP-01.png`, `docs/evidence/CP-11.png`, `docs/evidence/CP-15.png`, `docs/evidence/CP-17.png`, `docs/evidence/CP-18.png`, `docs/evidence/CP-20.png`, `docs/evidence/CP-24.png`, `docs/evidence/CP-25.png`, `docs/evidence/CP-26.png` | Implementado (catálogo por bloque, ventana de reserva, filtros vacíos, reactivos y de inventario) |
+| RF-01 | Búsqueda de recurso | CP-01, CP-11, CP-15, CP-17, CP-18, CP-20, CP-24, CP-25, CP-26 | Aprobado: los nueve casos con evidencia; CP-26 cerrado tras DEF-03 | `docs/evidence/CP-01.png`, `docs/evidence/CP-11.png`, `docs/evidence/CP-15.png`, `docs/evidence/CP-17.png`, `docs/evidence/CP-18.png`, `docs/evidence/CP-20.png`, `docs/evidence/CP-24.png`, `docs/evidence/CP-25.png`, `docs/evidence/CP-26.png`, `docs/evidence/CP-26-reprueba.png` | Implementado (catálogo por bloque, ventana de reserva, filtros vacíos, reactivos, de inventario y formulario usable sin JavaScript) |
 | RF-02 | Reserva de recurso | CP-02, CP-13, CP-15, CP-17, CP-18, CP-19, CP-22, CP-23 | Aprobado: CP-02, CP-13, CP-15, CP-17, CP-18, CP-19, CP-22, CP-23 con evidencia | `docs/evidence/CP-02.png`, `docs/evidence/CP-13.png`, `docs/evidence/CP-15.png`, `docs/evidence/CP-17.png`, `docs/evidence/CP-18.png`, `docs/evidence/CP-19.png`, `docs/evidence/CP-22.png`, `docs/evidence/CP-23.png` | Implementado (reserva por bloque, préstamo de libros y cancelación con auditoría) |
 | RF-03 | Generación de comprobante (QR) | CP-02, CP-13, CP-14 | Aprobado: CP-02, CP-13, CP-14 con evidencia | `docs/evidence/CP-02.png`, `docs/evidence/CP-13.png`, `docs/evidence/CP-14.png` | Implementado (QR con ID de reserva) |
 | RF-04 | Validación de entrega (check-in) | CP-04, CP-16, CP-21, CP-25 | Aprobado: CP-04, CP-16, CP-21, CP-25 con evidencia | `docs/evidence/CP-04.png`, `docs/evidence/CP-16.png`, `docs/evidence/CP-21.png`, `docs/evidence/CP-25.png` | Implementado (validación manual del código y panel con pestañas) |
@@ -54,9 +54,9 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | CP-12 | Devolución exactamente a las 11:00 no genera sanción | Límite | RF-07 | CU5 Registrar devolución | 3 | Aprobado |
 | CP-13 | "Mis reservas" lista las reservas propias y reabre el QR | Positivo | RF-02, RF-03 | CU2, CU3 | 3 | Aprobado |
 | CP-14 | Un usuario no ve ni abre el QR de una reserva ajena | Negativo | RF-03, RF-08 | CU3, CU0 | 3 | Aprobado |
-| CP-08 | Reserva + QR en ≤ 1,5 s (promedio de 20 peticiones concurrentes) | Límite | RNF-01 | CU2, CU3 | 4 | Pendiente |
-| CP-09 | Layout sin scroll horizontal en 3 resoluciones y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | Transversal | 4 | Pendiente |
-| CP-10 | Contraseñas con hash; datos ficticios; .gitignore | Positivo | RNF-03 | CU0 Iniciar Sesión | 4 | Pendiente |
+| CP-08 | Reserva + QR en ≤ 1,5 s (promedio de 20 peticiones concurrentes) | Límite | RNF-01 | CU2, CU3 | 4 | Aprobado |
+| CP-09 | Layout sin scroll horizontal en 3 resoluciones y Lighthouse accesibilidad ≥ 90 | Positivo | RNF-02 | Transversal | 4 | Aprobado |
+| CP-10 | Contraseñas con hash; datos ficticios; .gitignore | Positivo | RNF-03 | CU0 Iniciar Sesión | 4 | Aprobado |
 
 ## Cómo mantener la matriz
 
@@ -70,7 +70,7 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 ## Checklist de aceptación
 
 - Los 11 requisitos (RF-01 a RF-08, RNF-01 a RNF-03) están presentes, cada uno con al menos un ID de prueba.
-- Los resultados distinguen lo ejecutado (25 aprobados con evidencia y 1 fallido con defecto registrado) de lo no ejecutado.
+- Los resultados distinguen lo ejecutado (26 aprobados con evidencia, incluido el cierre de DEF-03 con su re-prueba) de lo no ejecutado.
 - El estado de implementación es explícito en las 11 filas.
 - IDs, tipos y requisitos son coherentes con casos-prueba.md (CP-01 a CP-26).
 - Solo los requisitos con todos sus CP aprobados figuran como «Aprobado»; el resto queda «Parcial» o «Pendiente».
@@ -104,3 +104,4 @@ La columna «Estado de implementación» refleja el código de la semana 3, resp
 | 21 | CP-01 se actualiza al RF-01 vigente y DEF-01 se cierra como defecto del caso. | RF-01 cambió en S3: el catálogo muestra todos los recursos con su estado y permite «Solo disponibles». La aplicación cumple el RF vigente; el caso conservaba el criterio de semana 2. |
 | 22 | La suite automática pasa de 69 a 90 pruebas con la corrección S3 (PR #11). | El dato de 69 correspondía al 2026-11-12; el informe SEM-03 debe actualizarse a 90 al cierre de S3. |
 | 23 | CP-26 se ejecuta el 2026-11-19 y RF-01 queda «Parcial» por DEF-03. | El caso estaba pendiente porque exige navegador con y sin JavaScript. Falló el paso 5 en «Salas y equipos»; el requisito no se marca aprobado hasta corregir DEF-03 y re-ejecutar el caso. |
+| 24 | RF-01 pasa a «Aprobado» el 2026-11-20 al cerrar DEF-03. | La corrección de `BusquedaForm` permite enviar el formulario sin JavaScript; la re-prueba del paso 5 de CP-26 quedó con evidencia en `CP-26-reprueba.png`. |
