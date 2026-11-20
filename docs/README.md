@@ -123,7 +123,7 @@ Cubierto por CP-21, con `python manage.py test` (69 pruebas automáticas).
 - **Filtros reactivos**: los selectores y casillas envían el formulario al cambiar; el botón "Filtrar" se mantiene para navegadores sin JavaScript y la búsqueda de texto no se autoenvía.
 - **Seed con fecha relativa**: las reservas de ejemplo se programan en el primer bloque reservable de hoy (o de mañana) y `seed --fecha AAAA-MM-DD` permite fijarlas.
 
-Cubierto por CP-20, CP-21 y CP-22 a CP-26, con `python manage.py test` (90 pruebas automáticas).
+Cubierto por CP-20, CP-21 y CP-22 a CP-26, con `python manage.py test` (91 pruebas automáticas).
 
 ## Orden de revisión
 
