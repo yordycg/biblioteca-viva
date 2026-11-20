@@ -165,8 +165,10 @@ class CatalogoInicialTests(TestCase):
         self.client.force_login(self.usuario)
         respuesta = self.client.get("/buscar/", {"vista": "recursos"})
         html = respuesta.content.decode()
-        self.assertIn("Elige un bloque", html)
-        self.assertNotIn('<option value="10:00-11:00"', html)
+        # El catálogo de bloques se ofrece para que el formulario funcione sin
+        # JavaScript (DEF-03), pero ninguno queda seleccionado.
+        self.assertIn('<option value="" selected>Elige un bloque</option>', html)
+        self.assertIsNone(respuesta.context["form"]["bloque"].value())
 
     def test_filtros_solo_validan_con_filtrar(self):
         self.client.force_login(self.usuario)
