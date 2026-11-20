@@ -1,0 +1,4 @@
+# Dependencias solo para pruebas y evidencias (no las usa la aplicación en ejecución).
+#   .venv/bin/pip install -r requirements-dev.txt
+gunicorn>=23.0
+selenium>=4.30
