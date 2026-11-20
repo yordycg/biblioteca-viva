@@ -1,8 +1,8 @@
 # Matriz de trazabilidad — BibliotecaViva (diseño SEM2-T5, ejecución semana 3)
 
-Estado real al 2026-11-20: los 26 casos están ejecutados y aprobados con evidencia. CP-26 falló el 2026-11-19 por DEF-03 y se cerró con la re-prueba del 2026-11-20 (paso 5 sin JavaScript).
+Estado real al 2026-11-20: los 27 casos están ejecutados y aprobados con evidencia. CP-26 falló el 2026-11-19 por DEF-03 y se cerró con la re-prueba del 2026-11-20 (paso 5 sin JavaScript). CP-27 se agregó en el cierre para dejar automatizado el flujo completo en navegador (Selenium).
 
-La columna «Estado de implementación» refleja el código de la semana 3 y la corrección de DEF-03, respaldado por `python manage.py test` (91 pruebas automáticas al 2026-11-20; 90 al 2026-11-13 y 69 al 2026-11-12), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, pero no sustituyen la ejecución de CP-09.
+La columna «Estado de implementación» refleja el código de la semana 3 y las correcciones de DEF-03, DEF-04 y DEF-05, respaldado por `python manage.py test` (91 pruebas automáticas al 2026-11-20), no por casos de prueba ejecutados. Las capturas de `evidence/rnf-02/` verifican el renderizado a 360 y 1280 px, y las auditorías de `evidence/rnf-02/lighthouse/` y `evidence/w3c/` son la evidencia de CP-09.
 
 ## Matriz principal
 
@@ -16,11 +16,15 @@ La columna «Estado de implementación» refleja el código de la semana 3 y la 
 | RF-06 | Control de tope de reservas | CP-03, CP-19 | Aprobado: CP-03, CP-19 con evidencia | `docs/evidence/CP-03.png`, `docs/evidence/CP-19.png` | Implementado (2 reservas y 2 préstamos activos) |
 | RF-07 | Gestión de penalizaciones por retraso | CP-06, CP-12 | Aprobado: CP-06, CP-12 con evidencia | `docs/evidence/CP-06.png`, `docs/evidence/CP-12.png` | Implementado (sanción de 7 días) |
 | RF-08 | Autenticación y roles básicos | CP-07, CP-14, CP-21 | Aprobado: CP-07, CP-14, CP-21 con evidencia | `docs/evidence/CP-07.png`, `docs/evidence/CP-14.png`, `docs/evidence/CP-21.png` | Implementado (login y roles) |
-| RNF-01 | Rendimiento en reserva y QR | CP-08 | Aprobado: CP-08 con evidencia | `docs/evidence/CP-08.txt` | Implementado; medición HTTP de 20 peticiones registrada |
-| RNF-02 | Usabilidad y diseño responsivo | CP-09 | Aprobado: CP-09 con evidencia | `docs/evidence/CP-09.png`, `docs/evidence/rnf-02/` | Implementado (360, 768 y 1280 px); Lighthouse no solicitado |
+| RNF-01 | Rendimiento en reserva y QR | CP-08 | Aprobado: CP-08 con evidencia funcional y de carga | `docs/evidence/CP-08.txt`, `docs/evidence/rnf-01-estres/` | Implementado; medición de 20 reservas y carga con JMeter a 1, 10 y 50 usuarios |
+| RNF-02 | Usabilidad y diseño responsivo | CP-09 | Aprobado: CP-09 con evidencia | `docs/evidence/CP-09.png`, `docs/evidence/rnf-02/`, `docs/evidence/rnf-02/lighthouse/`, `docs/evidence/w3c/` | Implementado (360, 768 y 1280 px); Lighthouse 100 en accesibilidad y 0 errores de marcado del W3C |
 | RNF-03 | Seguridad de datos | CP-10 | Aprobado: CP-10 con evidencia | `docs/evidence/CP-10.png` | Implementado (PBKDF2, .env y base ignorados, sin datos reales) |
 
-## (a) Casos de prueba CP-01 a CP-06 y CP-13 a CP-26
+> **Caso transversal:** CP-27 recorre en un navegador real el flujo completo de
+> RF-01 a RF-05 y RF-08 (login, búsqueda, reserva, QR, entrega y devolución). No
+> se repite en cada fila para no inflar la matriz.
+
+## (a) Casos de prueba CP-01 a CP-06 y CP-13 a CP-27
 
 | ID Prueba | Tipo | Requisito | Caso de uso | Qué valida |
 |---|---|---|---|---|
@@ -44,6 +48,7 @@ La columna «Estado de implementación» refleja el código de la semana 3 y la 
 | CP-24 | Límite | RF-01 | CU1 Buscar recurso | Los filtros obligatorios inician vacíos, el bloque no se autoselecciona y la validación ocurre solo al enviar. |
 | CP-25 | Positivo | RF-01, RF-04 | CU1 Buscar recurso, CU4 Validar inicio | El inventario se acota por nombre, tipo y estado sin alterar los contadores globales. |
 | CP-26 | Positivo | RF-01 | CU1 Buscar recurso | Los selectores y casillas filtran al cambiar; sin JavaScript el botón Filtrar sigue funcionando y el texto no se autoenvía. |
+| CP-27 | Positivo | RF-01 a RF-05, RF-08 | CU0 a CU5 | El flujo completo (login, búsqueda, reserva, QR, entrega y devolución) se ejecuta sin intervención manual en un navegador real. |
 
 ## (b) Plan de CP-07 a CP-12
 

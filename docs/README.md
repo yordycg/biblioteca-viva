@@ -35,6 +35,10 @@ historial de Git (rama y PR de cada semana). El flujo de trabajo interno vive en
 | Guía de evidencias | [`qa/guia-evidencias.md`](qa/guia-evidencias.md) | Pruebas |
 | Evidencias de ejecución | [`evidence/`](evidence/) | Pruebas |
 | Capturas de interfaz 360/1280 (RNF-02) | [`evidence/rnf-02/`](evidence/rnf-02/) | RNF-02 |
+| Auditorías de Lighthouse (móvil y escritorio) | [`evidence/rnf-02/lighthouse/`](evidence/rnf-02/lighthouse/) | RNF-02 |
+| Validación del HTML con el W3C | [`evidence/w3c/`](evidence/w3c/) | RNF-02 |
+| Prueba de carga con JMeter | [`evidence/rnf-01-estres/`](evidence/rnf-01-estres/) | RNF-01 |
+| Flujo completo con Selenium (CP-27) | [`evidence/e2e/`](evidence/e2e/) | F1–F3 |
 | Manual de ejecución (S3-05) | [`manual/manual-ejecucion.md`](manual/manual-ejecucion.md) | Manual |
 
 ## Trazabilidad por semana
@@ -44,6 +48,8 @@ historial de Git (rama y PR de cada semana). El flujo de trabajo interno vive en
 | 1 · Definición | Ficha, requisitos, plan de calidad y tablero | `requirements/` |
 | 2 · Diseño | Mockups v1, casos de uso, secuencia, clases y checklist | `design/` |
 | 3 · Construcción | Sistema de diseño, mockups v2, CP-01 a CP-14, matriz, defectos, revisión de backend y manual | `design/`, `qa/`, `evidence/` y `manual/` |
+| 4 · Validación | CP-15 a CP-26, DEF-03, medición de RNF-01 y RNF-02, capturas a 360/768/1280 | `qa/` y `evidence/` |
+| 5 · Cierre | Lighthouse, validador del W3C, carga con JMeter, E2E con Selenium (CP-27) y DEF-04/DEF-05 | `qa/`, `evidence/` y `scripts/` |
 
 ## Interfaz
 
@@ -124,6 +130,22 @@ Cubierto por CP-21, con `python manage.py test` (69 pruebas automáticas).
 - **Seed con fecha relativa**: las reservas de ejemplo se programan en el primer bloque reservable de hoy (o de mañana) y `seed --fecha AAAA-MM-DD` permite fijarlas.
 
 Cubierto por CP-20, CP-21 y CP-22 a CP-26, con `python manage.py test` (91 pruebas automáticas).
+
+## Cierre (semana 5): herramientas de prueba
+
+Además de los casos manuales, el cierre agrega cuatro mediciones reproducibles:
+
+- **Lighthouse 12.8.2** sobre tres pantallas en móvil y escritorio: accesibilidad
+  100, buenas prácticas 96, rendimiento 100 y SEO 91 (`evidence/rnf-02/lighthouse/`).
+- **Validador Nu del W3C** sobre cinco pantallas: 0 errores y 0 avisos
+  (`evidence/w3c/`).
+- **JMeter 5.6.3** con 1, 10 y 50 usuarios concurrentes: 0 % de error, techo de
+  ~27 req/s y p95 de 896 ms a 10 usuarios (`evidence/rnf-01-estres/`).
+- **Selenium** para el flujo completo: 8 de 8 pasos (`evidence/e2e/`).
+
+Las dos primeras detectaron DEF-04 (marcado inválido) y DEF-05 (la antelación
+mínima no se explicaba antes de elegir el bloque); ambas corregidas y re-probadas.
+Detalle en [`qa/defectos.md`](qa/defectos.md).
 
 ## Orden de revisión
 

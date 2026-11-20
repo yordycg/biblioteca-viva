@@ -1,0 +1,32 @@
+[
+  {
+    "pantalla": "login",
+    "ruta": "/login/",
+    "errores": 0,
+    "avisos": 0
+  },
+  {
+    "pantalla": "buscar",
+    "ruta": "/buscar/",
+    "errores": 0,
+    "avisos": 0
+  },
+  {
+    "pantalla": "libros",
+    "ruta": "/libros/",
+    "errores": 0,
+    "avisos": 0
+  },
+  {
+    "pantalla": "mis-reservas",
+    "ruta": "/mis-reservas/",
+    "errores": 0,
+    "avisos": 0
+  },
+  {
+    "pantalla": "bibliotecario",
+    "ruta": "/bibliotecario/",
+    "errores": 0,
+    "avisos": 0
+  }
+]

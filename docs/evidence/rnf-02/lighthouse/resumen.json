@@ -1,0 +1,59 @@
+{
+  "fecha": "2026-11-20",
+  "servidor": "http://127.0.0.1:8001",
+  "umbral": {
+    "accessibility": 90,
+    "best-practices": 90
+  },
+  "filas": [
+    {
+      "pantalla": "buscar",
+      "formato": "mobile",
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 91
+    },
+    {
+      "pantalla": "buscar",
+      "formato": "desktop",
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 91
+    },
+    {
+      "pantalla": "mis-reservas",
+      "formato": "mobile",
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 91
+    },
+    {
+      "pantalla": "mis-reservas",
+      "formato": "desktop",
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 91
+    },
+    {
+      "pantalla": "bibliotecario",
+      "formato": "mobile",
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 91
+    },
+    {
+      "pantalla": "bibliotecario",
+      "formato": "desktop",
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 91
+    }
+  ],
+  "bajo_umbral": []
+}
