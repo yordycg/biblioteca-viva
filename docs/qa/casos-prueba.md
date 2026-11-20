@@ -1,6 +1,6 @@
 # Casos de prueba — Biblioteca Viva (diseño SEM2-T6, ejecución semana 3)
 
-Estado real: Al 2026-11-20 los 26 casos están ejecutados y aprobados con evidencia. CP-26 falló el 2026-11-19 sin JavaScript (DEF-03), se corrigió y se repitió el paso 5 el 2026-11-20. La ejecución del 17-11 corrió con `local/tools/ejecutar_cp.py` sobre el flujo real y fue verificada por Gerald Sobarzo; CP-08 se midió por HTTP con `scripts/medir_rendimiento_http.py`, CP-09 con capturas a 360, 768 y 1280 px y CP-26 en Chromium con JavaScript activado y desactivado.
+Estado real: Al 2026-11-20 los 27 casos están ejecutados y aprobados con evidencia. CP-26 falló el 2026-11-19 sin JavaScript (DEF-03), se corrigió y se repitió el paso 5 el 2026-11-20. La ejecución del 17-11 corrió con `local/tools/ejecutar_cp.py` sobre el flujo real y fue verificada por Gerald Sobarzo; CP-08 se mide con `scripts/medir_rendimiento_http.py` y con JMeter (`scripts/carga/`), CP-09 con capturas a 360, 768 y 1280 px, Lighthouse 12.8.2 y el validador Nu del W3C, CP-26 en Chromium con JavaScript activado y desactivado y CP-27 con Selenium (`scripts/prueba_e2e.py`).
 
 La interfaz del MVP se rediseñó en la semana 3 con el sistema de diseño institucional (`docs/design/design-system.md`). Ese cambio **no** convierte ningún caso en aprobado: un caso solo cambia de estado cuando QA lo ejecuta y adjunta su evidencia.
 
@@ -157,29 +157,29 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RNF-01 |
 | Tipo | Límite |
-| Precondiciones | Seed cargado. Servidor local en marcha. `scripts/medir_rendimiento.py` disponible. |
-| Datos de entrada | 20 peticiones de reserva con generación de QR |
-| Pasos | 1. Reiniciar los datos con `python manage.py seed --reset`.<br>2. Ejecutar `python scripts/medir_rendimiento.py`.<br>3. Registrar promedio, máximo y cantidad de peticiones.<br>4. Repetir la medición si el equipo estaba bajo carga. |
-| Resultado esperado | El promedio de las 20 peticiones es menor o igual a 1,5 s, con el máximo registrado en la salida. |
-| Resultado obtenido | 20 peticiones HTTP reales de reserva + QR: promedio 27 ms, máximo 29 ms, p95 28 ms. Umbral 1.500 ms: CUMPLE. |
+| Precondiciones | Seed cargado. Servidor en marcha con gunicorn (2 workers) para la carga y con `runserver` para la medición funcional. JMeter 5.6.3 y JRE 21 instalados. |
+| Datos de entrada | 20 peticiones HTTP de reserva + QR · Carga concurrente de 1, 10 y 50 usuarios durante 60 s cada nivel (login + búsqueda + «Mis reservas») |
+| Pasos | 1. Reiniciar los datos con `python manage.py seed --reset`.<br>2. Medir el flujo funcional: `python scripts/medir_rendimiento_http.py`.<br>3. Levantar gunicorn en `127.0.0.1:8010`.<br>4. Ejecutar `scripts/carga/ejecutar_carga.sh 127.0.0.1 8010 60`.<br>5. Registrar rendimiento, promedio, p95, máximo y tasa de error por nivel.<br>6. Ejecutar `reserva-concurrente.jmx` con 10 hilos sobre el mismo recurso, fecha y bloque. |
+| Resultado esperado | El promedio de las 20 reservas es ≤ 1,5 s. En carga, el sistema no pierde peticiones y el punto de saturación queda declarado con su latencia. La reserva simultánea produce una sola reserva. |
+| Resultado obtenido | Funcional: 27 ms de promedio (máximo 29 ms). Carga: 16,0 req/s a 1 usuario (61 ms), 27,9 req/s a 10 (328 ms, p95 896 ms) y 27,4 req/s a 50 (1.078 ms, p95 3.338 ms), con 0 % de error en los tres niveles. Techo: ~27 req/s. Reserva simultánea: 10 intentos, 1 reserva (RSV-0435), 0 errores. Umbral de 1,5 s: CUMPLE hasta 10 usuarios concurrentes. |
 | Estado | Aprobado |
-| Evidencia | `docs/evidence/CP-08.txt` |
-| Ejecutado por / fecha | Yordy Carmona · 2026-11-17 |
+| Evidencia | `docs/evidence/CP-08.txt`, `docs/evidence/rnf-01-estres/` (informes HTML, JTL y `README.md`) |
+| Ejecutado por / fecha | Yordy Carmona · 2026-11-20 |
 
-## CP-09 — Interfaz responsiva y accesibilidad
+## CP-09 — Interfaz responsiva, accesibilidad y estándares
 
 | Campo | Detalle |
 |---|---|
 | Requisito asociado | RNF-02 |
 | Tipo | Positivo |
-| Precondiciones | Servidor local en marcha. Chromium y Lighthouse disponibles. |
-| Datos de entrada | Resoluciones 360×800, 768×1024 y 1280×800 · Auditoría Lighthouse |
-| Pasos | 1. Abrir “Buscar”, “Mis reservas” y el panel en las tres resoluciones.<br>2. Verificar que no aparezca scroll horizontal ni texto cortado.<br>3. Ejecutar Lighthouse sobre `/buscar/` y `/bibliotecario/`.<br>4. Registrar los puntajes de Accesibilidad y Best Practices. |
-| Resultado esperado | Las tres pantallas se adaptan sin desbordes y los puntajes de Accesibilidad y Best Practices son mayores o iguales a 90. |
-| Resultado obtenido | Seis pantallas a 360 y 1280 px y tres a 768 px, sin desbordes ni solapamientos. Lighthouse no se ejecutó porque la pauta no lo solicita. |
+| Precondiciones | Servidor local en marcha. Lighthouse 12.8.2 con Chromium y `vnu.jar` (validador del W3C) con JRE 21. |
+| Datos de entrada | Resoluciones 360×800, 768×1024 y 1280×800 · Lighthouse móvil y escritorio · Validación Nu del HTML |
+| Pasos | 1. Capturar «Buscar», «Mis reservas» y el panel en las tres resoluciones.<br>2. Ejecutar `python scripts/auditar_lighthouse.py` (6 auditorías: 3 pantallas × 2 formatos).<br>3. Ejecutar `python scripts/validar_w3c.py` sobre las cinco pantallas.<br>4. Registrar puntajes y errores de marcado. |
+| Resultado esperado | Sin scroll horizontal ni texto cortado en las tres resoluciones; Accesibilidad y Best Practices ≥ 90; HTML sin errores de marcado según el W3C. |
+| Resultado obtenido | Seis pantallas a 360 y 1280 px y tres a 768 px, sin desbordes. Lighthouse en las seis auditorías: Accesibilidad 100, Best Practices 96, Rendimiento 100, SEO 91. Validador Nu del W3C: 0 errores y 0 avisos en login, buscar, libros, mis-reservas y panel. |
 | Estado | Aprobado |
-| Evidencia | `docs/evidence/rnf-02/` |
-| Ejecutado por / fecha | Yordy Carmona · 2026-11-17 |
+| Evidencia | `docs/evidence/rnf-02/` (capturas), `docs/evidence/rnf-02/lighthouse/` (informes HTML y JSON), `docs/evidence/w3c/` |
+| Ejecutado por / fecha | Yordy Carmona · 2026-11-20 |
 
 ## CP-10 — Contraseñas con hash y datos ficticios
 
@@ -436,6 +436,21 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/evidence/CP-26.png` (fallo del paso 5) · `docs/evidence/CP-26-reprueba.png` (paso 5 corregido) |
 | Ejecutado por / fecha | Gerald Sobarzo / 2026-11-19 · re-prueba de Yordy Carmona / 2026-11-20 |
 
+## CP-27 — Flujo completo automatizado en navegador (E2E)
+
+| Campo | Detalle |
+|---|---|
+| Requisito asociado | RF-01, RF-02, RF-03, RF-04, RF-05, RF-08 |
+| Tipo | Positivo |
+| Precondiciones | Seed cargado. Servidor en marcha con `DEMO_MODE=1` y `DEMO_NOW` fijado para no depender de la hora real. Selenium con Chromium (Selenium Manager resuelve el driver). |
+| Datos de entrada | Solicitante `estudiante1@example.com` · Bibliotecario `bibliotecario1@example.com` · Sala 3 · 2026-11-21 · bloque 11:00–12:00 |
+| Pasos | 1. Ejecutar `python scripts/prueba_e2e.py`.<br>2. El solicitante inicia sesión, busca el bloque y reserva.<br>3. El bibliotecario inicia sesión, busca el código, confirma la entrega y registra la devolución desde el diálogo.<br>4. Revisar las seis capturas de `docs/evidence/e2e/`. |
+| Resultado esperado | Los ocho pasos se completan sin intervención manual y la reserva termina en estado Finalizada. |
+| Resultado obtenido | 8 de 8 pasos correctos: login del solicitante, búsqueda del bloque, confirmación de la reserva (RSV-0429), QR, login del bibliotecario, ticket Reservado, paso a En Uso y devolución a Finalizada. |
+| Estado | Aprobado |
+| Evidencia | `docs/evidence/e2e/01-busqueda.png` … `06-finalizada.png` |
+| Ejecutado por / fecha | Yordy Carmona · 2026-11-20 |
+
 ## (a) Distribución por tipo
 
 Semana 2 (casos diseñados):
@@ -518,6 +533,15 @@ Casos agregados en la corrección S3 (cancelación, filtros y pestañas):
 | Negativo | 1 | CP-23 |
 | Límite | 1 | CP-24 |
 | Total | 5 | |
+
+Caso agregado en el cierre (automatización de navegador):
+
+| Tipo | Cantidad | Casos |
+|---|---|---|
+| Positivo | 1 | CP-27 |
+| Negativo | 0 | — |
+| Límite | 0 | — |
+| Total | 1 | |
 
 ## (b) Plan original de CP-07 a CP-14
 

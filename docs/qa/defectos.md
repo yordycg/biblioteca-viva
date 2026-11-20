@@ -72,12 +72,45 @@
 DEF-01 no altera el conteo de fallidos de la aplicación: es una corrección del
 caso CP-01, registrada para dejar trazabilidad entre el criterio de semana 2 y el
 RF-01 vigente. DEF-02 tampoco es un defecto de la aplicación: corrige el método
-HTTP descrito en CP-23. El único fallo real contra el producto es **DEF-03**
-(CP-26, ejecución del 2026-11-19), cerrado con la re-prueba del 2026-11-20.
+HTTP descrito en CP-23. Los fallos reales contra el producto son **DEF-03**
+(CP-26, ejecución del 2026-11-19), **DEF-04** y **DEF-05**, los tres cerrados con
+su re-prueba el 2026-11-20. DEF-04 y DEF-05 los detectaron herramientas que no
+se habían usado antes: Lighthouse 12.8.2 y el validador Nu del W3C.
 
 | Fecha | Casos re-ejecutados | Aprobados | Fallidos | Bloqueados | Ejecutado por |
 |---|---|---|---|---|---|
 | 2026-11-20 | 1 (CP-26, paso 5 sin JavaScript) | 1 | 0 | 0 | Yordy Carmona |
+| 2026-11-20 | 1 (CP-27, flujo E2E con Selenium) | 1 | 0 | 0 | Yordy Carmona |
+
+### DEF-04 — Marcado HTML inválido detectado por el validador del W3C
+
+| Campo | Detalle |
+|---|---|
+| Descripción | El validador Nu del W3C reportó dos hallazgos de marcado. (1) En «Buscar» y en el catálogo de libros, la sección de resultados usaba `aria-labelledby` pero no contenía un encabezado cuando no había búsqueda: «Section lacks heading». (2) En «Mis reservas», la lista de datos usaba `<dl>` con un `<div>` intermedio que contenía un `<span>` y otro `<div>`: «Element span not allowed as child of element div» y «div is missing a required instance of child element dt/dd» (8 errores por reserva mostrada). No afectaba la vista, pero el documento no era HTML válido. |
+| Pasos para reproducir | 1. Iniciar sesión y abrir «Buscar» sin filtros.<br>2. Ejecutar `python scripts/validar_w3c.py`.<br>3. Abrir «Mis reservas» con al menos una reserva y repetir la validación. |
+| Severidad | Baja: no hay pérdida de datos ni función inaccesible; afecta el cumplimiento de estándares. |
+| Caso asociado | CP-09 |
+| Responsable | Yordy Carmona |
+| Estado | Cerrado |
+| Corrección (commit) | `5691bf8` — encabezado oculto en la sección de resultados de ambas vistas; la lista de datos pasó a `div` con `span` de término y valor, y se ajustaron las reglas `.data-list__term` y `.data-list__value` en el CSS. |
+| Re-prueba | 2026-11-20: `scripts/validar_w3c.py` sobre login, buscar, libros, mis-reservas y panel → **0 errores y 0 avisos** (`docs/evidence/w3c/`). |
+
+### DEF-05 — La antelación mínima de 15 minutos no se explica antes de elegir el bloque
+
+| Campo | Detalle |
+|---|---|
+| Descripción | La regla de antelación mínima (RF-01) solo aparecía cuando ya no quedaban bloques para la fecha elegida. El usuario no sabía por qué faltaban bloques ni cuánta antelación necesitaba: la explicación llegaba después del problema, no antes de la acción. |
+| Pasos para reproducir | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir «Buscar» › «Salas y equipos».<br>3. Revisar el campo «Bloque horario»: no hay texto de ayuda. |
+| Severidad | Baja (UX): el sistema no falla y el mensaje posterior es correcto; se pierde claridad antes de la acción. |
+| Caso asociado | CP-09 (usabilidad) |
+| Responsable | Yordy Carmona |
+| Estado | Cerrado |
+| Corrección (commit) | `5691bf8` — texto de ayuda bajo el selector: «Solo se ofrecen bloques con al menos 15 minutos de antelación», con el valor tomado de `services.MIN_ANTELACION_MIN`. |
+| Re-prueba | 2026-11-20: la ayuda se muestra en «Salas y equipos» antes de filtrar; el validador y las 91 pruebas automáticas siguen en verde. |
+
+El detector de DEF-04 y DEF-05 fue la combinación de Lighthouse 12.8.2 y el
+validador Nu del W3C; ninguno de los dos se había ejecutado antes en el proyecto.
+
 
 ## Observaciones de la ejecución del 2026-11-14 (no son defectos)
 

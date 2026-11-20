@@ -165,6 +165,25 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 - `simular_retraso.py` fuerza una devolución a las 11:01 y muestra la sanción.
 - `medir_rendimiento.py` mide 20 reservas + QR a nivel de servicio (medición inicial de RNF-01).
 
+## Scripts de prueba (semana 4 y cierre)
+
+```bash
+.venv/bin/pip install -r requirements-dev.txt   # gunicorn y selenium
+.venv/bin/python scripts/medir_rendimiento_http.py
+.venv/bin/python scripts/validar_w3c.py
+.venv/bin/python scripts/auditar_lighthouse.py
+.venv/bin/python scripts/prueba_e2e.py
+./scripts/carga/ejecutar_carga.sh 127.0.0.1 8010 60
+```
+
+- `medir_rendimiento_http.py` mide 20 reservas + QR por HTTP (RNF-01).
+- `validar_w3c.py` valida el HTML con el validador Nu del W3C (requiere `~/.local/opt/vnu.jar` y un JRE).
+- `auditar_lighthouse.py` audita accesibilidad, buenas prácticas, rendimiento y SEO en móvil y escritorio (requiere `CHROME_PATH`).
+- `prueba_e2e.py` recorre el flujo completo con Selenium; necesita el servidor con `DEMO_MODE=1`.
+- `scripts/carga/ejecutar_carga.sh` ejecuta JMeter a 1, 10 y 50 usuarios concurrentes contra gunicorn.
+
+El método y los resultados están en `docs/qa/casos-prueba.md` (CP-08, CP-09 y CP-27) y en `docs/evidence/`.
+
 ## Modo demostración
 
 Para probar RF-07 sin esperar la hora real:
