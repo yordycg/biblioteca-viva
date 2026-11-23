@@ -10,8 +10,8 @@ just dashboard-demo      # datos ficticios del panel
 just run                 # http://127.0.0.1:8000
 ```
 
-Cuentas ficticias: `estudiante1@example.com`, `estudiante2@example.com`,
-`bibliotecario1@example.com`, contraseña `demo1234`.
+Cuentas ficticias: `estudiante1@virginiogomez.cl`, `estudiante2@virginiogomez.cl`,
+`bibliotecario1@virginiogomez.cl`, contraseña `demo1234`.
 
 Capturas: 1280×800 y 360×800 cuando el caso sea visual. Nombres:
 `docs/evidence/CP-XX-1280.png` y `CP-XX-360.png`.

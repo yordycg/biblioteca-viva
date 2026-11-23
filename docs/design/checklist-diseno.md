@@ -39,7 +39,7 @@
 | Versión móvil 360 px en las 3 pantallas | Cumple | Las 3 láminas incluyen el marco móvil |
 | Versión escritorio 1280 px en al menos 2 | Cumple | Las 3 láminas incluyen el marco de escritorio |
 | Cada pantalla referencia su RF | Parcial | Láminas 1 y 2 con banda de título y chip de RF; lámina 3 sin ninguno → HAL-01 |
-| Datos ficticios, sin datos reales | No cumple | Nombre real y correo con dominio institucional en las 3 láminas (HAL-06). Se reemplazan por “Estudiante 1” y estudiante1@example.com en la corrección de S2; el rediseño de S3 los mantiene ficticios |
+| Datos ficticios, sin datos reales | No cumple | Nombre real y correo con dominio institucional en las 3 láminas (HAL-06). Se reemplazan por “Estudiante 1” y estudiante1@virginiogomez.cl en la corrección de S2; el rediseño de S3 los mantiene ficticios |
 
 ## 4. UML
 
@@ -88,7 +88,7 @@
 | HAL-03 | Funciones fuera de alcance: “Descargar PDF” y “Descargar QR” (lámina 2), “Historial” y “Mis Reservas” (lámina 1) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg` | Baja | Vicente Díaz | Eliminarlas o declararlas como mejora futura en el README de la tarea | [COMPLETAR] | Pendiente |
 | HAL-04 | La sección de exportación de `T1-mockups.md` listaba 7 archivos `-mobile`/`-desktop`; lo entregado son 3 láminas con móvil y escritorio juntos | `local/week-02/T1-mockups.md` | Baja | Yordy Carmona | Actualizar la sección a los 3 nombres reales | 2026-11-04 | No aplica (documento local) |
 | HAL-05 | Las fuentes `.mmd` del repo no correspondían a los PNG entregados | `clases.mmd`, `secuencia-reserva.mmd` | Media | Yordy Carmona | Fuentes reconstruidas el 2026-11-05 desde los PNG: 5 clases y 8 participantes con 27 mensajes; fuente y exportación coinciden | 2026-11-05 | Corregido |
-| HAL-06 | Las 3 láminas incluyen el nombre real “Vicente Díaz” y un correo de apariencia institucional (ficticio, pero con dominio real) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg`, `sem2-t1-bibliotecario.jpg` | Media | Vicente Díaz / Yordy Carmona | Reemplazar por “Estudiante 1” y `estudiante1@example.com` en las 3 láminas; el rediseño de S3 usa solo datos ficticios | 2026-11-06 | Corregido en S2; pendiente re-revisión 1:1 |
+| HAL-06 | Las 3 láminas incluyen el nombre real “Vicente Díaz” y un correo de apariencia institucional (ficticio, pero con dominio real) | `sem2-t1-busqueda.jpg`, `sem2-t1-reserva-qr.jpg`, `sem2-t1-bibliotecario.jpg` | Media | Vicente Díaz / Yordy Carmona | Reemplazar por “Estudiante 1” y `estudiante1@virginiogomez.cl` en las 3 láminas; el rediseño de S3 usa solo datos ficticios | 2026-11-06 | Corregido en S2; pendiente re-revisión 1:1 |
 | HAL-07 | La pantalla 1 repite “Sala 1” y los conteos no cuadran: “Disponibles (3)”, “Mostrando 4 resultados” y 5 tarjetas | `sem2-t1-busqueda.jpg` | Media | Vicente Díaz | Corregir en el rediseño de S3 (SEM3-T1); se documenta en el informe | 2026-11-06 | Pendiente (S3) |
 
 ## 8. Resultado global

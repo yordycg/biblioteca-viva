@@ -18,8 +18,8 @@
 | Pantalla | 1280 px | 360 px |
 |---|---|---|
 | Login sin credenciales demo | `login-1280.png` | `login-360.png` |
-| Búsqueda · Libros (filtros vacíos) | `buscar-libros-1280.png` | `buscar-libros-360.png` |
-| Búsqueda · Salas y equipos (filtros vacíos) | `buscar-recursos-1280.png` | `buscar-recursos-360.png` |
+| Búsqueda · Libros (listado inicial) | `buscar-libros-1280.png` | `buscar-libros-360.png` |
+| Búsqueda · Salas y equipos (listado inicial) | `buscar-recursos-1280.png` | `buscar-recursos-360.png` |
 | Error de validación al enviar sin filtros | `error-libros-1280.png` | `error-libros-360.png` |
 | Ficha de libro en una card | `ficha-1280.png` | `ficha-360.png` |
 | Panel · Operación | `panel-1280.png` | `panel-360.png` |
