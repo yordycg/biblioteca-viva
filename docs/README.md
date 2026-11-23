@@ -11,7 +11,7 @@ historial de Git (rama y PR de cada semana). El flujo de trabajo interno vive en
 |---|---|
 | [`requirements/`](requirements/) | Ficha del proyecto, requisitos RF/RNF, plan de calidad y evidencia del tablero |
 | [`design/`](design/) | Sistema de diseño, checklist aplicado, diagramas UML y mockups |
-| [`qa/`](qa/) | Casos de prueba, matriz de trazabilidad, bitácora de defectos y revisión de backend |
+| [`qa/`](qa/) | Casos de prueba, matriz de trazabilidad, bitácora de defectos, registro de revisiones y revisión de backend |
 | [`evidence/`](evidence/) | Evidencias de ejecución y capturas de interfaz a 360 y 1280 px |
 | [`manual/`](manual/) | Manual de ejecución e instalación |
 
@@ -31,6 +31,7 @@ historial de Git (rama y PR de cada semana). El flujo de trabajo interno vive en
 | Casos de prueba | [`qa/casos-prueba.md`](qa/casos-prueba.md) | Pruebas |
 | Matriz de trazabilidad | [`qa/matriz-trazabilidad.md`](qa/matriz-trazabilidad.md) | Trazabilidad |
 | Bitácora de defectos | [`qa/defectos.md`](qa/defectos.md) | Defectos |
+| Registro de revisiones internas | [`qa/revisiones.md`](qa/revisiones.md) | Calidad |
 | Revisión de backend y scripts (S3-02) | [`qa/revision-backend.md`](qa/revision-backend.md) | Calidad |
 | Guía de evidencias | [`qa/guia-evidencias.md`](qa/guia-evidencias.md) | Pruebas |
 | Evidencias de ejecución | [`evidence/`](evidence/) | Pruebas |
