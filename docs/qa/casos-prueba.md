@@ -11,9 +11,9 @@ Fuentes usadas: requisitos RF/RNF del equipo, diagrama de casos de uso (CU0–CU
 | Dato | Valor |
 |---|---|
 | Fecha de prueba | 2026-11-10 |
-| Solicitante | estudiante1@example.com (contraseña ficticia del seed) |
-| Otro solicitante | estudiante2@example.com |
-| Resolutor (bibliotecario) | bibliotecario1@example.com |
+| Solicitante | estudiante1@virginiogomez.cl (contraseña ficticia del seed) |
+| Otro solicitante | estudiante2@virginiogomez.cl |
+| Resolutor (bibliotecario) | bibliotecario1@virginiogomez.cl |
 | Recursos semilla | Sala 3 (Piso 1, 8 personas) · Sala 1 (Piso 1, 4 personas) · Proyector Epson (eq-014) · Notebook Dell (eq-002) |
 | Libros semilla | Don Quijote de la Mancha · Martín Fierro · La Araucana · Veinte mil leguas de viaje submarino · La metamorfosis · Frankenstein (carátulas SVG locales) |
 | Bloques | 10:00–11:00 · 11:00–12:00 · 15:00–16:00 |
@@ -52,9 +52,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01 (CU1 Buscar recurso) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Sala 3 libre el 2026-11-10 en 10:00–11:00. Sala 1 con reserva activa de estudiante2@example.com en ese mismo bloque. |
-| Datos de entrada | Usuario: estudiante1@example.com · Tipo de recurso: Sala · Fecha: 2026-11-10 · Bloque horario: 10:00–11:00 |
-| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir la pestaña "Buscar".<br>3. Elegir Tipo de recurso "Sala", Fecha 2026-11-10 y Bloque horario 10:00–11:00.<br>4. Presionar "Filtrar".<br>5. Revisar el encabezado y las tarjetas de resultados.<br>6. Marcar "Solo disponibles" y volver a filtrar. |
+| Precondiciones | Seed cargado. Sala 3 libre el 2026-11-10 en 10:00–11:00. Sala 1 con reserva activa de estudiante2@virginiogomez.cl en ese mismo bloque. |
+| Datos de entrada | Usuario: estudiante1@virginiogomez.cl · Tipo de recurso: Sala · Fecha: 2026-11-10 · Bloque horario: 10:00–11:00 |
+| Pasos | 1. Iniciar sesión como estudiante1@virginiogomez.cl.<br>2. Abrir la pestaña "Buscar".<br>3. Elegir Tipo de recurso "Sala", Fecha 2026-11-10 y Bloque horario 10:00–11:00.<br>4. Presionar "Filtrar".<br>5. Revisar el encabezado y las tarjetas de resultados.<br>6. Marcar "Solo disponibles" y volver a filtrar. |
 | Resultado esperado | El listado muestra Sala 3 con etiqueta "Disponible" y botón "Reservar bloque 10:00–11:00", y Sala 1 con etiqueta "Reservado" y sin botón de reserva, porque el RF-01 vigente muestra todos los recursos con su estado. Al activar "Solo disponibles", Sala 1 desaparece y queda solo Sala 3. No aparecen Proyector ni Notebook (tipo distinto). El encabezado indica fecha, bloque y cantidad de resultados, y la cifra coincide con las tarjetas mostradas. |
 | Resultado obtenido | La búsqueda (Sala · 2026-11-10 · 10:00–11:00) lista Sala 3 «Disponible» y Sala 1 «Reservado»; al marcar «Solo disponibles» queda solo Sala 3. No aparecen Proyector ni Notebook y el encabezado indica «2 recursos · 10-11-2026 · bloque 10:00-11:00». Coincide con el RF-01 vigente: todos los recursos con su estado y filtro de disponibilidad. |
 | Estado | Aprobado |
@@ -67,9 +67,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-02, RF-03 (CU2 Reservar recurso, CU3 Visualizar QR) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Sala 3 libre el 2026-11-10 en 10:00–11:00. estudiante1@example.com sin reservas ese día. |
-| Datos de entrada | Usuario: estudiante1@example.com · Recurso: Sala 3 · Fecha: 2026-11-10 · Bloque: 10:00–11:00 |
-| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Buscar Sala, 2026-11-10, 10:00–11:00 (como en CP-01).<br>3. Presionar "Reservar bloque 10:00–11:00" en Sala 3.<br>4. En el detalle (Estado: Disponible), presionar "Confirmar reserva".<br>5. Anotar el "ID reserva" mostrado (formato RSV-NNNN).<br>6. Verificar que se muestran "¡Reserva Confirmada!", la etiqueta "Reservada" y el QR.<br>7. Decodificar el QR con un lector externo y comparar su contenido con el ID anotado.<br>8. Presionar "Buscar otro recurso" y repetir la búsqueda del paso 2. |
+| Precondiciones | Seed cargado. Sala 3 libre el 2026-11-10 en 10:00–11:00. estudiante1@virginiogomez.cl sin reservas ese día. |
+| Datos de entrada | Usuario: estudiante1@virginiogomez.cl · Recurso: Sala 3 · Fecha: 2026-11-10 · Bloque: 10:00–11:00 |
+| Pasos | 1. Iniciar sesión como estudiante1@virginiogomez.cl.<br>2. Buscar Sala, 2026-11-10, 10:00–11:00 (como en CP-01).<br>3. Presionar "Reservar bloque 10:00–11:00" en Sala 3.<br>4. En el detalle (Estado: Disponible), presionar "Confirmar reserva".<br>5. Anotar el "ID reserva" mostrado (formato RSV-NNNN).<br>6. Verificar que se muestran "¡Reserva Confirmada!", la etiqueta "Reservada" y el QR.<br>7. Decodificar el QR con un lector externo y comparar su contenido con el ID anotado.<br>8. Presionar "Buscar otro recurso" y repetir la búsqueda del paso 2. |
 | Resultado esperado | Reserva registrada con estado Reservada. Se muestra un QR único cuyo contenido decodificado incluye el ID de la reserva, junto con el resumen del recurso y su horario. En la nueva búsqueda, Sala 3 aparece como "Reservado" y sin botón de reserva; con "Solo disponibles" no aparece. |
 | Resultado obtenido | Reserva RSV-0034 registrada con estado Reservada y su QR; el QR decodificado contiene RSV-0034. En «Mis reservas» figura la reserva y, en la nueva búsqueda, Sala 3 aparece como «Reservado» y sin botón; con «Solo disponibles» no aparece. |
 | Estado | Aprobado |
@@ -82,9 +82,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-06 (CU2 Reservar recurso) |
 | Tipo | Límite |
-| Precondiciones | Seed cargado. estudiante1@example.com tiene 2 reservas activas el 2026-11-10: Sala 3 10:00–11:00 (ID-A) y Sala 3 11:00–12:00 (ID-B). Sala 3 libre en 15:00–16:00. |
-| Datos de entrada | Usuario: estudiante1@example.com · Recurso: Sala 3 · Fecha: 2026-11-10 · Bloque: 15:00–16:00 (3ª reserva) |
-| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir "Mis reservas" y confirmar las 2 reservas activas (ID-A, ID-B).<br>3. En "Buscar", elegir Sala, 2026-11-10, 15:00–16:00 y presionar "Filtrar".<br>4. Presionar "Reservar bloque 15:00–16:00" en Sala 3 y luego "Confirmar reserva".<br>5. Leer el mensaje mostrado.<br>6. Abrir "Mis reservas" y revisar las reservas.<br>7. Repetir la búsqueda del paso 3. |
+| Precondiciones | Seed cargado. estudiante1@virginiogomez.cl tiene 2 reservas activas el 2026-11-10: Sala 3 10:00–11:00 (ID-A) y Sala 3 11:00–12:00 (ID-B). Sala 3 libre en 15:00–16:00. |
+| Datos de entrada | Usuario: estudiante1@virginiogomez.cl · Recurso: Sala 3 · Fecha: 2026-11-10 · Bloque: 15:00–16:00 (3ª reserva) |
+| Pasos | 1. Iniciar sesión como estudiante1@virginiogomez.cl.<br>2. Abrir "Mis reservas" y confirmar las 2 reservas activas (ID-A, ID-B).<br>3. En "Buscar", elegir Sala, 2026-11-10, 15:00–16:00 y presionar "Filtrar".<br>4. Presionar "Reservar bloque 15:00–16:00" en Sala 3 y luego "Confirmar reserva".<br>5. Leer el mensaje mostrado.<br>6. Abrir "Mis reservas" y revisar las reservas.<br>7. Repetir la búsqueda del paso 3. |
 | Resultado esperado | La 3ª reserva se rechaza con el mensaje "Límite alcanzado: ya tienes 2 reservas activas para ese día.". "Mis reservas" muestra solo ID-A e ID-B, con los mismos datos y estado Reservada. Sala 3 sigue disponible en 15:00–16:00. |
 | Resultado obtenido | Con RSV-0037 (10:00–11:00) y RSV-0038 (11:00–12:00) activas, la 3ª reserva (Sala 3 15:00–16:00) se rechazó con «Límite alcanzado: ya tienes 2 reservas activas para ese día.». «Mis reservas» siguió mostrando RSV-0037 y RSV-0038, y Sala 3 15:00–16:00 siguió Disponible. |
 | Estado | Aprobado |
@@ -97,7 +97,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-04 (CU4 Validar inicio) |
 | Tipo | Negativo |
-| Precondiciones | Seed cargado. Reserva Reservada de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, con ID anotado como ID-RESERVA. Hora actual dentro del bloque (ej. 10:05). Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@example.com en la vista Resolutor. |
+| Precondiciones | Seed cargado. Reserva Reservada de estudiante1@virginiogomez.cl para Sala 3, 2026-11-10 10:00–11:00, con ID anotado como ID-RESERVA. Hora actual dentro del bloque (ej. 10:05). Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@virginiogomez.cl en la vista Resolutor. |
 | Datos de entrada | Escenario A (inválido): código NO-EXISTE. Escenario B (duplicado): código de ID-RESERVA ya iniciada. |
 | Pasos | Escenario A — QR inválido<br>1. Abrir el visor de validación de la vista Resolutor.<br>2. Ingresar el código NO-EXISTE. El panel admite el ingreso manual del código.<br>3. Leer el mensaje y verificar que ID-RESERVA sigue en estado Reservada.<br>Escenario B — QR duplicado<br>4. Ingresar el código de ID-RESERVA; en la tarjeta (ID, recurso, correo, Estado "Reservada") presionar "Confirmar entrega". La reserva pasa a En Uso.<br>5. Ingresar nuevamente el mismo código de ID-RESERVA.<br>6. Leer el mensaje y verificar que la reserva sigue En Uso. |
 | Resultado esperado | A: se rechaza NO-EXISTE con mensaje "No existe una reserva con el código NO-EXISTE."; no se muestra tarjeta de reserva y ninguna reserva cambia de estado. B: el primer ingreso deja la reserva En Uso; el segundo se rechaza con mensaje "QR ya utilizado o la reserva no está vigente." y la reserva permanece En Uso. |
@@ -112,10 +112,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-05 (CU5 Registrar devolución) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso (inicio validado como en CP-04). Hora de devolución: 10:45. Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@example.com. |
+| Precondiciones | Seed cargado. Reserva de estudiante1@virginiogomez.cl para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso (inicio validado como en CP-04). Hora de devolución: 10:45. Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@virginiogomez.cl. |
 | Datos de entrada | Código de la reserva En Uso (RSV-NNNN) · Hora de devolución: 10:45 |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. En el visor, ingresar o escanear el QR de la reserva En Uso.<br>3. Verificar en la tarjeta: ID, Sala 3, correo y Estado "En Uso".<br>4. Presionar "Registrar devolución" (hora 10:45).<br>5. Verificar el estado de la reserva.<br>6. En el panel, abrir "Inventario" y verificar que Sala 3 10:00–11:00 figura "disponible".<br>7. Intentar una reserva nueva de Sala 1, 15:00–16:00 como estudiante1@example.com. |
-| Resultado esperado | La reserva pasa a Finalizada. El inventario muestra Sala 3 10:00–11:00 "disponible". No aparece el banner de sanción. estudiante1@example.com puede reservar normalmente (paso 7), sin sanción. |
+| Pasos | 1. Iniciar sesión como bibliotecario1@virginiogomez.cl.<br>2. En el visor, ingresar o escanear el QR de la reserva En Uso.<br>3. Verificar en la tarjeta: ID, Sala 3, correo y Estado "En Uso".<br>4. Presionar "Registrar devolución" (hora 10:45).<br>5. Verificar el estado de la reserva.<br>6. En el panel, abrir "Inventario" y verificar que Sala 3 10:00–11:00 figura "disponible".<br>7. Intentar una reserva nueva de Sala 1, 15:00–16:00 como estudiante1@virginiogomez.cl. |
+| Resultado esperado | La reserva pasa a Finalizada. El inventario muestra Sala 3 10:00–11:00 "disponible". No aparece el banner de sanción. estudiante1@virginiogomez.cl puede reservar normalmente (paso 7), sin sanción. |
 | Resultado obtenido | RSV-0044 pasó de En Uso a Finalizada con «Devolución registrada: RSV-0044 quedó Finalizada.», sin aviso de sanción; el inventario muestra Sala 3 10:00–11:00 «disponible» y estudiante1 reservó Sala 1 15:00–16:00 (RSV-0045) sin sanción. |
 | Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-05.png` |
@@ -127,10 +127,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-07 (CU5 Registrar devolución, CU6 Aplicar sanción) |
 | Tipo | Límite |
-| Precondiciones | Seed reiniciado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso. Hora de devolución: 11:01. Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@example.com. Sala 1 libre en 15:00–16:00. |
+| Precondiciones | Seed reiniciado. Reserva de estudiante1@virginiogomez.cl para Sala 3, 2026-11-10 10:00–11:00, en estado En Uso. Hora de devolución: 11:01. Hora fijada con `DEMO_MODE` y `DEMO_NOW`. Sesión como bibliotecario1@virginiogomez.cl. Sala 1 libre en 15:00–16:00. |
 | Datos de entrada | Código de la reserva En Uso · Hora de devolución: 11:01 (el bloque termina a las 11:00) · Reserva posterior: Sala 1, 2026-11-10, 15:00–16:00 |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Ingresar o escanear el QR de la reserva En Uso y verificar la tarjeta.<br>3. Presionar "Registrar devolución" (hora 11:01).<br>4. Verificar que aparece el banner "Devolución tardía: se aplicó una sanción de 7 días a Estudiante 1." y que la reserva queda Finalizada.<br>5. Verificar el registro de sanción de estudiante1@example.com (estado "Sancionado", fecha de término) en el aviso "Sanción aplicada hoy" y en "Sanciones activas".<br>6. Cerrar sesión e iniciar como estudiante1@example.com.<br>7. Buscar Sala 1, 2026-11-10, 15:00–16:00 e intentar reservar ("Reservar bloque 15:00–16:00" → "Confirmar reserva").<br>8. Leer el mensaje mostrado. |
-| Resultado esperado | La reserva pasa a Finalizada. Se muestra "Devolución tardía: se aplicó una sanción de 7 días a Estudiante 1." y estudiante1@example.com queda "Sancionado" por 7 días (hasta el 17-11-2026 11:01 en esta ejecución). El intento de reserva del paso 7 se rechaza con mensaje "No puedes reservar: tienes una sanción vigente hasta DD-MM-YYYY HH:MM.". |
+| Pasos | 1. Iniciar sesión como bibliotecario1@virginiogomez.cl.<br>2. Ingresar o escanear el QR de la reserva En Uso y verificar la tarjeta.<br>3. Presionar "Registrar devolución" (hora 11:01).<br>4. Verificar que aparece el banner "Devolución tardía: se aplicó una sanción de 7 días a Estudiante 1." y que la reserva queda Finalizada.<br>5. Verificar el registro de sanción de estudiante1@virginiogomez.cl (estado "Sancionado", fecha de término) en el aviso "Sanción aplicada hoy" y en "Sanciones activas".<br>6. Cerrar sesión e iniciar como estudiante1@virginiogomez.cl.<br>7. Buscar Sala 1, 2026-11-10, 15:00–16:00 e intentar reservar ("Reservar bloque 15:00–16:00" → "Confirmar reserva").<br>8. Leer el mensaje mostrado. |
+| Resultado esperado | La reserva pasa a Finalizada. Se muestra "Devolución tardía: se aplicó una sanción de 7 días a Estudiante 1." y estudiante1@virginiogomez.cl queda "Sancionado" por 7 días (hasta el 17-11-2026 11:01 en esta ejecución). El intento de reserva del paso 7 se rechaza con mensaje "No puedes reservar: tienes una sanción vigente hasta DD-MM-YYYY HH:MM.". |
 | Resultado obtenido | RSV-0048 devuelta a las 11:01: Finalizada, aviso «Devolución tardía: se aplicó una sanción de 7 días a Estudiante 1.» y sanción hasta el 17-11-2026 11:01 visible en «Sanciones activas». estudiante1 no pudo reservar Sala 1 15:00–16:00: «No puedes reservar: tienes una sanción vigente hasta 17-11-2026 11:01.» |
 | Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-06.png` |
@@ -143,7 +143,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Requisito asociado | RF-08 (CU0 Iniciar Sesión) |
 | Tipo | Negativo |
 | Precondiciones | Seed cargado. Sin sesión iniciada. |
-| Datos de entrada | `estudiante1@example.com` con clave incorrecta · `estudiante1@example.com` con `demo1234` · `bibliotecario1@example.com` con `demo1234` |
+| Datos de entrada | `estudiante1@virginiogomez.cl` con clave incorrecta · `estudiante1@virginiogomez.cl` con `demo1234` · `bibliotecario1@virginiogomez.cl` con `demo1234` |
 | Pasos | 1. Abrir `/login/`.<br>2. Ingresar el correo de estudiante con una clave incorrecta.<br>3. Verificar el mensaje mostrado.<br>4. Ingresar con la clave correcta.<br>5. Verificar la vista de destino.<br>6. Cerrar sesión e ingresar como bibliotecario.<br>7. Verificar la vista de destino. |
 | Resultado esperado | Las credenciales inválidas se rechazan con “Correo o contraseña incorrectos”; el estudiante llega a `/buscar/` y el bibliotecario a `/bibliotecario/`. |
 | Resultado obtenido | Credenciales inválidas rechazadas; cada rol llega a su vista. |
@@ -190,7 +190,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Precondiciones | Seed cargado. Repositorio clonado. |
 | Datos de entrada | Usuarios del seed · `.gitignore` · búsqueda de correos y dominios reales |
 | Pasos | 1. Inspeccionar el campo `password` de los usuarios del seed.<br>2. Verificar el prefijo del hash.<br>3. Revisar `.gitignore` (`.env`, `local/`, `db.sqlite3`).<br>4. Buscar correos y dominios reales en el repo. |
-| Resultado esperado | Las contraseñas usan `pbkdf2_sha256`, no hay credenciales ni bases versionadas y todos los datos son `@example.com`. |
+| Resultado esperado | Las contraseñas usan `pbkdf2_sha256`, no hay credenciales ni bases versionadas y todos los datos son `@virginiogomez.cl`. |
 | Resultado obtenido | Contrasenas con hash, .env y db ignorados, login sin credenciales visibles. |
 | Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-10.png` |
@@ -202,7 +202,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01 (CU1 Buscar recurso) |
 | Tipo | Negativo |
-| Precondiciones | Seed cargado. Todas las salas ocupadas en el bloque elegido. Sesión como estudiante1@example.com. |
+| Precondiciones | Seed cargado. Todas las salas ocupadas en el bloque elegido. Sesión como estudiante1@virginiogomez.cl. |
 | Datos de entrada | Fecha y bloque del día · Tipo “Sala” · “Solo disponibles” activado |
 | Pasos | 1. Abrir “Buscar” y la pestaña “Salas y equipos”.<br>2. Elegir la fecha y el bloque donde las salas están ocupadas.<br>3. Seleccionar el tipo “Sala”.<br>4. Activar “Solo disponibles”.<br>5. Verificar el mensaje y la ausencia de botones de reserva. |
 | Resultado esperado | Se muestra un mensaje claro de que no hay resultados, sin error técnico ni trazas, y sin botón para reservar. |
@@ -217,9 +217,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-07 (CU5 Registrar devolución) |
 | Tipo | Límite |
-| Precondiciones | Reserva de 10:00–11:00 en estado En Uso. Hora de la aplicación fijada en 11:00 (`DEMO_MODE=1`, `DEMO_NOW=2026-11-12T11:00:00`). Sesión como bibliotecario1@example.com. |
+| Precondiciones | Reserva de 10:00–11:00 en estado En Uso. Hora de la aplicación fijada en 11:00 (`DEMO_MODE=1`, `DEMO_NOW=2026-11-12T11:00:00`). Sesión como bibliotecario1@virginiogomez.cl. |
 | Datos de entrada | Código de la reserva En Uso · Devolución a las 11:00 exactas |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Validar el código de la reserva En Uso.<br>3. Registrar la devolución con la hora fijada en 11:00.<br>4. Verificar el estado de la reserva.<br>5. Verificar que el solicitante no quedó sancionado.<br>6. Intentar una reserva nueva con ese usuario. |
+| Pasos | 1. Iniciar sesión como bibliotecario1@virginiogomez.cl.<br>2. Validar el código de la reserva En Uso.<br>3. Registrar la devolución con la hora fijada en 11:00.<br>4. Verificar el estado de la reserva.<br>5. Verificar que el solicitante no quedó sancionado.<br>6. Intentar una reserva nueva con ese usuario. |
 | Resultado esperado | La reserva queda Finalizada y no se aplica sanción: el límite es el fin del bloque inclusive. El usuario puede volver a reservar. |
 | Resultado obtenido | Devolución a las 11:00 exactas: Finalizada y sin sanción. |
 | Estado | Aprobado |
@@ -232,9 +232,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-02, RF-03 (CU2 Reservar recurso, CU3 Visualizar QR) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. estudiante1@example.com con 1 reserva activa (Sala 3, 2026-11-10 10:00–11:00, ID-A) y 1 reserva finalizada (Sala 1, 2026-11-09 11:00–12:00). Sesión iniciada como estudiante1@example.com. |
-| Datos de entrada | Usuario: estudiante1@example.com · Reserva activa: ID-A (RSV-NNNN) |
-| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir "Mis reservas" en la navegación.<br>3. En la sección "Activas", verificar ID-A, recurso, fecha, bloque y estado "Reservada".<br>4. En la sección "Historial", verificar la reserva finalizada con estado "Finalizada".<br>5. Presionar "Ver QR" en ID-A.<br>6. Comparar el código mostrado con el ID de la reserva.<br>7. Presionar "Mis reservas" para volver a la lista. |
+| Precondiciones | Seed cargado. estudiante1@virginiogomez.cl con 1 reserva activa (Sala 3, 2026-11-10 10:00–11:00, ID-A) y 1 reserva finalizada (Sala 1, 2026-11-09 11:00–12:00). Sesión iniciada como estudiante1@virginiogomez.cl. |
+| Datos de entrada | Usuario: estudiante1@virginiogomez.cl · Reserva activa: ID-A (RSV-NNNN) |
+| Pasos | 1. Iniciar sesión como estudiante1@virginiogomez.cl.<br>2. Abrir "Mis reservas" en la navegación.<br>3. En la sección "Activas", verificar ID-A, recurso, fecha, bloque y estado "Reservada".<br>4. En la sección "Historial", verificar la reserva finalizada con estado "Finalizada".<br>5. Presionar "Ver QR" en ID-A.<br>6. Comparar el código mostrado con el ID de la reserva.<br>7. Presionar "Mis reservas" para volver a la lista. |
 | Resultado esperado | "Mis reservas" muestra solo las reservas del usuario: ID-A en "Activas" con estado Reservada y la reserva finalizada en "Historial". El botón "Ver QR" abre el QR de ID-A y el código coincide con el ID de la reserva. Al volver, la lista se mantiene. |
 | Resultado obtenido | RSV-0180 listada con acceso a su QR. |
 | Estado | Aprobado |
@@ -247,10 +247,10 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-03, RF-08 (CU3 Visualizar QR, CU0 Iniciar Sesión) |
 | Tipo | Negativo |
-| Precondiciones | Seed cargado. Reserva de estudiante1@example.com para Sala 3, 2026-11-10 10:00–11:00 (ID-A). Sesión como estudiante2@example.com, sin reservas. |
-| Datos de entrada | Usuario: estudiante2@example.com · URL forzada: `/reserva/<ID-A>/qr/` |
-| Pasos | 1. Iniciar sesión como estudiante1@example.com y anotar el ID de su reserva (ID-A).<br>2. Cerrar sesión e iniciar como estudiante2@example.com.<br>3. Abrir "Mis reservas" y verificar que ID-A no aparece.<br>4. Escribir en el navegador la URL `/reserva/<ID-A>/qr/`.<br>5. Leer la respuesta del sistema. |
-| Resultado esperado | "Mis reservas" de estudiante2@example.com muestra el estado vacío o solo sus propias reservas, sin ID-A. La URL forzada no expone el QR ajeno: el sistema responde 404 (no encontrado) y no muestra datos de la reserva de estudiante1@example.com. |
+| Precondiciones | Seed cargado. Reserva de estudiante1@virginiogomez.cl para Sala 3, 2026-11-10 10:00–11:00 (ID-A). Sesión como estudiante2@virginiogomez.cl, sin reservas. |
+| Datos de entrada | Usuario: estudiante2@virginiogomez.cl · URL forzada: `/reserva/<ID-A>/qr/` |
+| Pasos | 1. Iniciar sesión como estudiante1@virginiogomez.cl y anotar el ID de su reserva (ID-A).<br>2. Cerrar sesión e iniciar como estudiante2@virginiogomez.cl.<br>3. Abrir "Mis reservas" y verificar que ID-A no aparece.<br>4. Escribir en el navegador la URL `/reserva/<ID-A>/qr/`.<br>5. Leer la respuesta del sistema. |
+| Resultado esperado | "Mis reservas" de estudiante2@virginiogomez.cl muestra el estado vacío o solo sus propias reservas, sin ID-A. La URL forzada no expone el QR ajeno: el sistema responde 404 (no encontrado) y no muestra datos de la reserva de estudiante1@virginiogomez.cl. |
 | Resultado obtenido | El QR ajeno responde 404 y no aparece en la lista. |
 | Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-14.png` |
@@ -262,7 +262,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
 | Tipo | Negativo |
-| Precondiciones | Seed cargado. Sesión iniciada como estudiante1@example.com. La fecha de hoy es posterior a la fecha usada como dato (por ejemplo, hoy 2026-11-12 y dato 2026-11-09). |
+| Precondiciones | Seed cargado. Sesión iniciada como estudiante1@virginiogomez.cl. La fecha de hoy es posterior a la fecha usada como dato (por ejemplo, hoy 2026-11-12 y dato 2026-11-09). |
 | Datos de entrada | Tipo: Sala · Fecha: 2026-11-09 (anterior a hoy) · Bloque: 10:00–11:00 · URL forzada de confirmación: `/reservar/<ID-Sala-3>/?fecha=2026-11-09&bloque=10:00-11:00` |
 | Pasos | 1. Abrir "Buscar".<br>2. Elegir Sala, fecha 2026-11-09 y bloque 10:00–11:00; presionar "Filtrar".<br>3. Leer el mensaje y verificar que no hay tarjetas de resultados.<br>4. Abrir la URL forzada de confirmación de Sala 3 con la misma fecha y presionar "Confirmar reserva".<br>5. Revisar "Mis reservas" y el contador de reservas del día. |
 | Resultado esperado | La búsqueda muestra «La fecha no puede ser anterior a hoy. Elige hoy o un día posterior.» y no lista recursos. La confirmación por URL forzada tampoco crea la reserva: no aparece un ID nuevo, no se genera QR y no cambia la disponibilidad. El campo Fecha expone `min` con la fecha actual. |
@@ -277,9 +277,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-04, RF-05 (CU4 Validar inicio, CU5 Registrar devolución) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Sala 1 con la reserva de ejemplo del seed (Reservada); Proyector Epson creado En Uso en ese mismo bloque; Notebook Dell marcado No disponible; Sala 3 libre. Sesión como bibliotecario1@example.com. |
+| Precondiciones | Seed cargado. Sala 1 con la reserva de ejemplo del seed (Reservada); Proyector Epson creado En Uso en ese mismo bloque; Notebook Dell marcado No disponible; Sala 3 libre. Sesión como bibliotecario1@virginiogomez.cl. |
 | Datos de entrada | Fecha del panel: hoy · Recursos: 4 |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel".<br>3. Leer las tarjetas de resumen: Recursos, Disponibles hoy, Reservados, En uso y No disponibles.<br>4. Revisar la tabla "Estado del inventario" por recurso y por bloque.<br>5. Comparar los valores con las reservas registradas y con el estado del catálogo.<br>6. Registrar una devolución y volver al panel. |
+| Pasos | 1. Iniciar sesión como bibliotecario1@virginiogomez.cl.<br>2. Abrir "Panel".<br>3. Leer las tarjetas de resumen: Recursos, Disponibles hoy, Reservados, En uso y No disponibles.<br>4. Revisar la tabla "Estado del inventario" por recurso y por bloque.<br>5. Comparar los valores con las reservas registradas y con el estado del catálogo.<br>6. Registrar una devolución y volver al panel. |
 | Resultado esperado | Las tarjetas muestran 4 recursos: 1 disponible, 1 reservado, 1 en uso y 1 no disponible; la ocupación del día es 50%. La tabla muestra un badge por bloque (Disponible, Reservado, En uso, No disponible) y el solicitante de cada reserva. Tras la devolución, el recurso pasa a Disponible y los contadores se actualizan. |
 | Resultado obtenido | Inventario: 1 reservado, 1 en uso, 1 no disponible; tras devolver vuelve a Disponible. |
 | Estado | Aprobado |
@@ -292,7 +292,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
 | Tipo | Límite |
-| Precondiciones | Hora de la aplicación fijada en 2026-11-12 10:50. Sala 3 libre. Sesión como estudiante1@example.com. |
+| Precondiciones | Hora de la aplicación fijada en 2026-11-12 10:50. Sala 3 libre. Sesión como estudiante1@virginiogomez.cl. |
 | Datos de entrada | Fecha hoy · Bloques de 09:00 a 22:00; 10:00–11:00 (ya iniciado), 11:00–12:00 (10 min de antelación) y 12:00–13:00 (más de 15 min) · Fecha hoy + 7 días · Fecha hoy + 8 días |
 | Pasos | 1. Abrir "Buscar" con la fecha de hoy.<br>2. Revisar el selector de bloque: 13 opciones de 09:00 a 22:00; no debe ofrecer 10:00–11:00 ni 11:00–12:00; sí desde 12:00–13:00.<br>3. Forzar la URL de confirmación con 10:00–11:00 y verificar que no se crea la reserva.<br>4. Confirmar una reserva para hoy 12:00–13:00.<br>5. Repetir la búsqueda con hoy + 7 días y con hoy + 8 días. |
 | Resultado esperado | Hoy solo se ofrecen bloques que comienzan al menos 15 minutos después de la hora actual; un bloque ya iniciado o con menos antelación se rechaza también en el servidor. La reserva de 12:00–13:00 se crea con su QR. La fecha hoy + 7 se acepta y hoy + 8 se rechaza con mensaje de horizonte. |
@@ -307,9 +307,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01, RF-02 (CU1 Buscar recurso, CU2 Reservar recurso) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. "Don Quijote de la Mancha" sin préstamos activos. Sesión como estudiante1@example.com. |
+| Precondiciones | Seed cargado. "Don Quijote de la Mancha" sin préstamos activos. Sesión como estudiante1@virginiogomez.cl. |
 | Datos de entrada | Filtro del catálogo: "Cervantes" · Libro: Don Quijote de la Mancha · Fecha de retiro: hoy · Duración: 7 días |
-| Pasos | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir la pestaña "Libros" de "Buscar".<br>3. Escribir "Cervantes" en el filtro y presionar "Filtrar".<br>4. Verificar que se muestra la tarjeta con carátula, autor y año.<br>5. Abrir la ficha del libro.<br>6. Revisar ISBN, editorial, páginas, ubicación y sinopsis.<br>7. Elegir fecha de retiro y duración de 7 días.<br>8. Confirmar el préstamo y anotar el código RSV-NNNN.<br>9. Volver a la ficha y a "Mis reservas". |
+| Pasos | 1. Iniciar sesión como estudiante1@virginiogomez.cl.<br>2. Abrir la pestaña "Libros" de "Buscar".<br>3. Escribir "Cervantes" en el filtro y presionar "Filtrar".<br>4. Verificar que se muestra la tarjeta con carátula, autor y año.<br>5. Abrir la ficha del libro.<br>6. Revisar ISBN, editorial, páginas, ubicación y sinopsis.<br>7. Elegir fecha de retiro y duración de 7 días.<br>8. Confirmar el préstamo y anotar el código RSV-NNNN.<br>9. Volver a la ficha y a "Mis reservas". |
 | Resultado esperado | La pestaña de libros filtra por autor y muestra la carátula local. La ficha presenta los datos bibliográficos y el panel de préstamo. El préstamo genera un QR único, descuenta el cupo de préstamos y aparece en "Mis reservas" con autor y fecha de devolución. |
 | Resultado obtenido | Prestamo RSV-0379 de 7 dias con ficha completa. |
 | Estado | Aprobado |
@@ -322,7 +322,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-02, RF-06 (CU2 Reservar recurso) |
 | Tipo | Límite |
-| Precondiciones | Seed cargado. "Don Quijote de la Mancha" y "Martín Fierro" sin préstamos. Sesión como estudiante1@example.com. |
+| Precondiciones | Seed cargado. "Don Quijote de la Mancha" y "Martín Fierro" sin préstamos. Sesión como estudiante1@virginiogomez.cl. |
 | Datos de entrada | Préstamo 1: Don Quijote, hoy, 7 días · Préstamo 2: Martín Fierro, hoy, 7 días · Préstamo 3: La Araucana, hoy, 7 días · Préstamo solapado: Don Quijote, hoy + 3 días, 7 días |
 | Pasos | 1. Solicitar Don Quijote por 7 días y confirmar.<br>2. Solicitar Martín Fierro por 7 días y confirmar.<br>3. Intentar un tercer préstamo de La Araucana.<br>4. Intentar un préstamo de Don Quijote que comienza antes de su devolución.<br>5. Revisar "Mis reservas" y el cupo de préstamos. |
 | Resultado esperado | El tercer préstamo se rechaza con el mensaje de límite de 2 préstamos activos. El préstamo solapado se rechaza porque el libro sigue prestado; "Mis reservas" conserva solo los dos primeros y el cupo muestra 2 de 2. |
@@ -337,7 +337,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01 (CU1 Buscar recurso) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Sala 3 reservada en el bloque por defecto; Proyector Epson libre. Sesión como estudiante1@example.com. |
+| Precondiciones | Seed cargado. Sala 3 reservada en el bloque por defecto; Proyector Epson libre. Sesión como estudiante1@virginiogomez.cl. |
 | Datos de entrada | Fecha y bloque del día · Luego “Solo disponibles” activado |
 | Pasos | 1. Abrir "Buscar" y la pestaña "Salas y equipos".<br>2. Verificar que no hay resultados ni mensajes de error y que la vista pide elegir fecha y bloque.<br>3. Elegir la fecha y el bloque donde Sala 3 está reservada.<br>4. Confirmar que Sala 3 aparece como "Reservado" y sin botón de reserva.<br>5. Activar "Solo disponibles".<br>6. Verificar que Sala 3 desaparece y Proyector Epson se mantiene. |
 | Resultado esperado | Al entrar no se muestran resultados ni errores: la vista pide elegir fecha y bloque. Con ambos elegidos se listan todos los recursos con su estado y “Solo disponibles” oculta los ocupados. |
@@ -352,9 +352,9 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-04, RF-05, RF-08 (CU4 Validar inicio, CU5 Registrar devolución) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Una reserva de bloque pendiente, un préstamo de libro activo y una sanción activa. Sesión como bibliotecario1@example.com. |
+| Precondiciones | Seed cargado. Una reserva de bloque pendiente, un préstamo de libro activo y una sanción activa. Sesión como bibliotecario1@virginiogomez.cl. |
 | Datos de entrada | Panel del día · pestañas · filtros por estado, bloque y búsqueda por código |
-| Pasos | 1. Iniciar sesión como bibliotecario1@example.com.<br>2. Abrir "Panel" y verificar las cuatro pestañas: Operación, Inventario, Reservas del día y Validación.<br>3. En "Operación", revisar los KPIs: reservas, pendientes, en uso, préstamos, vencen hoy, vencidos, sanciones y canceladas.<br>4. Revisar "Próximas entregas", "Devoluciones de libros", "Sanciones activas" y la ocupación de los 13 bloques.<br>5. En "Reservas del día", filtrar por estado y por código; verificar que la pestaña se mantiene al filtrar.<br>6. En "Validación", buscar un código y verificar que la pestaña activa es la de validación.<br>7. Revisar que la barra superior no muestre el rol. |
+| Pasos | 1. Iniciar sesión como bibliotecario1@virginiogomez.cl.<br>2. Abrir "Panel" y verificar las cuatro pestañas: Operación, Inventario, Reservas del día y Validación.<br>3. En "Operación", revisar los KPIs: reservas, pendientes, en uso, préstamos, vencen hoy, vencidos, sanciones y canceladas.<br>4. Revisar "Próximas entregas", "Devoluciones de libros", "Sanciones activas" y la ocupación de los 13 bloques.<br>5. En "Reservas del día", filtrar por estado y por código; verificar que la pestaña se mantiene al filtrar.<br>6. En "Validación", buscar un código y verificar que la pestaña activa es la de validación.<br>7. Revisar que la barra superior no muestre el rol. |
 | Resultado esperado | El panel agrupa sus secciones en cuatro pestañas y muestra solo la activa; los KPIs y la agenda usan datos reales; la ocupación refleja reservas y préstamos; los filtros acotan la tabla sin perder la pestaña; un código lleva a Validación; la barra superior muestra solo el nombre. |
 | Resultado obtenido | Panel con 4 pestanas y KPIs reales (2 reservas hoy). |
 | Estado | Aprobado |
@@ -367,7 +367,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-02 (CU2 Reservar recurso) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Estudiante2 tiene una reserva pendiente en un bloque futuro. Sesión como estudiante2@example.com. |
+| Precondiciones | Seed cargado. Estudiante2 tiene una reserva pendiente en un bloque futuro. Sesión como estudiante2@virginiogomez.cl. |
 | Datos de entrada | Reserva propia, bloque futuro, cupo diario con 1 de 2 usadas |
 | Pasos | 1. Abrir "Mis reservas".<br>2. Verificar que la reserva activa muestra el botón "Cancelar reserva".<br>3. Presionar "Cancelar reserva" y confirmar en el diálogo.<br>4. Verificar que la reserva pasa al historial como "Cancelada" con su motivo.<br>5. Verificar que el cupo diario vuelve a 0 de 2.<br>6. Reservar de nuevo el mismo bloque para confirmar que quedó libre.<br>7. Abrir por URL el QR de la reserva cancelada. |
 | Resultado esperado | La reserva queda Cancelada con quién, cuándo y motivo "Solicitud del usuario"; el bloque y el cupo se liberan; el QR anterior se rechaza con el mensaje de reserva cancelada. |
@@ -391,17 +391,17 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Evidencia | `docs/evidence/CP-23.png` |
 | Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
 
-## CP-24 — Filtros vacíos y validación solo al enviar
+## CP-24 — Listado inicial completo y validación solo al enviar
 
 | Campo | Detalle |
 |---|---|
 | Requisito asociado | RF-01 (CU1 Buscar recurso) |
 | Tipo | Límite |
-| Precondiciones | Seed cargado. Sesión como estudiante1@example.com. |
+| Precondiciones | Seed cargado. Sesión como estudiante1@virginiogomez.cl. |
 | Datos de entrada | Formulario sin filtros · Envío incompleto · URL con fecha y bloque |
-| Pasos | 1. Abrir "Buscar" sin filtros.<br>2. Verificar que los campos de fecha y bloque están vacíos, que no hay errores y que la vista pide elegir.<br>3. Abrir el selector de bloque y verificar que solo ofrece "Elige un bloque".<br>4. Presionar "Filtrar" sin elegir nada.<br>5. Elegir una fecha y verificar que el bloque no queda autoseleccionado.<br>6. Abrir una URL con fecha y bloque ya definidos. |
-| Resultado esperado | Entrar no dispara errores; los mensajes aparecen solo al enviar; el bloque nunca se autoselecciona; un enlace con fecha y bloque sigue mostrando resultados. |
-| Resultado obtenido | Sin filtros no hay errores ni autoseleccion; el enlace con fecha y bloque funciona. |
+| Pasos | 1. Abrir "Buscar" sin filtros y verificar que se listan todos los recursos con el estado del próximo bloque.<br>2. Abrir la pestaña "Libros" y verificar que se listan los seis títulos con su disponibilidad.<br>3. Verificar que los campos de fecha, bloque y duración están vacíos y que no hay errores.<br>4. Enviar el formulario con una fecha anterior a hoy y verificar el mensaje bajo el campo.<br>5. Abrir una URL con fecha y bloque ya definidos. |
+| Resultado esperado | La vista lista el catálogo desde el inicio sin errores; los filtros son opcionales y validan solo al enviarse; una fecha inválida muestra su mensaje; un enlace con fecha y bloque sigue mostrando resultados. |
+| Resultado obtenido | El listado inicial muestra los recursos y los seis libros; los filtros vacíos no disparan errores; la fecha pasada muestra su mensaje; el enlace con fecha y bloque funciona. |
 | Estado | Aprobado |
 | Evidencia | `docs/evidence/CP-24.png` |
 | Ejecutado por / fecha | Gerald Sobarzo (verificación) · script local · 2026-11-17 |
@@ -412,7 +412,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 |---|---|
 | Requisito asociado | RF-01, RF-04 (CU1 Buscar recurso, CU4 Validar inicio) |
 | Tipo | Positivo |
-| Precondiciones | Seed cargado. Sesión como bibliotecario1@example.com. |
+| Precondiciones | Seed cargado. Sesión como bibliotecario1@virginiogomez.cl. |
 | Datos de entrada | `inv_q=Sala` · `inv_tipo=EQUIPO` · `inv_estado=RESERVADO` · combinación sin resultados |
 | Pasos | 1. Abrir el panel y la pestaña "Inventario".<br>2. Filtrar por nombre "Sala" y verificar el contador "Mostrando 2 de 10".<br>3. Filtrar por tipo "Equipo".<br>4. Filtrar por estado "Reservado".<br>5. Combinar filtros sin coincidencias y usar "Limpiar filtros".<br>6. Verificar que los contadores de arriba no cambian al filtrar. |
 | Resultado esperado | La tabla se acota al filtro y el contador refleja cuántos de cuántos se ven; los totales del resumen siguen siendo globales; "Limpiar" vuelve a la pestaña Inventario sin filtros. |
@@ -443,7 +443,7 @@ Referencias de interfaz vigentes: ver `design/design-system.md` §3 (componentes
 | Requisito asociado | RF-01, RF-02, RF-03, RF-04, RF-05, RF-08 |
 | Tipo | Positivo |
 | Precondiciones | Seed cargado. Servidor en marcha con `DEMO_MODE=1` y `DEMO_NOW` fijado para no depender de la hora real. Selenium con Chromium (Selenium Manager resuelve el driver). |
-| Datos de entrada | Solicitante `estudiante1@example.com` · Bibliotecario `bibliotecario1@example.com` · Sala 3 · 2026-11-21 · bloque 11:00–12:00 |
+| Datos de entrada | Solicitante `estudiante1@virginiogomez.cl` · Bibliotecario `bibliotecario1@virginiogomez.cl` · Sala 3 · 2026-11-21 · bloque 11:00–12:00 |
 | Pasos | 1. Ejecutar `python scripts/prueba_e2e.py`.<br>2. El solicitante inicia sesión, busca el bloque y reserva.<br>3. El bibliotecario inicia sesión, busca el código, confirma la entrega y registra la devolución desde el diálogo.<br>4. Revisar las seis capturas de `docs/evidence/e2e/`. |
 | Resultado esperado | Los ocho pasos se completan sin intervención manual y la reserva termina en estado Finalizada. |
 | Resultado obtenido | 8 de 8 pasos correctos: login del solicitante, búsqueda del bloque, confirmación de la reserva (RSV-0429), QR, login del bibliotecario, ticket Reservado, paso a En Uso y devolución a Finalizada. |
@@ -569,7 +569,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 - El plan de 14 casos (6 + 5 + 3) está declarado.
 - Los IDs CP-01…CP-26 coinciden con matriz-trazabilidad.md.
 - No hay evidencias, capturas ni resultados inventados.
-- Datos ficticios coherentes (2026-11-10, estudiante1@example.com, bloques definidos).
+- Datos ficticios coherentes (2026-11-10, estudiante1@virginiogomez.cl, bloques definidos).
 - Textos de botones y mensajes reflejan la interfaz vigente; las diferencias con los mockups [SEM2-T1] están registradas en el decision log y en las observaciones de `defectos.md`.
 
 ## (d) Decision log
@@ -584,7 +584,7 @@ Semana 2: CP-01 a CP-06 (6) · Semana 3: CP-07, CP-11, CP-12, CP-13, CP-14 (5) �
 | 6 | CP-06 intenta la reserva posterior en Sala 1 15:00–16:00. | Evita depender de Sala 3, que acaba de devolverse. |
 | 7 | CP-07 a CP-12 se proponen con tipos para cumplir ≥ 3 negativos y ≥ 2 límites en el total. | La pauta exige esa distribución en los 12 casos; el detalle final se define en semanas 3 y 4. |
 | 8 | CP-08 y CP-09 usan los métodos de verificación del equipo (20 peticiones concurrentes; 3 resoluciones en DevTools). | Coherencia con la definición de RNF-01 y RNF-02. |
-| 9 | Los casos usan solo datos @example.com, no los datos de los mockups. | Los mockups muestran nombre y correo de apariencia real; RNF-03 exige cero datos reales. |
+| 9 | Los casos usan solo datos @virginiogomez.cl, no los datos de los mockups. | Los mockups muestran nombre y correo de apariencia real; RNF-03 exige cero datos reales. |
 | 10 | No se agregan RF/RNF ni funcionalidades fuera de alcance. | Regla de trabajo del proyecto. |
 | 11 | CP-08 se clasifica como Límite, no como Positivo. | Verifica el comportamiento en el borde del umbral de RNF-01 (≤ 1,5 s); se corrige por `OBS-LOCAL-01` de la revisión interna. |
 | 12 | Se agregan CP-13 y CP-14 en semana 3 al implementar la pantalla "Mis reservas". | La pantalla ya figura en los mockups (pestaña "Mis Reservas") y CP-03 la usa; los casos cubren el listado propio y el aislamiento entre usuarios. |

@@ -89,9 +89,9 @@ python manage.py runserver 0.0.0.0:8000
 
 | Rol | Usuario | Contraseña |
 |---|---|---|
-| Solicitante | `estudiante1@example.com` | `demo1234` |
-| Solicitante | `estudiante2@example.com` | `demo1234` |
-| Bibliotecario | `bibliotecario1@example.com` | `demo1234` |
+| Solicitante | `estudiante1@virginiogomez.cl` | `demo1234` |
+| Solicitante | `estudiante2@virginiogomez.cl` | `demo1234` |
+| Bibliotecario | `bibliotecario1@virginiogomez.cl` | `demo1234` |
 
 Recursos de ejemplo: Sala 1 y Sala 3 (Piso 1), Proyector Epson (eq-014) y Notebook
 Dell (eq-002). Libros: Don Quijote de la Mancha, Martín Fierro, La Araucana,
@@ -104,7 +104,7 @@ y el archivo `db.sqlite3` queda fuera de Git.
 
 ### 5.1 Iniciar sesión
 
-Abrir `/login/` e ingresar con `estudiante1@example.com` / `demo1234`. El
+Abrir `/login/` e ingresar con `estudiante1@virginiogomez.cl` / `demo1234`. El
 solicitante llega a la vista de búsqueda; el bibliotecario llega al panel de
 gestión. Si las credenciales son incorrectas, se muestra «Correo o contraseña
 incorrectos».
@@ -118,10 +118,11 @@ En **Buscar → Salas y equipos**, elegir tipo, fecha y bloque, y presionar
 «Disponible», «Reservado», «En uso» o «No disponible». Los recursos ocupados no
 ofrecen botón de reserva.
 
-La casilla **Solo disponibles** oculta los recursos ocupados. Los filtros inician
-vacíos: la vista no muestra resultados hasta elegir fecha y bloque. El horizonte
-de reserva es de 7 días y, para el día actual, solo se ofrecen bloques que
-comienzan al menos 15 minutos después de la hora actual.
+La casilla **Solo disponibles** oculta los recursos ocupados. Al entrar, la vista
+lista todos los recursos con el estado del próximo bloque reservable; los filtros
+inician vacíos y solo se aplican al enviarlos. El horizonte de reserva es de 7
+días y, para el día actual, solo se ofrecen bloques que comienzan al menos 15
+minutos después de la hora actual.
 
 ![Búsqueda de recursos](../evidence/rnf-02/rnf-02-buscar-1280.png)
 
@@ -260,7 +261,7 @@ python scripts/demo_dashboard.py
 - **No hay usuarios:** ejecutar `python manage.py migrate` y luego
   `python manage.py seed`.
 - **Datos sucios:** `python manage.py seed --reset`.
-- **Login falla:** usar `estudiante1@example.com` / `demo1234`.
+- **Login falla:** usar `estudiante1@virginiogomez.cl` / `demo1234`.
 - **Sanción o reserva fuera de fecha:** revisar `DEMO_MODE` y `DEMO_NOW`, y
   volver a sembrar con `--fecha` si es necesario.
 

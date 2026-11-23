@@ -26,7 +26,7 @@
 | Campo | Detalle |
 |---|---|
 | Descripción | CP-01 se diseñó en semana 2 contra un RF-01 que pedía listar únicamente los recursos libres. El RF-01 vigente (desde la semana 3) pide mostrar todos los recursos con su estado y permitir «Solo disponibles». La ejecución del 2026-11-14 mostró que la aplicación cumple el RF vigente: Sala 1 aparece como «Reservado» y desaparece al activar el filtro. No es un defecto de la aplicación; es un defecto de diseño del caso. |
-| Pasos para reproducir | 1. Iniciar sesión como estudiante1@example.com. 2. Abrir «Buscar» → «Salas y equipos». 3. Elegir Tipo «Sala», fecha 2026-11-10 y bloque 10:00–11:00 (Sala 1 ya reservada por estudiante2@example.com). 4. Presionar «Filtrar» sin marcar «Solo disponibles». Resultado: «2 recursos»: Sala 1 «Reservado» y Sala 3 «Disponible». 5. Marcar «Solo disponibles» y filtrar: queda solo Sala 3. |
+| Pasos para reproducir | 1. Iniciar sesión como estudiante1@virginiogomez.cl. 2. Abrir «Buscar» → «Salas y equipos». 3. Elegir Tipo «Sala», fecha 2026-11-10 y bloque 10:00–11:00 (Sala 1 ya reservada por estudiante2@virginiogomez.cl). 4. Presionar «Filtrar» sin marcar «Solo disponibles». Resultado: «2 recursos»: Sala 1 «Reservado» y Sala 3 «Disponible». 5. Marcar «Solo disponibles» y filtrar: queda solo Sala 3. |
 | Severidad | Baja (documentación): el comportamiento de la aplicación es correcto; el criterio del caso estaba desactualizado. |
 | Caso asociado | CP-01 |
 | Responsable | Gerald Sobarzo |
@@ -39,7 +39,7 @@
 | Campo | Detalle |
 |---|---|
 | Descripción | El paso 1 de CP-23 pedía abrir por URL `/mis-reservas/<id>/cancelar/` de una reserva ajena y esperaba 404. La vista tiene `@require_POST`, así que un GET responde 405 y no ejecuta nada; con POST la respuesta sí es 404. La aplicación es correcta: el caso describía el método equivocado. |
-| Pasos para reproducir | 1. Iniciar sesión como estudiante1@example.com. 2. Abrir por GET `/mis-reservas/<id-de-estudiante2>/cancelar/`: responde 405. 3. Repetir con POST: responde 404 y la reserva no cambia. |
+| Pasos para reproducir | 1. Iniciar sesión como estudiante1@virginiogomez.cl. 2. Abrir por GET `/mis-reservas/<id-de-estudiante2>/cancelar/`: responde 405. 3. Repetir con POST: responde 404 y la reserva no cambia. |
 | Severidad | Baja (documentación): no hay efecto sobre datos. |
 | Caso asociado | CP-23 |
 | Responsable | Yordy Carmona |
@@ -52,7 +52,7 @@
 | Campo | Detalle |
 |---|---|
 | Descripción | En Buscar › Salas y equipos, la lista de bloques horarios se llena con JavaScript al elegir la fecha. Sin JavaScript el selector queda solo con «Elige un bloque» y es obligatorio, de modo que el navegador impide enviar el formulario. El comentario de `app.js` indica que sin JavaScript los formularios siguen funcionando; en esta vista no se cumple. |
-| Pasos para reproducir | 1. Desactivar JavaScript en el navegador. 2. Iniciar sesión como estudiante1@example.com. 3. Abrir «Buscar» › «Salas y equipos». 4. Escribir la fecha 2026-11-10. 5. Presionar «Filtrar». Resultado: aviso «Please select an item in the list.» en «Bloque horario», sin recarga ni resultados. |
+| Pasos para reproducir | 1. Desactivar JavaScript en el navegador. 2. Iniciar sesión como estudiante1@virginiogomez.cl. 3. Abrir «Buscar» › «Salas y equipos». 4. Escribir la fecha 2026-11-10. 5. Presionar «Filtrar». Resultado: aviso «Please select an item in the list.» en «Bloque horario», sin recarga ni resultados. |
 | Severidad | Media: la función es inaccesible sin JavaScript, sin pérdida de datos; con JavaScript todo funciona. |
 | Caso asociado | CP-26 (paso 5) |
 | Responsable | Reportó Gerald Sobarzo · corrigió Yordy Carmona |
@@ -101,7 +101,7 @@ se habían usado antes: Lighthouse 12.8.2 y el validador Nu del W3C.
 | Campo | Detalle |
 |---|---|
 | Descripción | La regla de antelación mínima (RF-01) solo aparecía cuando ya no quedaban bloques para la fecha elegida. El usuario no sabía por qué faltaban bloques ni cuánta antelación necesitaba: la explicación llegaba después del problema, no antes de la acción. |
-| Pasos para reproducir | 1. Iniciar sesión como estudiante1@example.com.<br>2. Abrir «Buscar» › «Salas y equipos».<br>3. Revisar el campo «Bloque horario»: no hay texto de ayuda. |
+| Pasos para reproducir | 1. Iniciar sesión como estudiante1@virginiogomez.cl.<br>2. Abrir «Buscar» › «Salas y equipos».<br>3. Revisar el campo «Bloque horario»: no hay texto de ayuda. |
 | Severidad | Baja (UX): el sistema no falla y el mensaje posterior es correcto; se pierde claridad antes de la acción. |
 | Caso asociado | CP-09 (usabilidad) |
 | Responsable | Yordy Carmona |

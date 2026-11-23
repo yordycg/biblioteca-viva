@@ -89,9 +89,9 @@ System check identified no issues (0 silenced).
 ### B. `python manage.py seed`
 
 ```text
-Usuario: estudiante1@example.com (SOLICITANTE)
-Usuario: estudiante2@example.com (SOLICITANTE)
-Usuario: bibliotecario1@example.com (BIBLIOTECARIO)
+Usuario: estudiante1@virginiogomez.cl (SOLICITANTE)
+Usuario: estudiante2@virginiogomez.cl (SOLICITANTE)
+Usuario: bibliotecario1@virginiogomez.cl (BIBLIOTECARIO)
 Recurso: Sala 3
 Recurso: Sala 1
 Recurso: Proyector Epson

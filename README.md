@@ -104,9 +104,9 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 
 | Rol | Usuario | Contraseña |
 |---|---|---|
-| Estudiante | `estudiante1@example.com` | `demo1234` |
-| Estudiante | `estudiante2@example.com` | `demo1234` |
-| Bibliotecario | `bibliotecario1@example.com` | `demo1234` |
+| Estudiante | `estudiante1@virginiogomez.cl` | `demo1234` |
+| Estudiante | `estudiante2@virginiogomez.cl` | `demo1234` |
+| Bibliotecario | `bibliotecario1@virginiogomez.cl` | `demo1234` |
 
 ## Pantallas para revisar
 
@@ -140,7 +140,7 @@ DJANGO_ALLOWED_HOSTS="*" DJANGO_CSRF_TRUSTED_ORIGINS="http://IP-DEL-PC:8000" pyt
 - **CSRF en el teléfono:** agrega el origen a `DJANGO_CSRF_TRUSTED_ORIGINS`.
 - **No hay usuarios:** `python manage.py migrate && python manage.py seed`.
 - **Datos sucios:** `python manage.py seed --reset`.
-- **Login falla:** usa `estudiante1@example.com` / `demo1234`.
+- **Login falla:** usa `estudiante1@virginiogomez.cl` / `demo1234`.
 
 ## Flujo principal
 
