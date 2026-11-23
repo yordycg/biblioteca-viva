@@ -21,7 +21,6 @@
         <span class="quota__value">{{ hoy|date:"d-m-Y" }} · {{ resumen.en_uso }} en uso</span>
       </div>
     </div>
-    <span class="req">RF-04 · RF-05</span>
   </div>
 </section>
 
@@ -31,7 +30,7 @@
       <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
     </span>
     <div>
-      <p class="notice__title">Sanción aplicada hoy <span class="req">RF-07</span></p>
+      <p class="notice__title">Sanción aplicada hoy</p>
       <p class="notice__text">
         {% for sancion in sanciones_hoy %}
           {{ sancion.usuario.get_full_name|default:sancion.usuario.email }} queda
@@ -93,7 +92,6 @@
         <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
         <h2 id="entregas-title" style="font-size: 1.125rem;">Próximas entregas</h2>
       </div>
-      <span class="req">RF-04</span>
     </div>
     {% if resumen_panel.proximas_entregas %}
       <ul class="agenda">
@@ -118,7 +116,6 @@
         <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
         <h2 id="devoluciones-title" style="font-size: 1.125rem;">Devoluciones de libros</h2>
       </div>
-      <span class="req">RF-05</span>
     </div>
     {% if resumen_panel.devoluciones %}
       <ul class="agenda">
@@ -147,7 +144,6 @@
       <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
       <h2 id="ocupacion-title" style="font-size: 1.125rem;">Ocupación por bloque</h2>
     </div>
-    <span class="req">RF-01</span>
   </div>
   <div class="occupancy">
     {% for bloque in resumen_panel.por_bloque %}
@@ -171,7 +167,6 @@
       <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
       <h2 id="sanciones-activas-title" style="font-size: 1.125rem;">Sanciones activas</h2>
     </div>
-    <span class="req">RF-07</span>
   </div>
   {% if resumen_panel.sanciones %}
     <ul class="agenda">
@@ -198,7 +193,6 @@
       <svg class="icon" aria-hidden="true"><use href="#i-building"></use></svg>
       <h2 id="inventario-title" style="font-size: 1.125rem;">Estado del inventario</h2>
     </div>
-    <span class="req">RF-01 · RF-04</span>
   </div>
 
   <div class="stats">
@@ -356,7 +350,6 @@
       <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
       <h2 id="validacion-title" style="font-size: 1.125rem;">Recepción y validación</h2>
     </div>
-    <span class="req">RF-04</span>
   </div>
 
   <form method="get" action="{% url 'bibliotecario' %}">
@@ -488,7 +481,6 @@
       <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
       <h2 id="filtros-panel-title" style="font-size: 1.125rem;">Filtrar reservas del día</h2>
     </div>
-    <span class="req">RF-04</span>
   </div>
   <form method="get" action="{% url 'bibliotecario' %}" class="filters filters--panel" data-auto-submit>
     <input type="hidden" name="tab" value="reservas">
@@ -650,7 +642,6 @@
       disponible. Si la devolución es posterior al plazo acordado, se aplica una
       sanción de 7 días al solicitante.
     </p>
-    <span class="req">RF-05 · RF-07</span>
   </div>
   <div class="modal__foot">
     <button class="btn btn--secondary" type="button" data-modal-close>Cancelar</button>

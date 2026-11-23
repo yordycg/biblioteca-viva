@@ -21,7 +21,6 @@
         <span class="quota__value">{{ cupo.restantes }} reserva{{ cupo.restantes|pluralize:"s" }} disponible{{ cupo.restantes|pluralize:"s" }}</span>
       </div>
     </div>
-    <span class="req">RF-06</span>
   </div>
 </section>
 
@@ -116,7 +115,6 @@
         <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
         <h2 id="qr-title" style="font-size: 1.125rem;">Código de acceso</h2>
       </div>
-      <span class="req">RF-03 · RF-04</span>
     </div>
 
     <div class="qr-panel">
@@ -135,7 +133,7 @@
         <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
       </span>
       <div>
-        <p class="notice__title">Devolución <span class="req">RF-05</span></p>
+        <p class="notice__title">Devolución</p>
         <p class="notice__text">
           {% if reserva.modalidad == "PRESTAMO" %}Devuelve el libro hasta la fecha indicada. Una devolución posterior genera una sanción de 7 días.{% else %}Devuelve el recurso dentro del bloque. Una devolución posterior al término del bloque genera una sanción de 7 días.{% endif %}
         </p>
