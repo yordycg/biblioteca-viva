@@ -34,7 +34,6 @@
         </div>
       </div>
     {% endif %}
-    <span class="req">RF-01 · RF-02</span>
   </div>
 </section>
 
@@ -44,7 +43,7 @@
       <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
     </span>
     <div>
-      <p class="notice__title">Sanción vigente <span class="req">RF-07</span></p>
+      <p class="notice__title">Sanción vigente</p>
       <p class="notice__text">
         Tienes una sanción por devolución tardía hasta el
         <strong>{{ sancion_hasta|date:"d-m-Y H:i" }}</strong>. Mientras esté activa no
@@ -68,7 +67,6 @@
         <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
         <h2 id="filtros-libros" style="font-size: 1.125rem;">Buscar un libro</h2>
       </div>
-      <span class="req">RF-01</span>
     </div>
 
     <form method="get" action="{% url 'buscar' %}" data-auto-submit>
@@ -228,7 +226,6 @@
         <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
         <h2 id="filtros-title" style="font-size: 1.125rem;">Filtros de búsqueda</h2>
       </div>
-      <span class="req">RF-01</span>
     </div>
 
     <form method="get" action="{% url 'buscar' %}" data-auto-submit>
@@ -304,7 +301,7 @@
       <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
     </span>
     <div>
-      <p class="notice__title">Sin bloques disponibles <span class="req">RF-01</span></p>
+      <p class="notice__title">Sin bloques disponibles</p>
       <p class="notice__text">
         Para la fecha seleccionada no quedan bloques con la antelación mínima de
         {{ min_antelacion }} minutos. Elige otra fecha.
@@ -317,7 +314,7 @@
       <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
     </span>
     <div>
-      <p class="notice__title">Regla de préstamos <span class="req">RF-06</span></p>
+      <p class="notice__title">Regla de préstamos</p>
       <p class="notice__text">
         Máximo 2 reservas activas por usuario y por día. Hoy tienes
         <strong>{{ cupo.usadas }} de {{ cupo.max }}</strong>.
