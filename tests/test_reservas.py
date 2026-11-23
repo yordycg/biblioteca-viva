@@ -51,8 +51,8 @@ class VentanaReservaTests(TestCase):
 
     def setUp(self):
         self.usuario = Usuario.objects.create_user(
-            username="ventana@example.com",
-            email="ventana@example.com",
+            username="ventana@virginiogomez.cl",
+            email="ventana@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
@@ -133,20 +133,20 @@ class CancelacionTests(TestCase):
     def setUp(self):
         self.hoy = services.hoy()
         self.estudiante = Usuario.objects.create_user(
-            username="cancela@example.com",
-            email="cancela@example.com",
+            username="cancela@virginiogomez.cl",
+            email="cancela@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
         self.otro = Usuario.objects.create_user(
-            username="otro@example.com",
-            email="otro@example.com",
+            username="otro@virginiogomez.cl",
+            email="otro@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
         self.bibliotecario = Usuario.objects.create_user(
-            username="bib@example.com",
-            email="bib@example.com",
+            username="bib@virginiogomez.cl",
+            email="bib@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.BIBLIOTECARIO,
         )
@@ -173,6 +173,40 @@ class CancelacionTests(TestCase):
         )
         self.assertIsNotNone(reserva.cancelada_en)
         self.assertEqual(services.cupo_diario(self.estudiante, self.hoy)["usadas"], 0)
+
+    def test_mis_reservas_muestra_el_cupo_real(self):
+        self._reserva()
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/mis-reservas/")
+        self.assertContains(respuesta, "1/2")
+        self.assertContains(respuesta, "1 reserva disponible")
+
+    def test_cancelar_se_oculta_si_el_bloque_empezo(self):
+        reserva = Reserva.objects.create(
+            usuario=self.estudiante,
+            recurso=self.sala,
+            fecha=self.hoy,
+            bloque="09:00-10:00",  # ahora son las 09:00: ya comenzó
+        )
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/mis-reservas/")
+        self.assertNotContains(respuesta, f"/mis-reservas/{reserva.pk}/cancelar/")
+        self.assertContains(respuesta, "El bloque ya comenzó.")
+
+    def test_prestamo_muestra_el_vencimiento_relativo(self):
+        libro = Recurso.objects.create(
+            nombre="Libro Vence", tipo=Recurso.Tipo.LIBRO
+        )
+        Reserva.objects.create(
+            usuario=self.estudiante,
+            recurso=libro,
+            fecha=self.hoy,
+            modalidad=Reserva.Modalidad.PRESTAMO,
+            fecha_vencimiento=self.hoy + timedelta(days=2),
+        )
+        self.client.force_login(self.estudiante)
+        respuesta = self.client.get("/mis-reservas/")
+        self.assertContains(respuesta, "vence en 2 días")
 
     def test_bloque_cancelado_queda_disponible(self):
         reserva = self._reserva()

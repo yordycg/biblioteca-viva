@@ -81,7 +81,7 @@ def main():
     solicitante = navegador()
     bibliotecario = navegador()
     try:
-        entrar(solicitante, "estudiante1@example.com")
+        entrar(solicitante, "estudiante1@virginiogomez.cl")
         comprobar("Login del solicitante", "/buscar/" in solicitante.current_url)
 
         solicitante.get(
@@ -106,7 +106,7 @@ def main():
         codigo = codigo.group(0)
         print(f"      codigo: {codigo}")
 
-        entrar(bibliotecario, "bibliotecario1@example.com", "/bibliotecario/")
+        entrar(bibliotecario, "bibliotecario1@virginiogomez.cl", "/bibliotecario/")
         comprobar("Login del bibliotecario", "/bibliotecario/" in bibliotecario.current_url)
 
         bibliotecario.get(BASE + "/bibliotecario/?tab=validacion")

@@ -28,9 +28,9 @@ BLOQUE = "10:00-11:00"
 
 def main():
     usuario, _ = Usuario.objects.get_or_create(
-        username="medicion@example.com",
+        username="medicion@virginiogomez.cl",
         defaults={
-            "email": "medicion@example.com",
+            "email": "medicion@virginiogomez.cl",
             "first_name": "Medición",
             "last_name": "Local",
             "rol": Usuario.Rol.SOLICITANTE,

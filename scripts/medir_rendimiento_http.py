@@ -22,7 +22,7 @@ BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000").rstrip("/
 N = int(sys.argv[2]) if len(sys.argv) > 2 else 20
 SALIDA = Path(__file__).resolve().parents[1] / "docs" / "evidence" / "CP-08.txt"
 CLAVE = "demo1234"
-USUARIOS = ["estudiante1@example.com", "estudiante2@example.com"]
+USUARIOS = ["estudiante1@virginiogomez.cl", "estudiante2@virginiogomez.cl"]
 BLOQUES = ["10:00-11:00", "12:00-13:00", "15:00-16:00", "16:00-17:00"]
 # Las salas se descubren desde la propia busqueda: los IDs dependen del seed.
 

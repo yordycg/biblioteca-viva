@@ -13,10 +13,12 @@
   </div>
   <div class="page-head__aside">
     <div class="quota">
-      <div class="quota__ring" style="--pct: 0%;"><span>{{ activas|length }}</span></div>
+      <div class="quota__ring" style="--pct: {{ cupo.porcentaje }}%;">
+        <span>{{ cupo.usadas }}/{{ cupo.max }}</span>
+      </div>
       <div>
-        <span class="quota__label">Reservas activas</span>
-        <span class="quota__value">Historial: {{ historial|length }}</span>
+        <span class="quota__label">Cupo diario</span>
+        <span class="quota__value">{{ cupo.restantes }} reserva{{ cupo.restantes|pluralize:"s" }} disponible{{ cupo.restantes|pluralize:"s" }}</span>
       </div>
     </div>
   </div>
@@ -71,7 +73,16 @@
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
                   <span class="data-list__term">{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</span>
-                  <span class="data-list__value">{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</span>
+                  <span class="data-list__value">
+                    {% if reserva.modalidad == "PRESTAMO" %}
+                      {{ reserva.fecha_vencimiento|date:"d-m-Y" }}
+                      {% if reserva.dias_para_vencer is not None %}
+                        <strong>{% if reserva.dias_para_vencer < 0 %}· vencido hace {{ reserva.dias_vencido }} día{{ reserva.dias_vencido|pluralize:"s" }}{% elif reserva.dias_para_vencer == 0 %}· vence hoy{% elif reserva.dias_para_vencer == 1 %}· vence mañana{% else %}· vence en {{ reserva.dias_para_vencer }} días{% endif %}</strong>
+                      {% endif %}
+                    {% else %}
+                      {{ reserva.get_bloque_display }}
+                    {% endif %}
+                  </span>
                 </div>
               </div>
             </div>
@@ -81,7 +92,7 @@
                 <svg class="icon" aria-hidden="true"><use href="#i-qr"></use></svg>
                 Ver QR
               </a>
-              {% if reserva.estado == "RESERVADA" %}
+              {% if reserva.estado == "RESERVADA" and not reserva.bloqueo_cancelacion %}
                 <form id="form-cancelar-{{ reserva.id }}" method="post"
                       action="{% url 'cancelar_mi_reserva' reserva.id %}">
                   {% csrf_token %}
@@ -93,6 +104,8 @@
                     Cancelar reserva
                   </button>
                 </form>
+              {% elif reserva.estado == "RESERVADA" %}
+                <span class="hint-inline">{{ reserva.bloqueo_cancelacion }}</span>
               {% endif %}
               <span class="hint-inline">{{ reserva.recurso.ubicacion|default:"" }}</span>
             </div>
@@ -140,7 +153,16 @@
                 <span class="data-list__icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg></span>
                 <div>
                   <span class="data-list__term">{% if reserva.modalidad == "PRESTAMO" %}Devolución{% else %}Bloque{% endif %}</span>
-                  <span class="data-list__value">{% if reserva.modalidad == "PRESTAMO" %}{{ reserva.fecha_vencimiento|date:"d-m-Y" }}{% else %}{{ reserva.get_bloque_display }}{% endif %}</span>
+                  <span class="data-list__value">
+                    {% if reserva.modalidad == "PRESTAMO" %}
+                      {{ reserva.fecha_vencimiento|date:"d-m-Y" }}
+                      {% if reserva.dias_para_vencer is not None %}
+                        <strong>{% if reserva.dias_para_vencer < 0 %}· vencido hace {{ reserva.dias_vencido }} día{{ reserva.dias_vencido|pluralize:"s" }}{% elif reserva.dias_para_vencer == 0 %}· vence hoy{% elif reserva.dias_para_vencer == 1 %}· vence mañana{% else %}· vence en {{ reserva.dias_para_vencer }} días{% endif %}</strong>
+                      {% endif %}
+                    {% else %}
+                      {{ reserva.get_bloque_display }}
+                    {% endif %}
+                  </span>
                 </div>
               </div>
             </div>

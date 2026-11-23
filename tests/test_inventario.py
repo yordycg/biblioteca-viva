@@ -16,8 +16,8 @@ class InventarioTests(TestCase):
     def setUp(self):
         self.hoy = services.hoy()
         self.usuario = Usuario.objects.create_user(
-            username="inv@example.com",
-            email="inv@example.com",
+            username="inv@virginiogomez.cl",
+            email="inv@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
@@ -100,8 +100,8 @@ class InventarioTests(TestCase):
 
     def test_panel_filtra_el_inventario_sin_alterar_los_contadores(self):
         bibliotecario = Usuario.objects.create_user(
-            username="inv-panel@example.com",
-            email="inv-panel@example.com",
+            username="inv-panel@virginiogomez.cl",
+            email="inv-panel@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.BIBLIOTECARIO,
         )
@@ -118,14 +118,14 @@ class CatalogoInicialTests(TestCase):
     def setUp(self):
         self.hoy = services.hoy()
         self.usuario = Usuario.objects.create_user(
-            username="catalogo@example.com",
-            email="catalogo@example.com",
+            username="catalogo@virginiogomez.cl",
+            email="catalogo@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
         self.bibliotecario = Usuario.objects.create_user(
-            username="panel@example.com",
-            email="panel@example.com",
+            username="panel@virginiogomez.cl",
+            email="panel@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.BIBLIOTECARIO,
         )
@@ -241,8 +241,8 @@ class CatalogoInicialTests(TestCase):
 class SinBloquesHoyTests(TestCase):
     def setUp(self):
         self.usuario = Usuario.objects.create_user(
-            username="sinbloques@example.com",
-            email="sinbloques@example.com",
+            username="sinbloques@virginiogomez.cl",
+            email="sinbloques@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
