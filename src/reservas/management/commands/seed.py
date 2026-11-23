@@ -65,9 +65,9 @@ class Command(BaseCommand):
             self.stdout.write("Datos anteriores eliminados.")
 
         usuarios = [
-            ("estudiante1@example.com", "Estudiante", "1", Usuario.Rol.SOLICITANTE),
-            ("estudiante2@example.com", "Estudiante", "2", Usuario.Rol.SOLICITANTE),
-            ("bibliotecario1@example.com", "Bibliotecario", "1", Usuario.Rol.BIBLIOTECARIO),
+            ("estudiante1@virginiogomez.cl", "Estudiante", "1", Usuario.Rol.SOLICITANTE),
+            ("estudiante2@virginiogomez.cl", "Estudiante", "2", Usuario.Rol.SOLICITANTE),
+            ("bibliotecario1@virginiogomez.cl", "Bibliotecario", "1", Usuario.Rol.BIBLIOTECARIO),
         ]
         for username, first_name, last_name, rol in usuarios:
             usuario, created = Usuario.objects.get_or_create(
@@ -205,7 +205,7 @@ class Command(BaseCommand):
                 libro.save()
             self.stdout.write(f"Libro: {nombre}")
 
-        estudiante2 = Usuario.objects.get(username="estudiante2@example.com")
+        estudiante2 = Usuario.objects.get(username="estudiante2@virginiogomez.cl")
         sala1 = Recurso.objects.get(nombre="Sala 1")
         fecha_demo, bloque_demo, bloque_cancelado = self._programar_demo(
             options.get("fecha")

@@ -13,14 +13,14 @@ from reservas.models import Libro, QR, Recurso, Reserva, Sancion, Usuario
 class ReglasDeNegocioTests(TestCase):
     def setUp(self):
         self.usuario = Usuario.objects.create_user(
-            username="u@example.com",
-            email="u@example.com",
+            username="u@virginiogomez.cl",
+            email="u@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
         self.otro = Usuario.objects.create_user(
-            username="otro@example.com",
-            email="otro@example.com",
+            username="otro@virginiogomez.cl",
+            email="otro@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )

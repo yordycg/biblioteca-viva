@@ -29,9 +29,9 @@ CLAVE = "demo1234"
 
 # (nombre, ruta, usuario, categorias)
 PANTALLAS = [
-    ("buscar", "/buscar/", "estudiante1@example.com"),
-    ("mis-reservas", "/mis-reservas/", "estudiante1@example.com"),
-    ("bibliotecario", "/bibliotecario/", "bibliotecario1@example.com"),
+    ("buscar", "/buscar/", "estudiante1@virginiogomez.cl"),
+    ("mis-reservas", "/mis-reservas/", "estudiante1@virginiogomez.cl"),
+    ("bibliotecario", "/bibliotecario/", "bibliotecario1@virginiogomez.cl"),
 ]
 
 CATEGORIAS = "accessibility,best-practices,performance,seo"

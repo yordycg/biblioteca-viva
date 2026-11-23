@@ -33,7 +33,7 @@ def aware(hora):
 
 
 def main():
-    usuario = Usuario.objects.get(username="estudiante1@example.com")
+    usuario = Usuario.objects.get(username="estudiante1@virginiogomez.cl")
     recurso = Recurso.objects.get(nombre="Sala 3")
     Reserva.objects.filter(recurso=recurso, fecha=FECHA, bloque=BLOQUE).delete()
 

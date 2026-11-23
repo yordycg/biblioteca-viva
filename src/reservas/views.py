@@ -293,17 +293,32 @@ def mis_reservas(request):
     if _es_bibliotecario(request.user):
         return redirect("bibliotecario")
 
+    hoy = services.hoy()
     reservas = Reserva.objects.filter(usuario=request.user).select_related("recurso")
-    activas = reservas.filter(
-        estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO]
-    ).order_by("fecha", "bloque")
+    activas = list(
+        reservas.filter(
+            estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO]
+        ).order_by("fecha", "bloque")
+    )
+    for reserva in activas:
+        reserva.bloqueo_cancelacion = services.motivo_no_cancelable(
+            reserva, request.user
+        )
+        if reserva.modalidad == Reserva.Modalidad.PRESTAMO and reserva.fecha_vencimiento:
+            dias = (reserva.fecha_vencimiento - hoy).days
+            reserva.dias_para_vencer = dias
+            reserva.dias_vencido = abs(dias)
     historial = reservas.exclude(
         estado__in=[Reserva.Estado.RESERVADA, Reserva.Estado.EN_USO]
     ).order_by("-fecha", "-creada_en")
     return render(
         request,
         "reservas/mis_reservas.html",
-        {"activas": activas, "historial": historial},
+        {
+            "activas": activas,
+            "historial": historial,
+            "cupo": services.cupo_diario(request.user, hoy),
+        },
     )
 
 

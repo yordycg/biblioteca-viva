@@ -16,14 +16,14 @@ class LibroTests(TestCase):
     def setUp(self):
         self.hoy = services.hoy()
         self.usuario = Usuario.objects.create_user(
-            username="libro@example.com",
-            email="libro@example.com",
+            username="libro@virginiogomez.cl",
+            email="libro@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
         self.bibliotecario = Usuario.objects.create_user(
-            username="biblioteca@example.com",
-            email="biblioteca@example.com",
+            username="biblioteca@virginiogomez.cl",
+            email="biblioteca@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.BIBLIOTECARIO,
         )

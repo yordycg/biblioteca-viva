@@ -16,14 +16,14 @@ class InterfazTests(TestCase):
     def setUp(self):
         self.hoy = services.hoy()
         self.estudiante = Usuario.objects.create_user(
-            username="e@example.com",
-            email="e@example.com",
+            username="e@virginiogomez.cl",
+            email="e@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.SOLICITANTE,
         )
         self.bibliotecario = Usuario.objects.create_user(
-            username="b@example.com",
-            email="b@example.com",
+            username="b@virginiogomez.cl",
+            email="b@virginiogomez.cl",
             password="demo1234",
             rol=Usuario.Rol.BIBLIOTECARIO,
         )
@@ -203,7 +203,7 @@ class InterfazTests(TestCase):
     def test_login_no_expone_credenciales_de_demo(self):
         respuesta = self.client.get("/login/")
         self.assertNotContains(respuesta, "Credenciales de prueba")
-        self.assertNotContains(respuesta, "estudiante1@example.com")
+        self.assertNotContains(respuesta, "estudiante1@virginiogomez.cl")
         self.assertNotContains(respuesta, "demo1234")
 
     def test_barra_superior_muestra_logo_institucional(self):
@@ -214,13 +214,13 @@ class InterfazTests(TestCase):
 
     def test_login_valido_redirige(self):
         respuesta = self.client.post(
-            "/login/", {"username": "e@example.com", "password": "demo1234"}
+            "/login/", {"username": "e@virginiogomez.cl", "password": "demo1234"}
         )
         self.assertRedirects(respuesta, "/", fetch_redirect_response=False)
 
     def test_login_invalido_muestra_error(self):
         respuesta = self.client.post(
-            "/login/", {"username": "e@example.com", "password": "incorrecta"}
+            "/login/", {"username": "e@virginiogomez.cl", "password": "incorrecta"}
         )
         self.assertEqual(respuesta.status_code, 200)
         self.assertContains(respuesta, "Correo o contraseña incorrectos")

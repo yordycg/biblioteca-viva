@@ -275,6 +275,27 @@ def crear_reserva(usuario, recurso, fecha, bloque=None, dias=None, momento=None)
     return reserva
 
 
+def motivo_no_cancelable(reserva, actor, momento=None):
+    """Motivo por el que el solicitante no puede cancelar, o None si puede.
+
+    Replica las reglas de `cancelar_reserva` para que la interfaz no ofrezca una
+    acción que el servidor va a rechazar.
+    """
+    momento = momento or ahora()
+    if reserva.estado != Reserva.Estado.RESERVADA:
+        return "Solo se cancelan reservas pendientes de entrega."
+    if actor.rol == Usuario.Rol.BIBLIOTECARIO:
+        return None
+    if reserva.usuario_id != actor.pk:
+        return "No puedes cancelar una reserva ajena."
+    if reserva.modalidad == Reserva.Modalidad.PRESTAMO:
+        if reserva.fecha < timezone.localtime(momento).date():
+            return "El plazo de retiro ya pasó."
+    elif not bloque_vigente(reserva.bloque, reserva.fecha, momento):
+        return "El bloque ya comenzó."
+    return None
+
+
 def cancelar_reserva(reserva, actor, motivo="", momento=None):
     """Anula una reserva pendiente de entrega (RF-02).
 
