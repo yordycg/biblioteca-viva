@@ -147,28 +147,33 @@ class CatalogoInicialTests(TestCase):
         self.assertEqual(Reserva.BLOQUES[0][0], "09:00-10:00")
         self.assertEqual(Reserva.BLOQUES[-1][0], "21:00-22:00")
 
-    def test_libros_inicial_pide_elegir_filtros(self):
+    def test_libros_inicial_muestra_el_catalogo(self):
+        """El catálogo de libros aparece completo al entrar, sin filtrar."""
         self.client.force_login(self.usuario)
         respuesta = self.client.get("/buscar/", {"vista": "libros"})
-        self.assertNotContains(respuesta, "Libro Catálogo")
-        self.assertContains(respuesta, "Elige una fecha de retiro y una duración.")
+        self.assertContains(respuesta, "Libro Catálogo")
+        self.assertNotContains(respuesta, "Elige una fecha de retiro")
+        self.assertIsNone(respuesta.context["form_libros"]["dias"].value())
+        self.assertTrue(respuesta.context["tarjetas"])
         self.assertNotContains(respuesta, "field--error")
 
-    def test_recursos_inicial_pide_elegir_filtros(self):
+    def test_recursos_inicial_muestra_el_catalogo(self):
+        """Salas y equipos se listan desde el inicio con el próximo bloque."""
         self.client.force_login(self.usuario)
         respuesta = self.client.get("/buscar/", {"vista": "recursos"})
-        self.assertNotContains(respuesta, "Sala Catálogo")
-        self.assertContains(respuesta, "Elige una fecha y un bloque horario.")
+        self.assertContains(respuesta, "Sala Catálogo")
+        self.assertContains(respuesta, "Proyector Catálogo")
+        self.assertNotContains(respuesta, "Elige una fecha y un bloque horario")
         self.assertNotContains(respuesta, "field--error")
 
-    def test_bloque_no_se_autoselecciona_sin_fecha(self):
+    def test_formulario_vacio_sin_filtros(self):
+        """Los filtros se pintan vacíos; el listado usa el próximo bloque."""
         self.client.force_login(self.usuario)
         respuesta = self.client.get("/buscar/", {"vista": "recursos"})
-        html = respuesta.content.decode()
-        # El catálogo de bloques se ofrece para que el formulario funcione sin
-        # JavaScript (DEF-03), pero ninguno queda seleccionado.
-        self.assertIn('<option value="" selected>Elige un bloque</option>', html)
+        self.assertIsNone(respuesta.context["form"]["fecha"].value())
         self.assertIsNone(respuesta.context["form"]["bloque"].value())
+        self.assertEqual(respuesta.context["bloque"], "10:00-11:00")
+        self.assertTrue(respuesta.context["recursos"])
 
     def test_filtros_solo_validan_con_filtrar(self):
         self.client.force_login(self.usuario)
