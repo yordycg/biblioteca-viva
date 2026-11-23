@@ -143,19 +143,6 @@
   </section>
 
   <section class="stack" aria-labelledby="libros-title">
-    {% if elegir %}
-      <h2 id="libros-title" class="sr-only">Resultados del catálogo de libros</h2>
-      <div class="empty">
-        <span class="empty__icon" aria-hidden="true">
-          <svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg>
-        </span>
-        <p><strong>Elige una fecha de retiro y una duración.</strong></p>
-        <p class="hint-inline">
-          Con esos datos te mostramos qué títulos están disponibles para el
-          préstamo.
-        </p>
-      </div>
-    {% else %}
       <div class="section-title">
         <h2 id="libros-title">
           {% if tarjetas %}{{ tarjetas|length }} libro{{ tarjetas|length|pluralize:"s" }}
@@ -217,7 +204,6 @@
           <a class="btn btn--secondary" href="{% url 'buscar' %}?vista=libros">Limpiar filtros</a>
         </div>
       {% endif %}
-    {% endif %}
   </section>
 {% else %}
   <section class="card" aria-labelledby="filtros-title">
@@ -323,18 +309,6 @@
   </div>
 
   <section aria-labelledby="resultados-title" class="stack">
-    {% if elegir %}
-      <h2 id="resultados-title" class="sr-only">Resultados de la búsqueda</h2>
-      <div class="empty">
-        <span class="empty__icon" aria-hidden="true">
-          <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
-        </span>
-        <p><strong>Elige una fecha y un bloque horario.</strong></p>
-        <p class="hint-inline">
-          Con esos datos te mostramos qué salas y equipos están disponibles.
-        </p>
-      </div>
-    {% else %}
     <div class="section-title">
       <h2 id="resultados-title">
         {% if recursos %}{{ recursos|length }} recurso{{ recursos|length|pluralize:"s" }}
@@ -420,7 +394,6 @@
         </p>
         <a class="btn btn--secondary" href="{% url 'buscar' %}?vista=recursos">Limpiar filtros</a>
       </div>
-    {% endif %}
     {% endif %}
   </section>
 {% endif %}

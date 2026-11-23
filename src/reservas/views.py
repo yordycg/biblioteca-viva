@@ -99,6 +99,19 @@ def home(request):
     return redirect("buscar")
 
 
+def _busqueda_por_defecto(hoy):
+    """Fecha y bloque con los que abre la búsqueda sin filtros (RF-01).
+
+    La lista se muestra desde el inicio; el primer bloque reservable del día
+    (o de mañana, si ya no quedan) da el estado de cada recurso.
+    """
+    for fecha in (hoy, hoy + timedelta(days=1)):
+        disponibles = services.bloques_disponibles(fecha)
+        if disponibles:
+            return fecha, disponibles[0][0]
+    return hoy, Reserva.BLOQUES[0][0]
+
+
 @login_required
 def buscar(request):
     """Catálogo con filtros; valida solo cuando se envía el formulario (RF-01)."""
@@ -117,20 +130,26 @@ def buscar(request):
     cupo = services.cupo_diario(request.user, hoy)
 
     if vista == "libros":
+        # El formulario se pinta vacío; los filtros solo se usan al enviarlos.
         form_libros = BusquedaLibrosForm(request.GET if enviado else None)
+        calculo = (
+            form_libros
+            if enviado
+            else BusquedaLibrosForm({"fecha": hoy.isoformat(), "dias": 7})
+        )
         fecha_libros = None
         dias = None
         tarjetas = []
-        if enviado and form_libros.is_valid():
-            fecha_libros = form_libros.cleaned_data["fecha"]
-            dias = form_libros.cleaned_data["dias"]
+        if calculo.is_valid():
+            fecha_libros = calculo.cleaned_data["fecha"]
+            dias = calculo.cleaned_data["dias"]
             tarjetas = services.catalogo_libros(
                 fecha_libros,
-                form_libros.cleaned_data["q"],
-                form_libros.cleaned_data["genero"],
+                calculo.cleaned_data["q"],
+                calculo.cleaned_data["genero"],
                 dias,
             )
-            if form_libros.cleaned_data["solo_disponibles"]:
+            if calculo.cleaned_data["solo_disponibles"]:
                 tarjetas = [t for t in tarjetas if t["disponible"]]
         return render(
             request,
@@ -142,7 +161,6 @@ def buscar(request):
                 "fecha": fecha_libros,
                 "dias": dias,
                 "enviado": enviado,
-                "elegir": not enviado,
                 "cupo": cupo,
                 "sancion_hasta": sancion_hasta,
                 "prestamos": services.prestamos_activos(request.user),
@@ -150,23 +168,31 @@ def buscar(request):
             },
         )
 
+    # El formulario se pinta vacío; el listado usa el próximo bloque por defecto.
     form = BusquedaForm(request.GET if enviado else None)
+    if enviado:
+        calculo = form
+    else:
+        fecha_defecto, bloque_defecto = _busqueda_por_defecto(hoy)
+        calculo = BusquedaForm(
+            {"fecha": fecha_defecto.isoformat(), "bloque": bloque_defecto}
+        )
     fecha = None
     bloque = None
     recursos = []
-    if enviado and form.is_valid():
-        fecha = form.cleaned_data["fecha"]
-        bloque = form.cleaned_data["bloque"]
+    if calculo.is_valid():
+        fecha = calculo.cleaned_data["fecha"]
+        bloque = calculo.cleaned_data["bloque"]
         recursos = services.estado_recursos(
             fecha,
             bloque,
-            form.cleaned_data["tipo"],
-            form.cleaned_data["solo_disponibles"],
+            calculo.cleaned_data["tipo"],
+            calculo.cleaned_data["solo_disponibles"],
         )
     sin_bloques = bool(
         enviado
-        and form.cleaned_data.get("fecha")
-        and not services.bloques_disponibles(form.cleaned_data["fecha"])
+        and calculo.cleaned_data.get("fecha")
+        and not services.bloques_disponibles(calculo.cleaned_data["fecha"])
     )
     return render(
         request,
@@ -178,7 +204,6 @@ def buscar(request):
             "fecha": fecha,
             "bloque": bloque,
             "enviado": enviado,
-            "elegir": not enviado,
             "cupo": cupo,
             "sancion_hasta": sancion_hasta,
             "sin_bloques": sin_bloques,
