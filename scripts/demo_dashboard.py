@@ -17,20 +17,29 @@ import django  # noqa: E402
 
 django.setup()
 
-from django.db import transaction  # noqa: E402
+from django.db import IntegrityError, transaction  # noqa: E402
 
 from reservas import services  # noqa: E402
 from reservas.models import QR, Libro, Recurso, Reserva, Sancion, Usuario  # noqa: E402
 
 PASSWORD = "demo1234"
 DEMO_USERS = [
-    ("ana.perez@example.com", "Ana", "Pérez"),
-    ("luis.soto@example.com", "Luis", "Soto"),
-    ("carla.rojas@example.com", "Carla", "Rojas"),
+    ("ana.perez@virginiogomez.cl", "Ana", "Pérez"),
+    ("luis.soto@virginiogomez.cl", "Luis", "Soto"),
+    ("carla.rojas@virginiogomez.cl", "Carla", "Rojas"),
 ]
 
 
 def crear_reserva(usuario, recurso, estado, bloque="", fecha=None, vencimiento=None):
+    try:
+        with transaction.atomic():
+            return _crear(usuario, recurso, estado, bloque, fecha, vencimiento)
+    except IntegrityError:
+        print(f"Aviso: {recurso.nombre} ya tenía una reserva en {bloque or fecha}.")
+        return None
+
+
+def _crear(usuario, recurso, estado, bloque="", fecha=None, vencimiento=None):
     reserva = Reserva.objects.create(
         usuario=usuario,
         recurso=recurso,
@@ -55,10 +64,9 @@ def crear_reserva(usuario, recurso, estado, bloque="", fecha=None, vencimiento=N
 def main():
     hoy = services.hoy()
     ahora = services.ahora()
-    bloques = [valor for valor, _ in services.bloques_disponibles(hoy)]
-    if not bloques:
-        print("Aviso: hoy no quedan bloques; se usan los del catálogo completo.")
-        bloques = [valor for valor, _ in Reserva.BLOQUES]
+    # Los datos de demostración reparten reservas por todo el día, no solo por
+    # las franjas que aún se pueden reservar: así la línea de tiempo se ve.
+    bloques = [valor for valor, _ in Reserva.BLOQUES]
 
     def bloque_de_ahora():
         """Bloque que está corriendo en este momento, si lo hay."""
@@ -85,12 +93,17 @@ def main():
                 return bloque
         return None
 
-    def crear_en_bloque(usuario, recurso, estado, desde=0):
-        bloque = bloque_libre(recurso, desde)
-        if not bloque:
+    def crear_en_bloque(usuario, recurso, estado, desde=0, bloque=None):
+        elegido = bloque
+        if elegido and Reserva.objects.filter(
+            recurso=recurso, fecha=hoy, bloque=elegido
+        ).exists():
+            elegido = None
+        elegido = elegido or bloque_libre(recurso, desde)
+        if not elegido:
             print(f"Aviso: {recurso.nombre} ya no tiene bloques libres.")
             return None
-        return crear_reserva(usuario, recurso, estado, bloque)
+        return crear_reserva(usuario, recurso, estado, elegido)
 
     with transaction.atomic():
         usuarios = []
@@ -131,13 +144,13 @@ def main():
         )
         # Una finalizada de primera hora y una en uso del bloque actual: así la
         # línea de tiempo del día muestra actividad, no solo la última franja.
-        primera = [valor for valor, _ in Reserva.BLOQUES][0]
-        crear_reserva(carla, notebook, Reserva.Estado.FINALIZADA, primera)
-        crear_reserva(
+        crear_en_bloque(carla, notebook, Reserva.Estado.FINALIZADA, 0)
+        crear_en_bloque(
             carla,
             sala1,
             Reserva.Estado.EN_USO,
-            bloque_de_ahora() or bloque_libre(sala1, 0) or "21:00-22:00",
+            len(bloques) - 1,
+            bloque=bloque_de_ahora(),
         )
         crear_en_bloque(ana, proyector, Reserva.Estado.CANCELADA, 4)
 
